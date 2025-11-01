@@ -1,9 +1,38 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { authGuard, roleGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    component: DashboardComponent,
+    pathMatch: 'full',
+    redirectTo: 'dashboard',
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./features/auth/login.component').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+  },
+  {
+    path: 'admin',
+    canActivate: [authGuard, roleGuard(['admin'])],
+    loadComponent: () =>
+      import('./features/admin/admin.component').then((m) => m.AdminComponent),
+  },
+  {
+    path: 'unauthorized',
+    loadComponent: () =>
+      import('./features/unauthorized/unauthorized.component').then(
+        (m) => m.UnauthorizedComponent
+      ),
+  },
+  {
+    path: '**',
+    redirectTo: 'dashboard',
   },
 ];
