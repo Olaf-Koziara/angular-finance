@@ -1,0 +1,34 @@
+<header class="app-header">
+  <div class="header-container">
+    <div class="header-logo">
+      <mat-icon>account_balance</mat-icon>
+      <span class="logo-text">{{ 'DASHBOARD.TITLE' | translate }}</span>
+    </div>
+    
+    <nav class="header-nav">
+      <a routerLink="/" class="nav-link">
+        <mat-icon>dashboard</mat-icon>
+        <span>{{ 'DASHBOARD.TITLE' | translate }}</span>
+      </a>
+    </nav>
+
+    <div class="header-actions">
+      <button mat-button [matMenuTriggerFor]="langMenu" class="lang-button">
+        <mat-icon>language</mat-icon>
+        <span>{{ getLangLabel() }}</span>
+        <mat-icon class="arrow-icon">arrow_drop_down</mat-icon>
+      </button>
+      
+      <mat-menu #langMenu="matMenu">
+        <button mat-menu-item (click)="switchLanguage('en')" [class.active]="currentLang === 'en'">
+          <mat-icon>{{ currentLang === 'en' ? 'check' : '' }}</mat-icon>
+          <span>{{ 'GENERAL.ENGLISH' | translate }}</span>
+        </button>
+        <button mat-menu-item (click)="switchLanguage('pl')" [class.active]="currentLang === 'pl'">
+          <mat-icon>{{ currentLang === 'pl' ? 'check' : '' }}</mat-icon>
+          <span>{{ 'GENERAL.POLISH' | translate }}</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</header>
