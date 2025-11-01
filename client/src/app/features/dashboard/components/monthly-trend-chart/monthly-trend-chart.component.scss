@@ -1,0 +1,176 @@
+.chart-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  mat-card-header {
+    background: linear-gradient(135deg, #2196f3 0%, #21cbf3 100%);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px 12px 0 0;
+    margin: -16px -16px 16px -16px;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  mat-card-content {
+    padding: 24px !important;
+  }
+}
+
+.monthly-chart {
+  .chart-bars {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 300px;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 20px 0;
+
+    @media (max-width: 768px) {
+      height: 250px;
+      gap: 8px;
+    }
+  }
+
+  .month-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-8px);
+    }
+
+    &.selected {
+      .bars-container {
+        transform: scale(1.05);
+      }
+
+      .month-label {
+        color: #3f51b5;
+        font-weight: 700;
+      }
+    }
+
+    .bars-container {
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+      height: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .bar {
+      width: 30px;
+      min-height: 10px;
+      border-radius: 8px 8px 0 0;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+
+      @media (max-width: 768px) {
+        width: 20px;
+      }
+
+      &:hover {
+        filter: brightness(1.2);
+        transform: scaleY(1.05);
+      }
+
+      .bar-label {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.65rem;
+        font-weight: 600;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+
+        @media (max-width: 768px) {
+          display: none;
+        }
+      }
+
+      &:hover .bar-label {
+        opacity: 1;
+      }
+    }
+
+    .income-bar {
+      background: linear-gradient(180deg, #4caf50 0%, #8bc34a 100%);
+    }
+
+    .expenses-bar {
+      background: linear-gradient(180deg, #f44336 0%, #e91e63 100%);
+    }
+
+    .month-label {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.7);
+      transition: all 0.3s ease;
+    }
+  }
+
+  .chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    padding: 16px;
+    background: #f5f5f5;
+    border-radius: 8px;
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #333;
+
+      .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+      }
+
+      .income-color {
+        background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+      }
+
+      .expenses-color {
+        background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+      }
+    }
+  }
+}
+
