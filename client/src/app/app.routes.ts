@@ -1,9 +1,15 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: DashboardComponent,
+    loadComponent: () =>
+      import('./features/transactions/pages/transactions-page.component').then(
+        m => m.TransactionsPageComponent,
+      ),
+  },
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];

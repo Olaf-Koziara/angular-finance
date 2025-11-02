@@ -1,0 +1,26 @@
+.transaction-table {
+  width: 100%;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  color: var(--mat-sys-outline);
+}
+
+.empty-state mat-icon {
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+}
+
+.empty-state p {
+  margin: 0;
+  font-weight: 500;
+}

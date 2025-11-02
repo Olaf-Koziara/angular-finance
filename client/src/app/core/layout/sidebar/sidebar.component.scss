@@ -1,0 +1,50 @@
+.layout {
+  height: 100vh;
+  background: var(--mat-sys-surface-container);
+}
+
+.sidenav {
+  width: 260px;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.4)), var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.brand mat-icon {
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.content {
+  height: calc(100vh - 64px);
+  overflow: auto;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.25), transparent 60%),
+    var(--mat-sys-surface-bright);
+}
+
+a.active {
+  border-radius: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
