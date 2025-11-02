@@ -1,0 +1,17 @@
+.filters {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.transactions-table {
+  width: 100%;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.54);
+}

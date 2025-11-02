@@ -1,0 +1,21 @@
+@let list = transactions();
+
+<section class="transactions">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>New transaction</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-transaction-form (saved)="handleSave($event)"></app-transaction-form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Transactions</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-transaction-list [transactions]="list"></app-transaction-list>
+    </mat-card-content>
+  </mat-card>
+</section>
