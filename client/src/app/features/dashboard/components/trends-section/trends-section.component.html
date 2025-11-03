@@ -1,0 +1,31 @@
+<mat-card class="trends-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>trending_up</mat-icon>
+      {{ 'DASHBOARD.TRENDS' | translate }}
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="trends-grid">
+      @for (trend of trends(); track trend.label) {
+        <div class="trend-item" [class.positive]="trend.change > 0">
+          <p class="trend-label">{{ trend.label | translate }}</p>
+          <div class="trend-value-row">
+            <span class="trend-value">
+              @if (trend.label.includes('RATE')) {
+                {{ trend.value }}%
+              } @else {
+                {{ formatCurrency(trend.value) }}
+              }
+            </span>
+            <span class="trend-change" [class.negative]="trend.change < 0">
+              <mat-icon>{{ trend.change > 0 ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+              {{ formatPercentage(trend.change) }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>
+

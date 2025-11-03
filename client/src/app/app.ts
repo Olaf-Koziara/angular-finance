@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { SidebarComponent } from './core/layout/sidebar/sidebar.component';
 import { TranslateService } from '@ngx-translate/core';
+import { IconsService } from './core/icons/icons.service';
+import { SidebarComponent } from './core/layout/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-root',
@@ -11,13 +12,12 @@ import { TranslateService } from '@ngx-translate/core';
 export class App implements OnInit {
   protected readonly title = signal('angular-finance');
 
-  constructor(private translate: TranslateService) {
-    // Set default language
-    translate.setDefaultLang('en');
+  constructor(private translate: TranslateService,private iconsService:IconsService) {
+
     translate.use('en');
   }
 
   ngOnInit(): void {
-    // Initialize the app
+    this.iconsService.registerIcons();
   }
 }
