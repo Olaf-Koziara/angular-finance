@@ -11,6 +11,7 @@ import { routes } from './app.routes';
 
 import { provideHttpClient } from '@angular/common/http';
 import { provideTranslateService } from '@ngx-translate/core';
+import { DEFAULT_LANGUAGE } from './shared/constants/language.constants';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,8 +26,9 @@ export const appConfig: ApplicationConfig = {
         suffix: '.json',
       }),
       useDefaultLang: true,
-      fallbackLang: 'en',
-      lang: 'en',
+      fallbackLang: DEFAULT_LANGUAGE,
+      lang: DEFAULT_LANGUAGE,
+    
     }),
   ],
 };

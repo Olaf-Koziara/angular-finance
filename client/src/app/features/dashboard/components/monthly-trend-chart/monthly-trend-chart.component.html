@@ -1,0 +1,47 @@
+<mat-card class="chart-card monthly-chart-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>show_chart</mat-icon>
+      {{ 'DASHBOARD.MONTHLY_TREND' | translate }}
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="monthly-chart">
+      <div class="chart-bars">
+        @for (data of monthlyData(); track data.month; let i = $index) {
+          <div
+            class="month-group"
+            (click)="onMonthSelect(i)"
+            [class.selected]="selectedMonth() === i">
+            <div class="bars-container">
+              <div
+                class="bar income-bar"
+                [style.height.%]="(data.income / 10000) * 100"
+                [matTooltip]="'Income: ' + formatCurrency(data.income)">
+                <span class="bar-label">{{ formatCurrency(data.income) }}</span>
+              </div>
+              <div
+                class="bar expenses-bar"
+                [style.height.%]="(data.expenses / 10000) * 100"
+                [matTooltip]="'Expenses: ' + formatCurrency(data.expenses)">
+                <span class="bar-label">{{ formatCurrency(data.expenses) }}</span>
+              </div>
+            </div>
+            <span class="month-label">{{ data.month | translate }}</span>
+          </div>
+        }
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item">
+          <span class="legend-color income-color"></span>
+          <span>{{ 'DASHBOARD.INCOME' | translate }}</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color expenses-color"></span>
+          <span>{{ 'DASHBOARD.EXPENSES' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
