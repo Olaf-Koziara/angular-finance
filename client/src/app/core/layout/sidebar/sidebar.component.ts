@@ -10,7 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
+import { HeaderComponent } from "../header/header.component";
 
 @Component({
   selector: 'app-sidebar',
@@ -25,8 +25,9 @@ import { LanguageSwitcherComponent } from '../language-switcher/language-switche
     MatSelectModule,
     AsyncPipe,
     TranslateModule,
-    LanguageSwitcherComponent
-  ],
+    HeaderComponent,
+    
+],
 })
 export class SidebarComponent {
   private breakpointObserver = inject(BreakpointObserver);
