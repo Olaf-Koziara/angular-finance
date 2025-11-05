@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { CreateTransaction, TransactionType } from '../../models/transaction.model';
+import { TransactionCategory } from '../../constants/transaction-categories.constant';
 
 @Component({
   selector: 'app-transaction-form',
@@ -71,7 +72,7 @@ export class TransactionFormComponent {
     const safeDate = parsed ?? new Date();
     this.submitted.emit({
       amount: amount ?? 0,
-      category,
+      category: category as TransactionCategory,
       date: safeDate.toISOString(),
       type,
     });
