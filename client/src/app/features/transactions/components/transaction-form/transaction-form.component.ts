@@ -61,8 +61,6 @@ export class TransactionFormComponent {
     }),
   });
 
-  readonly isSubmitDisabled = computed(() => this.form.invalid);
-
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -82,6 +80,9 @@ export class TransactionFormComponent {
       category: '',
       date: safeDate,
       type,
+    });
+    Object.values(this.form.controls).forEach((control) => {
+      control.setErrors(null);
     });
   }
 }
