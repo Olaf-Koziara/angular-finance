@@ -1,0 +1,30 @@
+<form [formGroup]="form" class="filters" novalidate>
+  <mat-form-field appearance="outline">
+    <mat-label>Search</mat-label>
+    <input matInput formControlName="search" placeholder="Category" />
+    <button
+      mat-icon-button
+      type="button"
+      matSuffix
+      *ngIf="form.controls.search.value"
+      (click)="clearSearch()"
+      aria-label="Clear search"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Type</mat-label>
+    <mat-select formControlName="type">
+      <mat-option *ngFor="let option of types" [value]="option">{{
+        option | titlecase
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Category</mat-label>
+    <mat-select formControlName="categories" multiple>
+      <mat-option *ngFor="let category of categories" [value]="category">{{ category }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>
