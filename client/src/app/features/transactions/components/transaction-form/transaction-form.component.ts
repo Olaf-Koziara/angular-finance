@@ -10,6 +10,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { CreateTransaction, TransactionType } from '../../models/transaction.model';
 import { TransactionCategory } from '../../constants/transaction-categories.constant';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-transaction-form',
@@ -24,6 +25,7 @@ import { TransactionCategory } from '../../constants/transaction-categories.cons
     MatNativeDateModule,
     MatButtonModule,
     MatButtonToggleModule,
+    TranslateModule,
   ],
   templateUrl: './transaction-form.component.html',
   styleUrl: './transaction-form.component.scss',

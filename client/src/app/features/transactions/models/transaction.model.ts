@@ -20,5 +20,5 @@ export interface CreateTransaction {
 export interface TransactionFilters {
   search: string;
   type: 'all' | TransactionType;
-  categories: TransactionCategory[];
+  categories: TransactionCategory[] | null;
 }

@@ -7,10 +7,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TransactionFilters } from '../../models/transaction.model';
-import {
-  TRANSACTION_CATEGORIES,
-  TransactionCategory,
-} from '../../constants/transaction-categories.constant';
+import { TRANSACTION_CATEGORIES } from '../../constants/transaction-categories.constant';
+import { TransactionCategory } from '../../constants/transaction-categories.constant';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-transaction-filters',
@@ -22,6 +21,7 @@ import {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    TranslateModule,
   ],
   templateUrl: './transaction-filters.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,25 +30,25 @@ export class TransactionFiltersComponent {
   private readonly fb = inject(FormBuilder);
   categories = TRANSACTION_CATEGORIES;
   readonly filters = input.required<TransactionFilters>();
-  readonly changed = output<TransactionFilters>();
+  readonly changed = output<Partial<TransactionFilters>>();
   readonly types: ReadonlyArray<TransactionFilters['type']> = ['all', 'income', 'expense'];
-  readonly form = this.fb.nonNullable.group({
-    search: '',
-    type: 'all' as TransactionFilters['type'],
-    categories: [[...this.categories] as TransactionCategory[]],
+  readonly formGroup = this.fb.group({
+    search: this.fb.control('', { nonNullable: true }),
+    type: this.fb.control<TransactionFilters['type']>('all', { nonNullable: true }),
+    categories: this.fb.control<TransactionCategory[] | null>(null),
   });
 
   constructor() {
     effect(() => {
       const value = this.filters();
-      this.form.patchValue(value, { emitEvent: false });
+      this.formGroup.patchValue(value, { emitEvent: false });
     });
-    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.changed.emit(this.form.getRawValue());
+    this.formGroup.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.changed.emit(this.formGroup.getRawValue());
     });
   }
 
   clearSearch(): void {
-    this.form.controls.search.setValue('');
+    this.formGroup.controls.search.setValue('');
   }
 }

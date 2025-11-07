@@ -4,12 +4,13 @@ import { MatCardModule } from '@angular/material/card';
 import { TransactionFormComponent } from '../components/transaction-form/transaction-form.component';
 import { TransactionListComponent } from '../components/transaction-list/transaction-list.component';
 import { CreateTransaction } from '../models/transaction.model';
+import { TranslateModule } from '@ngx-translate/core';
 import { TransactionService } from '../services/transaction.service';
 
 @Component({
   selector: 'app-transactions-page',
   standalone: true,
-  imports: [CommonModule, MatCardModule, TransactionFormComponent, TransactionListComponent],
+  imports: [CommonModule, MatCardModule, TransactionFormComponent, TransactionListComponent, TranslateModule],
   templateUrl: './transactions-page.component.html',
   styleUrl: './transactions-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
