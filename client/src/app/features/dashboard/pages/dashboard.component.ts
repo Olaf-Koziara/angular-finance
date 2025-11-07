@@ -1,18 +1,18 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { FinancialSummaryCardComponent } from './components/financial-summary-card/financial-summary-card.component';
-import { TrendsSectionComponent } from './components/trends-section/trends-section.component';
-import { BudgetChartComponent } from './components/budget-chart/budget-chart.component';
-import { MonthlyTrendChartComponent } from './components/monthly-trend-chart/monthly-trend-chart.component';
-import { AlertsListComponent } from './components/alerts-list/alerts-list.component';
+import { FinancialSummaryCardComponent } from '../components/financial-summary-card/financial-summary-card.component';
+import { TrendsSectionComponent } from '../components/trends-section/trends-section.component';
+import { BudgetChartComponent } from '../components/budget-chart/budget-chart.component';
+import { MonthlyTrendChartComponent } from '../components/monthly-trend-chart/monthly-trend-chart.component';
+import { AlertsListComponent } from '../components/alerts-list/alerts-list.component';
 import {
   FinancialSummary,
   TrendData,
   BudgetCategory,
   MonthlyData,
   Alert,
-} from './models/dashboard.models';
+} from '../models/dashboard.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,26 +31,62 @@ import {
 })
 export class DashboardComponent {
   financialSummary = signal<FinancialSummary>({
-    balance: 25430.50,
-    income: 8500.00,
-    expenses: 5240.30,
+    balance: 25430.5,
+    income: 8500.0,
+    expenses: 5240.3,
     budgetUsage: 68,
     alerts: 3,
   });
 
   trends = signal<TrendData[]>([
-    { label: 'DASHBOARD.BALANCE_CHANGE', value: 3260.20, change: 12.5 },
-    { label: 'DASHBOARD.STATISTICS.MONTHLY_AVERAGE', value: 6850.00, change: -3.2 },
+    { label: 'DASHBOARD.BALANCE_CHANGE', value: 3260.2, change: 12.5 },
+    { label: 'DASHBOARD.STATISTICS.MONTHLY_AVERAGE', value: 6850.0, change: -3.2 },
     { label: 'DASHBOARD.STATISTICS.SAVINGS_RATE', value: 38.4, change: 5.8 },
   ]);
 
   budgetCategories = signal<BudgetCategory[]>([
-    { name: 'DASHBOARD.CATEGORIES.FOOD', spent: 1200, budget: 1000, percentage: 120, color: '#f44336' },
-    { name: 'DASHBOARD.CATEGORIES.TRANSPORT', spent: 450, budget: 600, percentage: 75, color: '#4caf50' },
-    { name: 'DASHBOARD.CATEGORIES.ENTERTAINMENT', spent: 820, budget: 800, percentage: 102.5, color: '#ff9800' },
-    { name: 'DASHBOARD.CATEGORIES.UTILITIES', spent: 380, budget: 500, percentage: 76, color: '#4caf50' },
-    { name: 'DASHBOARD.CATEGORIES.HEALTHCARE', spent: 290, budget: 400, percentage: 72.5, color: '#4caf50' },
-    { name: 'DASHBOARD.CATEGORIES.OTHER', spent: 180, budget: 300, percentage: 60, color: '#2196f3' },
+    {
+      name: 'DASHBOARD.CATEGORIES.FOOD',
+      spent: 1200,
+      budget: 1000,
+      percentage: 120,
+      color: '#f44336',
+    },
+    {
+      name: 'DASHBOARD.CATEGORIES.TRANSPORT',
+      spent: 450,
+      budget: 600,
+      percentage: 75,
+      color: '#4caf50',
+    },
+    {
+      name: 'DASHBOARD.CATEGORIES.ENTERTAINMENT',
+      spent: 820,
+      budget: 800,
+      percentage: 102.5,
+      color: '#ff9800',
+    },
+    {
+      name: 'DASHBOARD.CATEGORIES.UTILITIES',
+      spent: 380,
+      budget: 500,
+      percentage: 76,
+      color: '#4caf50',
+    },
+    {
+      name: 'DASHBOARD.CATEGORIES.HEALTHCARE',
+      spent: 290,
+      budget: 400,
+      percentage: 72.5,
+      color: '#4caf50',
+    },
+    {
+      name: 'DASHBOARD.CATEGORIES.OTHER',
+      spent: 180,
+      budget: 300,
+      percentage: 60,
+      color: '#2196f3',
+    },
   ]);
 
   monthlyData = signal<MonthlyData[]>([
