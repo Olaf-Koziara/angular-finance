@@ -6,11 +6,13 @@ import {
 import { provideRouter } from '@angular/router';
 
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
 
 import { provideHttpClient } from '@angular/common/http';
 import { provideTranslateService } from '@ngx-translate/core';
+import { DEFAULT_LANGUAGE } from './shared/constants/language.constants';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,6 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
+    provideAnimations(),
     provideHttpClient(),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
@@ -25,8 +28,8 @@ export const appConfig: ApplicationConfig = {
         suffix: '.json',
       }),
       useDefaultLang: true,
-      fallbackLang: 'en',
-      lang: 'en',
+      fallbackLang: DEFAULT_LANGUAGE,
+      lang: DEFAULT_LANGUAGE,
     }),
   ],
 };
