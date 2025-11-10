@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
