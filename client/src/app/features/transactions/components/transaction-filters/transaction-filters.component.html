@@ -1,31 +1,33 @@
-<form [formGroup]="formGroup" class="filters" novalidate>
+<form [formGroup]="formGroup" class="transaction-filters-form" novalidate>
   <mat-form-field appearance="outline">
-    <mat-label>Search</mat-label>
-    <input matInput formControlName="search" placeholder="Category" />
+    <mat-label>{{ 'TRANSACTIONS.SEARCH' | translate }}</mat-label>
+    <input matInput formControlName="search" [placeholder]="'TRANSACTIONS.CATEGORY' | translate" />
     @if (formGroup.controls.search.value) {
-      <button
-        mat-icon-button
-        type="button"
-        matSuffix
-        (click)="clearSearch()"
-        aria-label="Clear search"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
+    <button
+      mat-icon-button
+      type="button"
+      matSuffix
+      (click)="clearSearch()"
+      [attr.aria-label]="'TRANSACTIONS.CLEAR_SEARCH' | translate"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
     }
   </mat-form-field>
   <mat-form-field appearance="outline">
-    <mat-label>Type</mat-label>
+    <mat-label>{{ 'TRANSACTIONS.TYPE' | translate }}</mat-label>
     <mat-select formControlName="type">
       <mat-option *ngFor="let option of types" [value]="option">{{
-        option | titlecase
+        'TRANSACTIONS.TYPES.' + option.toUpperCase() | translate
       }}</mat-option>
     </mat-select>
   </mat-form-field>
   <mat-form-field appearance="outline">
-    <mat-label>Category</mat-label>
+    <mat-label>{{ 'TRANSACTIONS.CATEGORY' | translate }}</mat-label>
     <mat-select formControlName="categories" multiple>
-      <mat-option *ngFor="let category of categories" [value]="category">{{ category }}</mat-option>
+      <mat-option *ngFor="let category of categories" [value]="category">{{
+        'TRANSACTIONS.CATEGORIES.' + category.toUpperCase() | translate
+      }}</mat-option>
     </mat-select>
   </mat-form-field>
 </form>

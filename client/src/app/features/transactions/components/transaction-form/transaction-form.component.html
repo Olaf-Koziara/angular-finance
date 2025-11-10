@@ -1,45 +1,53 @@
 <form class="transaction-form" [formGroup]="form" (ngSubmit)="submit()">
   <div class="row">
     <mat-form-field appearance="outline">
-      <mat-label>Amount</mat-label>
+      <mat-label>{{ 'TRANSACTIONS.AMOUNT' | translate }}</mat-label>
       <input matInput type="number" min="0" step="0.01" formControlName="amount" />
-      <mat-error *ngIf="form.controls.amount.hasError('required')">Amount is required</mat-error>
-      <mat-error *ngIf="form.controls.amount.hasError('min')"
-        >Amount must be greater than zero</mat-error
-      >
+      <mat-error *ngIf="form.controls.amount.hasError('required')">{{
+        'TRANSACTIONS.AMOUNT_REQUIRED' | translate
+      }}</mat-error>
+      <mat-error *ngIf="form.controls.amount.hasError('min')">{{
+        'TRANSACTIONS.AMOUNT_MIN' | translate
+      }}</mat-error>
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>Category</mat-label>
+      <mat-label>{{ 'TRANSACTIONS.CATEGORY' | translate }}</mat-label>
       <mat-select formControlName="category">
         <mat-option *ngFor="let category of categories()" [value]="category">{{
           `TRANSACTIONS.CATEGORIES.${category.toUpperCase()}` | translate
         }}</mat-option>
       </mat-select>
-      <mat-error *ngIf="form.controls.category.hasError('required')"
-        >Category is required</mat-error
-      >
+      <mat-error *ngIf="form.controls.category.hasError('required')">{{
+        'TRANSACTIONS.CATEGORY_REQUIRED' | translate
+      }}</mat-error>
     </mat-form-field>
   </div>
   <div class="row">
     <mat-form-field appearance="outline">
-      <mat-label>Date</mat-label>
+      <mat-label>{{ 'TRANSACTIONS.DATE' | translate }}</mat-label>
       <input matInput [matDatepicker]="picker" formControlName="date" />
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
 
       <mat-datepicker #picker></mat-datepicker>
-      <mat-error *ngIf="form.controls.date.hasError('required')">Date is required</mat-error>
+      <mat-error *ngIf="form.controls.date.hasError('required')">{{
+        'TRANSACTIONS.DATE_REQUIRED' | translate
+      }}</mat-error>
     </mat-form-field>
     <div class="type-field">
-      <span class="type-label">Type</span>
+      <span class="type-label">{{ 'TRANSACTIONS.TYPE' | translate }}</span>
       <mat-button-toggle-group formControlName="type" appearance="standard">
-        <mat-button-toggle value="income">Income</mat-button-toggle>
-        <mat-button-toggle value="expense">Expense</mat-button-toggle>
+        <mat-button-toggle value="income">{{
+          'TRANSACTIONS.TYPES.INCOME' | translate
+        }}</mat-button-toggle>
+        <mat-button-toggle value="expense">{{
+          'TRANSACTIONS.TYPES.EXPENSE' | translate
+        }}</mat-button-toggle>
       </mat-button-toggle-group>
     </div>
   </div>
   <div class="actions">
     <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
-      Save transaction
+      {{ 'TRANSACTIONS.SAVE_TRANSACTION' | translate }}
     </button>
   </div>
 </form>

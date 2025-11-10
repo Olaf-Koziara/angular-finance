@@ -24,6 +24,7 @@ import { TranslateModule } from '@ngx-translate/core';
     TranslateModule,
   ],
   templateUrl: './transaction-filters.component.html',
+  styleUrl: './transaction-filters.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransactionFiltersComponent {
