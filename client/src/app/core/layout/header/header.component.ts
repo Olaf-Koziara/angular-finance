@@ -23,13 +23,9 @@ export class HeaderComponent {
         let r = this.activatedRoute.root;
         while (r.firstChild) r = r.firstChild;
         return r.snapshot;
-      })
+      }),
     ),
-    { initialValue: this.activatedRoute.snapshot }
+    { initialValue: this.activatedRoute.snapshot },
   );
   pageTranslationName = computed(() => this.leafRouteSnapshot().data['pageTranslationName'] ?? '');
-
-  ngOnInit(): void {
-    this.router.events.pipe();
-  }
 }

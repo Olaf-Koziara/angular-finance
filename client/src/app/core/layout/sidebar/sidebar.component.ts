@@ -43,7 +43,7 @@ export class SidebarComponent {
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map((result) => result.matches),
-    shareReplay()
+    shareReplay(),
   );
 
   onLanguageChange(langCode: string) {

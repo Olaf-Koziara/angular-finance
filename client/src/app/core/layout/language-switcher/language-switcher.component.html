@@ -4,14 +4,17 @@
     <span>{{ getLangLabel() }}</span>
     <mat-icon class="arrow-icon">arrow_drop_down</mat-icon>
   </button>
-  
+
   <mat-menu #langMenu="matMenu">
-    @for (language of languages;track language){
-    <button mat-menu-item (click)="onLanguageChange(language)" [class.active]="currentLang() === language">
-      <mat-icon [svgIcon]="`${language}Flag`"></mat-icon>
-      <span>{{ getLanguageTranslationKey(language)| translate }}</span>
-    </button>
-  }
- 
+    @for (language of languages; track language) {
+      <button
+        mat-menu-item
+        (click)="onLanguageChange(language)"
+        [class.active]="currentLang() === language"
+      >
+        <mat-icon [svgIcon]="`${language}Flag`"></mat-icon>
+        <span>{{ getLanguageTranslationKey(language) | translate }}</span>
+      </button>
+    }
   </mat-menu>
-  </div>
+</div>
