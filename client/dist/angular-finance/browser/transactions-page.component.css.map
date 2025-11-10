@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/transactions/pages/transactions-page.component.scss"],
-  "sourcesContent": [".page {\n  display: flex;\n  flex-direction: column;\n  gap: 1.5rem;\n  padding: 2rem;\n  max-width: 1200px;\n  margin: 0 auto;\n}\n\n.page-header h1 {\n  margin: 0;\n  font-size: 2.25rem;\n  font-weight: 700;\n}\n\n.page-header p {\n  margin: 0.25rem 0 0;\n  color: var(--mat-sys-outline);\n}\n\n.content {\n  display: grid;\n  gap: 1.5rem;\n  grid-template-columns: minmax(0, 1fr);\n}\n\n.form-card,\n.list-card {\n  border-radius: 1rem;\n  overflow: hidden;\n}\n\n@media (min-width: 992px) {\n  .content {\n    grid-template-columns: 360px minmax(0, 1fr);\n    align-items: start;\n  }\n}\n.transaction-form-card {\n  mat-card-header {\n    padding-bottom: 0.5rem;\n  }\n}\n"],
-  "mappings": ";AAAA,CAAA;AACE,WAAA;AACA,kBAAA;AACA,OAAA;AACA,WAAA;AACA,aAAA;AACA,UAAA,EAAA;;AAGF,CAAA,YAAA;AACE,UAAA;AACA,aAAA;AACA,eAAA;;AAGF,CANA,YAMA;AACE,UAAA,QAAA,EAAA;AACA,SAAA,IAAA;;AAGF,CAAA;AACE,WAAA;AACA,OAAA;AACA,yBAAA,OAAA,CAAA,EAAA;;AAGF,CAAA;AAAA,CAAA;AAEE,iBAAA;AACA,YAAA;;AAGF,OAAA,CAAA,SAAA,EAAA;AACE,GAbF;AAcI,2BAAA,MAAA,OAAA,CAAA,EAAA;AACA,iBAAA;;;AAIF,CAAA,sBAAA;AACE,kBAAA;;",
-  "names": []
-}

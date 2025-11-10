@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/transactions/components/transaction-form/transaction-form.component.scss"],
-  "sourcesContent": [".transaction-form {\n  display: grid;\n  gap: 1.5rem;\n}\n\n.row {\n  display: grid;\n  gap: 1rem;\n  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));\n}\n\n.type-field {\n  display: flex;\n  flex-direction: column;\n  gap: 0.5rem;\n  align-items: flex-start;\n  padding-top: 0.5rem;\n}\n\n.type-label {\n  font-size: 0.75rem;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.08em;\n  color: var(--mat-sys-secondary);\n}\n\n.actions {\n  display: flex;\n  justify-content: flex-end;\n}\n"],
-  "mappings": ";AAAA,CAAA;AACE,WAAA;AACA,OAAA;;AAGF,CAAA;AACE,WAAA;AACA,OAAA;AACA,yBAAA,OAAA,QAAA,EAAA,OAAA,KAAA,EAAA;;AAGF,CAAA;AACE,WAAA;AACA,kBAAA;AACA,OAAA;AACA,eAAA;AACA,eAAA;;AAGF,CAAA;AACE,aAAA;AACA,eAAA;AACA,kBAAA;AACA,kBAAA;AACA,SAAA,IAAA;;AAGF,CAAA;AACE,WAAA;AACA,mBAAA;;",
-  "names": []
-}
