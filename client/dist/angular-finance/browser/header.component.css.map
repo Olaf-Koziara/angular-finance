@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/core/layout/header/header.component.scss"],
+  "sourcesContent": [":host {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  background: rgba(255, 255, 255, 0.2);\n  border-radius: 0 0 16px 16px;\n  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);\n  backdrop-filter: blur(2.5px);\n  -webkit-backdrop-filter: blur(1.7px);\n  width: 100%;\n  padding: 0 1rem;\n  header {\n    display: flex;\n    align-items: center;\n  }\n}\n"],
+  "mappings": ";AAAA;AACE,WAAA;AACA,mBAAA;AACA,eAAA;AACA,cAAA,KAAA,GAAA,EAAA,GAAA,EAAA,GAAA,EAAA;AACA,iBAAA,EAAA,EAAA,KAAA;AACA,cAAA,EAAA,IAAA,KAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AACA,mBAAA,KAAA;AACA,2BAAA,KAAA;AACA,SAAA;AACA,WAAA,EAAA;;AACA,MAAA;AACE,WAAA;AACA,eAAA;;",
+  "names": []
+}
