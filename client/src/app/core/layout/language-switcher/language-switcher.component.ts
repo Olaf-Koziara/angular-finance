@@ -18,11 +18,11 @@ export class LanguageSwitcherComponent {
     translate = inject(TranslateService);
     currentLang = signal<Language>(this.translate.getCurrentLang());
     languages = SUPPORTED_LANGUAGES;
-    onLanguageChange(languageCode:LanguageCode ){
+    onLanguageChange(languageCode: LanguageCode ){
         this.translate.use(languageCode);
         this.currentLang.set(languageCode);
     }
-    getLanguageTranslationKey(languageCode:LanguageCode){
+    getLanguageTranslationKey(languageCode: LanguageCode){
         return LANGUAGE_TRANSLATION_KEYS[languageCode];
     }
 
