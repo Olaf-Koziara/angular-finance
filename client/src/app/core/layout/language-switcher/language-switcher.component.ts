@@ -27,7 +27,9 @@ import {
 })
 export class LanguageSwitcherComponent {
   translate = inject(TranslateService);
-  currentLang = signal<Language>(this.translate.currentLang);
+  currentLang = signal<Language>(
+    (this.translate.currentLang || this.translate.defaultLang) as Language
+  );
   languages = SUPPORTED_LANGUAGES;
   onLanguageChange(languageCode: LanguageCode) {
     this.translate.use(languageCode);
