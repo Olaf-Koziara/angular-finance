@@ -1,0 +1,31 @@
+.transaction-form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.row {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.type-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding-top: 0.5rem;
+}
+
+.type-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mat-sys-secondary);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

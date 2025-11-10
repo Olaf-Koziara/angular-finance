@@ -15,12 +15,13 @@ export const routes: Routes = [
     path: 'dashboard',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      import('./features/dashboard/pages/dashboard.component').then((m) => m.DashboardComponent),
   },
   {
     path: 'admin',
     canActivate: [authGuard, roleGuard(['admin'])],
-    loadComponent: () => import('./features/admin/admin.component').then((m) => m.AdminComponent),
+    loadComponent: () =>
+      import('./features/admin/pages/admin.component').then((m) => m.AdminComponent),
   },
   {
     path: 'unauthorized',
@@ -28,7 +29,17 @@ export const routes: Routes = [
       import('./features/unauthorized/unauthorized.component').then((m) => m.UnauthorizedComponent),
   },
   {
+    path: 'transactions',
+    loadComponent: () =>
+      import('./features/transactions/pages/transactions-page.component').then(
+        (m) => m.TransactionsPageComponent
+      ),
+    data: {
+      pageTranslationName: 'TRANSACTIONS',
+    },
+  },
+  {
     path: '**',
-    redirectTo: 'dashboard',
+    redirectTo: '',
   },
 ];

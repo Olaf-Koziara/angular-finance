@@ -6,12 +6,14 @@ import {
 import { provideRouter } from '@angular/router';
 
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideTranslateService } from '@ngx-translate/core';
 import { authInterceptor } from './core/auth/auth.interceptor';
+import { DEFAULT_LANGUAGE } from './shared/constants/language.constants';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,14 +22,15 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideHttpClient(withInterceptors([authInterceptor])),
+    provideAnimations(),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
         prefix: '/i18n/',
         suffix: '.json',
       }),
       useDefaultLang: true,
-      fallbackLang: 'en',
-      lang: 'en',
+      fallbackLang: DEFAULT_LANGUAGE,
+      lang: DEFAULT_LANGUAGE,
     }),
   ],
 };

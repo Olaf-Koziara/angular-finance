@@ -1,0 +1,59 @@
+@if (hasTransactions()) {
+  <ng-container>
+    <app-transaction-filters [filters]="filters()" />
+    <table mat-table [dataSource]="transactions()" class="transaction-table mat-elevation-z2">
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>{{ 'TRANSACTIONS.DATE' | translate }}</th>
+        <td mat-cell *matCellDef="let item">{{ item.date | date: 'mediumDate' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>{{ 'TRANSACTIONS.CATEGORY' | translate }}</th>
+        <td mat-cell *matCellDef="let item">
+          {{ 'TRANSACTIONS.CATEGORIES.' + item.category.toUpperCase() | translate }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>{{ 'TRANSACTIONS.TYPE' | translate }}</th>
+        <td mat-cell *matCellDef="let item">
+          <mat-chip [color]="item.type === 'income' ? 'primary' : 'warn'" selected>{{
+            'TRANSACTIONS.TYPES.' + item.type.toUpperCase() | translate
+          }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef>{{ 'TRANSACTIONS.AMOUNT' | translate }}</th>
+        <td mat-cell *matCellDef="let item">{{ item.amount | currency }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let item">
+          <button
+            mat-icon-button
+            type="button"
+            color="warn"
+            (click)="remove(item.id)"
+            [attr.aria-label]="'TRANSACTIONS.REMOVE' | translate"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <thead>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      </thead>
+      <tbody>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </tbody>
+    </table>
+  </ng-container>
+} @else {
+  <div class="empty-state">
+    <mat-icon>account_balance_wallet</mat-icon>
+    <p>{{ 'TRANSACTIONS.NO_TRANSACTIONS' | translate }}</p>
+  </div>
+}

@@ -1,0 +1,25 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <!-- <h1 class="dashboard-title">{{ 'DASHBOARD.TITLE' | translate }}</h1> -->
+    <p class="dashboard-subtitle">{{ 'DASHBOARD.FINANCIAL_HEALTH' | translate }}</p>
+  </div>
+
+  <div class="summary-grid">
+    @for (card of summaryCards(); track card.type) {
+    <app-financial-summary-card [card]="card" />
+    }
+  </div>
+
+  <div class="trends-section">
+    <app-trends-section [trends]="trends()" />
+  </div>
+
+  <div class="charts-grid">
+    <app-budget-chart [categories]="budgetCategories()" />
+    <app-monthly-trend-chart [monthlyData]="monthlyData()" />
+  </div>
+
+  <div class="alerts-section">
+    <app-alerts-list [alerts]="alerts()" />
+  </div>
+</div>
