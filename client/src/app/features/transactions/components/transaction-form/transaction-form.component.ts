@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -9,6 +9,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { CreateTransaction, TransactionType } from '../../models/transaction.model';
+import { TransactionCategory } from '../../constants/transaction-categories.constant';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-transaction-form',
@@ -23,6 +25,7 @@ import { CreateTransaction, TransactionType } from '../../models/transaction.mod
     MatNativeDateModule,
     MatButtonModule,
     MatButtonToggleModule,
+    TranslateModule,
   ],
   templateUrl: './transaction-form.component.html',
   styleUrl: './transaction-form.component.scss',
@@ -61,8 +64,6 @@ export class TransactionFormComponent {
     }),
   });
 
-  readonly isSubmitDisabled = computed(() => this.form.invalid);
-
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -73,7 +74,7 @@ export class TransactionFormComponent {
     const safeDate = parsed ?? new Date();
     this.submitted.emit({
       amount: amount ?? 0,
-      category,
+      category: category as TransactionCategory,
       date: safeDate.toISOString(),
       type,
     });
@@ -82,6 +83,9 @@ export class TransactionFormComponent {
       category: '',
       date: safeDate,
       type,
+    });
+    Object.values(this.form.controls).forEach((control) => {
+      control.setErrors(null);
     });
   }
 }

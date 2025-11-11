@@ -30,7 +30,6 @@ export const appConfig: ApplicationConfig = {
       useDefaultLang: true,
       fallbackLang: DEFAULT_LANGUAGE,
       lang: DEFAULT_LANGUAGE,
-    
     }),
   ],
 };

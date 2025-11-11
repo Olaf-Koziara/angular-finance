@@ -4,14 +4,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { TranslateModule } from '@ngx-translate/core';
-import { Alert } from '../../models/dashboard.models';
+import { Alert } from '../../models/dashboard.model';
 
 @Component({
   selector: 'app-alerts-list',
   standalone: true,
   imports: [MatCardModule, MatIconModule, MatButtonModule, MatChipsModule, TranslateModule],
   templateUrl: './alerts-list.component.html',
-  styleUrl: './alerts-list.component.scss'
+  styleUrl: './alerts-list.component.scss',
 })
 export class AlertsListComponent {
   alerts = input.required<Alert[]>();
@@ -20,4 +20,3 @@ export class AlertsListComponent {
     return `alert-${type}`;
   }
 }
-

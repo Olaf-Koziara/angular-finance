@@ -10,7 +10,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { HeaderComponent } from "../header/header.component";
+import { HeaderComponent } from '../header/header.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -26,8 +27,8 @@ import { HeaderComponent } from "../header/header.component";
     AsyncPipe,
     TranslateModule,
     HeaderComponent,
-    
-],
+    RouterLink,
+  ],
 })
 export class SidebarComponent {
   private breakpointObserver = inject(BreakpointObserver);
@@ -42,7 +43,7 @@ export class SidebarComponent {
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map((result) => result.matches),
-    shareReplay()
+    shareReplay(),
   );
 
   onLanguageChange(langCode: string) {

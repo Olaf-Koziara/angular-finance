@@ -1,4 +1,4 @@
-export enum customIcons{
-    plFlag="plFlag",
-    enFlag="enFlag"
+export enum customIcons {
+  plFlag = 'plFlag',
+  enFlag = 'enFlag',
 }

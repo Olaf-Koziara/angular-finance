@@ -1,4 +1,10 @@
 {
+  "SIDEBAR": {
+    "DASHBOARD": "Dashboard",
+    "TRANSACTIONS": "Transactions",
+    "REPORTS": "Reports",
+    "SETTINGS": "Settings"
+  },
   "GENERAL": {
     "LANGUAGE": "Language",
     "ENGLISH": "English",
@@ -49,6 +55,32 @@
       "OCT": "Oct",
       "NOV": "Nov",
       "DEC": "Dec"
+    }
+  },
+  "TRANSACTIONS": {
+    "TITLE": "Transactions",
+    "DATE": "Date",
+    "CATEGORY": "Category",
+    "TYPE": "Type",
+    "AMOUNT": "Amount",
+    "REMOVE": "Remove",
+    "NO_TRANSACTIONS": "No transactions yet",
+    "NEW": "New transaction",
+    "HISTORY": "History",
+    "TYPES": {
+      "INCOME": "Income",
+      "EXPENSE": "Expense"
+    },
+    "CATEGORIES": {
+      "FOOD": "Food",
+      "TRANSPORTATION": "Transport",
+      "HOUSING": "Housing",
+      "UTILITIES": "Utilities",
+      "ENTERTAINMENT": "Entertainment",
+      "HEALTHCARE": "Health",
+      "EDUCATION": "Education",
+      "SAVINGS": "Savings",
+      "OTHER": "Other"
     }
   }
 }

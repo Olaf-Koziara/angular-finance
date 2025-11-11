@@ -1,4 +1,11 @@
 {
+  "SIDEBAR": {
+    "DASHBOARD": "Panel Finansowy",
+    "TRANSACTIONS": "Transakcje",
+    "REPORTS": "Raporty",
+    "SETTINGS": "Ustawienia"
+  },
+
   "GENERAL": {
     "LANGUAGE": "Język",
     "ENGLISH": "Angielski",
@@ -49,6 +56,32 @@
       "OCT": "Paź",
       "NOV": "Lis",
       "DEC": "Gru"
+    }
+  },
+  "TRANSACTIONS": {
+    "TITLE": "Transakcje",
+    "DATE": "Data",
+    "CATEGORY": "Kategoria",
+    "TYPE": "Typ",
+    "AMOUNT": "Kwota",
+    "REMOVE": "Usuń",
+    "NO_TRANSACTIONS": "Brak transakcji",
+    "NEW": "Nowa transakcja",
+    "HISTORY": "Historia",
+    "TYPES": {
+      "INCOME": "Przychód",
+      "EXPENSE": "Wydatek"
+    },
+    "CATEGORIES": {
+      "FOOD": "Jedzenie",
+      "TRANSPORTATION": "Transport",
+      "HOUSING": "Mieszkanie",
+      "UTILITIES": "Media",
+      "ENTERTAINMENT": "Rozrywka",
+      "HEALTHCARE": "Zdrowie",
+      "EDUCATION": "Edukacja",
+      "SAVINGS": "Oszczędności",
+      "OTHER": "Inne"
     }
   }
 }
