@@ -9,7 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { CreateTransaction, TransactionType } from '../../models/transaction.model';
-import { TransactionCategory } from '../../constants/transaction-categories.constant';
+import { TransactionCategory, TRANSACTION_CATEGORIES } from '../../constants/transaction-categories.constant';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -34,16 +34,7 @@ import { TranslateModule } from '@ngx-translate/core';
 export class TransactionFormComponent {
   private readonly fb = inject(FormBuilder);
 
-  readonly categories = input<string[]>([
-    'Housing',
-    'Transportation',
-    'Food',
-    'Utilities',
-    'Entertainment',
-    'Healthcare',
-    'Savings',
-    'Other',
-  ]);
+  readonly categories = input<string[]>([...TRANSACTION_CATEGORIES]);
 
   readonly submitted = output<CreateTransaction>();
 

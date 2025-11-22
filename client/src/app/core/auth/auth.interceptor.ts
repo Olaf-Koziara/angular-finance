@@ -1,10 +1,12 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { catchError, switchMap, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const authService = inject(AuthService);
+  const router = inject(Router);
   const token = authService.getToken();
 
   const authRequest = token
@@ -37,6 +39,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
 
       if (error.status === 403) {
         authService.logout(false);
+        router.navigate(['/unauthorized']);
       }
 
       return throwError(() => error);
