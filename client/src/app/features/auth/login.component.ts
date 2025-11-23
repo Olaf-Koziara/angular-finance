@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../core/auth/auth.service';
@@ -9,9 +9,10 @@ import { AuthService } from '../../core/auth/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   private readonly fb = inject(NonNullableFormBuilder);
@@ -22,10 +23,11 @@ export class LoginComponent {
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly showPassword = signal(false);
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
   readonly submitDisabled = computed(() => this.loading() || this.form.invalid);
@@ -40,6 +42,10 @@ export class LoginComponent {
       (this.form.controls.password.dirty || this.form.controls.password.touched)
   );
 
+  togglePasswordVisibility(): void {
+    this.showPassword.update(v => !v);
+  }
+
   submit(): void {
     if (this.submitDisabled()) {
       this.form.markAllAsTouched();
@@ -49,7 +55,7 @@ export class LoginComponent {
     this.loading.set(true);
     this.error.set(null);
 
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/dashboard';
 
     this.authService
       .login(this.form.getRawValue())
@@ -59,10 +65,10 @@ export class LoginComponent {
       )
       .subscribe({
         next: () => {
-          this.router.navigateByUrl(returnUrl || '/');
+          this.router.navigateByUrl(returnUrl);
         },
         error: (err) => {
-          const message = err?.error?.message || 'Unable to sign in. Try again later.';
+          const message = err?.error?.message || 'Invalid email or password. Please try again.';
           this.error.set(message);
         },
       });
