@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /bazel-out
+client/dist
 
 # Node
 npm-debug.log
@@ -15,6 +16,9 @@ node_modules
 server/dist
 server/.env
 server/coverage
+server/dev.db
+server/dev.db-journal
+server/prisma/migrations
 
 
 # IDEs and editors
