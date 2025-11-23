@@ -1,0 +1,21 @@
+.sidenav-container {
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.sidenav {
+  width: 200px;
+  background: transparent;
+  --mat-sys-on-surface: #fff !important;
+}
+
+.sidenav .mat-toolbar {
+  background: transparent;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: transparent;
+}
