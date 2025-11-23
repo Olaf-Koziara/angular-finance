@@ -1,9 +1,0 @@
-{
-  "routes": {
-    "/": {},
-    "/dashboard": {},
-    "/login": {},
-    "/register": {},
-    "/unauthorized": {}
-  }
-}
