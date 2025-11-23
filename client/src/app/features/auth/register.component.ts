@@ -144,10 +144,14 @@ export class RegisterComponent {
           
           if (err?.error?.message) {
             message = err.error.message;
-          } else if (err?.error?.errors) {
+          } else if (err?.error?.errors && typeof err.error.errors === 'object') {
             // Handle validation errors from server
-            const errors = err.error.errors;
-            message = Object.values(errors).flat().join(', ');
+            const errors = err.error.errors as Record<string, string[]>;
+            const errorMessages = Object.values(errors)
+              .filter(val => Array.isArray(val))
+              .flat()
+              .filter(msg => typeof msg === 'string');
+            message = errorMessages.length > 0 ? errorMessages.join(', ') : message;
           }
           
           this.error.set(message);

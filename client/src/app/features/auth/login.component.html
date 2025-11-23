@@ -40,7 +40,7 @@
             (click)="togglePasswordVisibility()"
             [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
           >
-            {{ showPassword() ? '👁️' : '👁️‍🗨️' }}
+            <span aria-hidden="true">{{ showPassword() ? '👁️' : '👁️‍🗨️' }}</span>
           </button>
         </div>
         @if (passwordInvalid()) {

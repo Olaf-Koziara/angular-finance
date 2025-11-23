@@ -56,7 +56,7 @@
             (click)="togglePasswordVisibility()"
             [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
           >
-            {{ showPassword() ? '👁️' : '👁️‍🗨️' }}
+            <span aria-hidden="true">{{ showPassword() ? '👁️' : '👁️‍🗨️' }}</span>
           </button>
         </div>
         @if (passwordStrength(); as strength) {
@@ -99,7 +99,7 @@
             (click)="toggleConfirmPasswordVisibility()"
             [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'"
           >
-            {{ showConfirmPassword() ? '👁️' : '👁️‍🗨️' }}
+            <span aria-hidden="true">{{ showConfirmPassword() ? '👁️' : '👁️‍🗨️' }}</span>
           </button>
         </div>
         @if (confirmPasswordInvalid()) {
