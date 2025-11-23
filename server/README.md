@@ -267,6 +267,17 @@ server/
 - Error handling without sensitive data leaks
 - Environment variable configuration
 
+### Security Recommendations for Production
+
+For production deployment, consider implementing these additional security measures:
+
+1. **Rate Limiting**: Add rate limiting middleware (e.g., `express-rate-limit`) to authentication endpoints to prevent brute force attacks
+2. **HTTPS**: Always use HTTPS in production
+3. **Database Security**: Use connection pooling and secure database credentials
+4. **Secrets Management**: Use a secrets manager (e.g., AWS Secrets Manager, HashiCorp Vault)
+5. **Monitoring**: Implement application monitoring and alerting
+6. **Security Headers**: Review and customize Helmet configuration for your needs
+
 ## Development Guidelines
 
 1. **Always use async/await**, never callbacks
