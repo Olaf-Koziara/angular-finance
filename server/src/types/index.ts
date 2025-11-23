@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 // Standardized API Response Types
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -32,6 +34,6 @@ export interface AuthResponse {
 }
 
 // Express Request Extensions
-export interface AuthRequest extends Express.Request {
+export interface AuthRequest extends Request {
   userId?: string;
 }
