@@ -17,12 +17,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/dashboard/pages/dashboard.component').then((m) => m.DashboardComponent),
   },
-  {
-    path: 'admin',
-    canActivate: [authGuard, roleGuard(['admin'])],
-    loadComponent: () =>
-      import('./features/admin/pages/admin.component').then((m) => m.AdminComponent),
-  },
+  // {
+  //   path: 'admin',
+  //   canActivate: [authGuard, roleGuard(['admin'])],
+  //   loadComponent: () =>
+  //     import('./features/admin/pages/admin.component').then((m) => m.AdminComponent),
+  // },
   {
     path: 'unauthorized',
     loadComponent: () =>
