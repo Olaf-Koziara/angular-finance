@@ -41,7 +41,7 @@ export class LanguageSwitcherComponent {
 
   getLangLabel(): string {
     const current = this.currentLang();
-    const translationKey = this.getLanguageTranslationKey(current as LanguageCode);
+    const translationKey = this.getLanguageTranslationKey(current as LanguageCode) ?? '';
     return this.translate.instant(translationKey) || current;
   }
 }
