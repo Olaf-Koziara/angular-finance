@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime } from 'rxjs';
 import { TransactionFilters } from '../../models/transaction.model';
 import { TRANSACTION_CATEGORIES } from '../../constants/transaction-categories.constant';
 import { TransactionCategory } from '../../constants/transaction-categories.constant';
@@ -44,7 +45,10 @@ export class TransactionFiltersComponent {
       const value = this.filters();
       this.formGroup.patchValue(value, { emitEvent: false });
     });
-    this.formGroup.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+    this.formGroup.valueChanges.pipe(
+      takeUntilDestroyed(),
+      debounceTime(300)
+    ).subscribe(() => {
       this.changed.emit(this.formGroup.getRawValue());
     });
   }

@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
-import { Transaction, TransactionFilters } from '../../models/transaction.model';
-import { TransactionFiltersComponent } from '../transaction-filters/transaction-filters.component';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { Transaction } from '../../models/transaction.model';
 
 @Component({
   selector: 'app-transaction-list',
@@ -18,7 +18,7 @@ import { TransactionFiltersComponent } from '../transaction-filters/transaction-
     MatIconModule,
     MatChipsModule,
     TranslateModule,
-    TransactionFiltersComponent,
+    LoaderComponent,
   ],
   templateUrl: './transaction-list.component.html',
   styleUrl: './transaction-list.component.scss',
@@ -27,18 +27,17 @@ import { TransactionFiltersComponent } from '../transaction-filters/transaction-
 })
 export class TransactionListComponent {
   readonly transactions = input.required<readonly Transaction[]>();
+  readonly total = input.required<number>();
+  readonly loading = input.required<boolean>();
+
   readonly removed = output<string>();
-  filters = signal<TransactionFilters>({
-    search: '',
-    type: 'all',
-    categories: [],
-  });
 
   readonly displayedColumns = ['date', 'category', 'type', 'amount', 'actions'] as const;
 
-  readonly hasTransactions = computed(() => this.transactions().length > 0);
+  readonly hasTransactions = computed(() => this.total() > 0);
 
   remove(id: string): void {
     this.removed.emit(id);
   }
 }
+
