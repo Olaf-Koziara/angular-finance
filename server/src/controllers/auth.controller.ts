@@ -10,7 +10,13 @@ const REFRESH_TOKEN_COOKIE = 'refresh_token';
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
 /**
- * Set refresh token as HttpOnly cookie
+ * Set refresh token as HttpOnly cookie with secure settings.
+ * 
+ * Security considerations:
+ * - httpOnly: Prevents JavaScript access (XSS protection)
+ * - secure: Only sent over HTTPS in production
+ * - sameSite: 'strict' prevents CSRF attacks by not sending cookie on cross-origin requests
+ * - path: '/api/auth' limits cookie scope to auth endpoints only
  */
 const setRefreshTokenCookie = (res: Response, refreshToken: string): void => {
   res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, {

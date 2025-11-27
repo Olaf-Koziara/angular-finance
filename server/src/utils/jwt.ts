@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { config } from '../config';
 import { AuthenticationError } from './errors';
+import { logger } from './logger';
 
 export interface JwtPayload {
   userId: string;
@@ -98,7 +99,8 @@ export const getRefreshTokenExpirationDate = (): Date => {
 function parseExpiration(exp: string): number {
   const match = exp.match(/^(\d+)([smhd])$/);
   if (!match) {
-    // Default to 7 days if invalid format
+    // Log warning about invalid format and use default
+    logger.warn(`Invalid expiration format "${exp}", using default of 7 days`);
     return 7 * 24 * 60 * 60 * 1000;
   }
 

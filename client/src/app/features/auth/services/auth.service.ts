@@ -54,17 +54,13 @@ export class AuthService {
 
   login(credentials: LoginPayload): Observable<AuthResponse> {
     return this.http.post<{ data: AuthResponse }>(`${environment.API_ORIGIN}/api/auth/login`, credentials, {
-      withCredentials: true, // Include cookies for refresh token
+      withCredentials: true,
     }).pipe(
       tap((response) => this.setSession(response.data)),
       catchError((error) => {
         this.clearSession();
         return throwError(() => error);
-      }),
-      // Map to just the data
-      tap(() => {}),
-      // Return just the auth response
-      catchError((error) => throwError(() => error)),
+      })
     );
   }
 
@@ -102,10 +98,9 @@ export class AuthService {
     this.refreshSubject.next(false);
 
     return this.http.post<{ data: RefreshResponse }>(`${environment.API_ORIGIN}/api/auth/refresh`, {}, {
-      withCredentials: true, // Send refresh token cookie
+      withCredentials: true,
     }).pipe(
       tap((response) => {
-        // Update access token in storage
         if (this.storage && response.data.accessToken) {
           this.storage.setItem(ACCESS_TOKEN_KEY, response.data.accessToken);
         }
@@ -117,9 +112,7 @@ export class AuthService {
         this.refreshSubject.next(true);
         this.logout();
         return throwError(() => error);
-      }),
-      // Map to just the data
-      tap(() => {}),
+      })
     );
   }
 

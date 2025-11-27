@@ -4,7 +4,17 @@ import { Router } from '@angular/router';
 import { catchError, switchMap, throwError, Observable, BehaviorSubject, filter, take } from 'rxjs';
 import { AuthService } from '../../features/auth/services/auth.service';
 
-// Track if a refresh is in progress to avoid multiple refresh calls
+/**
+ * Module-level state for handling concurrent 401 errors during token refresh.
+ * This is intentional - when multiple requests fail with 401 simultaneously,
+ * we want only one refresh request to be made, and all other requests should
+ * wait for that refresh to complete before retrying with the new token.
+ * 
+ * This state is safe because:
+ * 1. Angular HttpClient interceptors are singletons within an application
+ * 2. The state is reset after each refresh cycle completes
+ * 3. The BehaviorSubject allows waiting requests to receive the new token
+ */
 let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 

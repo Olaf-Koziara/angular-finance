@@ -181,7 +181,7 @@ export class AuthService {
     await prisma.refreshToken.create({
       data: {
         id: tokenId,
-        token: tokenId, // Using tokenId as the token value for lookup
+        token: tokenId,
         userId,
         expiresAt: getRefreshTokenExpirationDate(),
       },
