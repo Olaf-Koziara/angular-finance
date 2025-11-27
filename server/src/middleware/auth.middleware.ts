@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthenticationError } from '../utils/errors';
-import { verifyToken } from '../utils/jwt';
+import { verifyAccessToken } from '../utils/jwt';
 import { AuthRequest } from '../types';
 
 export const authenticate = async (
@@ -16,7 +16,7 @@ export const authenticate = async (
     }
 
     const token = authHeader.substring(7);
-    const payload = verifyToken(token);
+    const payload = verifyAccessToken(token);
 
     // Attach user ID to request
     (req as AuthRequest).userId = payload.userId;

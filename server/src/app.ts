@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import { config } from './config';
 import routes from './routes';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
@@ -20,6 +21,9 @@ export const createApp = (): Application => {
       credentials: true,
     })
   );
+
+  // Cookie parsing middleware
+  app.use(cookieParser());
 
   // Body parsing middleware
   app.use(express.json());
