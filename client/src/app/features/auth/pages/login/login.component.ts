@@ -1,15 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { finalize } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService } from '../../core/auth/auth.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule, MatLabel } from "@angular/material/form-field";
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { finalize, startWith } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, RouterLink, MatFormFieldModule,MatLabel],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -27,8 +29,10 @@ export class LoginComponent {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
   });
-
-  readonly submitDisabled = computed(() => this.loading() || this.form.invalid);
+  readonly formStatus = toSignal(
+    this.form.statusChanges.pipe(startWith(this.form.status)),
+  );
+  readonly submitDisabled = computed(() => this.loading() || this.formStatus() !== "VALID")
   readonly emailInvalid = computed(
     () =>
       this.form.controls.email.invalid &&

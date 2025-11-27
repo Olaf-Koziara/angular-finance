@@ -14,7 +14,7 @@
     </label>
 
     <label class="form-field">
-      <span>Password</span>
+      <mat-label>Password</mat-label>
       <input
         type="password"
         formControlName="password"
@@ -24,10 +24,11 @@
       <small *ngIf="passwordInvalid()">Password is required</small>
     </label>
 
-    <button type="submit" [disabled]="submitDisabled()">
-      {{ loading() ? 'Signing in?' : 'Sign in' }}
+    <button matButton="elevated" type="submit" [disabled]="submitDisabled()">
+      {{ loading() ? 'logging in?' : 'Login' }}
     </button>
   </form>
+  <a matButton="elevated" [routerLink]="['/register']">Register</a>
 
   <p class="error" *ngIf="error()">{{ error() }}</p>
 </section>
