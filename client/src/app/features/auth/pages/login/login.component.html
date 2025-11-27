@@ -1,16 +1,22 @@
 <section class="auth-container" data-testid="login">
   <h1>Sign in</h1>
 
-  <form [formGroup]="form" (ngSubmit)="submit()">
+  <form [formGroup]="form"  (ngSubmit)="submit()">
     <label class="form-field">
       <span>Email</span>
       <input
         type="email"
         formControlName="email"
         autocomplete="username"
-        [attr.aria-invalid]="emailInvalid()"
-      />
-      <small *ngIf="emailInvalid()">Enter a valid email</small>
+        >
+        @if(email?.touched && email?.invalid){
+          @if(email?.errors?.['required']){
+            <small class="error">Email is required</small>
+          }
+          @if(email?.errors?.['email']){
+            <small class="error">Wrong email</small>
+          }
+        }
     </label>
 
     <label class="form-field">
@@ -19,12 +25,21 @@
         type="password"
         formControlName="password"
         autocomplete="current-password"
-        [attr.aria-invalid]="passwordInvalid()"
       />
-      <small *ngIf="passwordInvalid()">Password is required</small>
+      @if(password?.touched && password?.invalid){
+        @if(password?.errors?.['required']){
+          <small class="error">Email is required</small>
+        }
+        @if(password?.errors?.['minlength']){
+          <small class="error">Minimum length is 6</small>
+        }
+        @if(password?.errors?.['maxlength']){
+          <small class="error">Maximum length is 6</small>
+        }
+      }
     </label>
 
-    <button matButton="elevated" type="submit" [disabled]="submitDisabled()">
+    <button matButton="elevated" type="submit">
       {{ loading() ? 'logging in?' : 'Login' }}
     </button>
   </form>

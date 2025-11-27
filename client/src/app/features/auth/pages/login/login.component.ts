@@ -1,17 +1,18 @@
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule, MatLabel } from "@angular/material/form-field";
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize, startWith } from 'rxjs';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, RouterLink, MatFormFieldModule,MatLabel],
+  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, RouterLink, MatFormFieldModule,MatLabel,TextFieldModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -27,29 +28,24 @@ export class LoginComponent {
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
+    password: ['', [Validators.required,Validators.minLength(6),Validators.maxLength(20)]],
   });
-  readonly formStatus = toSignal(
-    this.form.statusChanges.pipe(startWith(this.form.status)),
-  );
-  readonly submitDisabled = computed(() => this.loading() || this.formStatus() !== "VALID")
-  readonly emailInvalid = computed(
-    () =>
-      this.form.controls.email.invalid &&
-      (this.form.controls.email.dirty || this.form.controls.email.touched)
-  );
-  readonly passwordInvalid = computed(
-    () =>
-      this.form.controls.password.invalid &&
-      (this.form.controls.password.dirty || this.form.controls.password.touched)
-  );
 
+  ngOnInit(){
+  }
+  get email(){
+    return this.form.get('email');
+  }
+  get password()
+{
+  return this.form.get('password');
+}
   submit(): void {
-    if (this.submitDisabled()) {
-      this.form.markAllAsTouched();
+
+    this.form.updateValueAndValidity();
+    if(this.form.invalid){
       return;
     }
-
     this.loading.set(true);
     this.error.set(null);
 
@@ -71,4 +67,5 @@ export class LoginComponent {
         },
       });
   }
+
 }
