@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { jwtConfig } from '../config/jwt.config.js';
+import { jwtConfig, ACCESS_TOKEN_EXPIRY_MS, REFRESH_TOKEN_EXPIRY_MS } from '../config/jwt.config.js';
 import {
   generateTokenPair,
   verifyRefreshToken,
@@ -11,11 +11,19 @@ const router = Router();
 
 /**
  * Mock user database for demo purposes.
- * In production, this would be replaced with a real database.
+ * 
+ * IMPORTANT: In production:
+ * - Use a real database (PostgreSQL, MongoDB, etc.)
+ * - Hash passwords using bcrypt or Argon2
+ * - Never use hardcoded credentials
+ * 
+ * Example with bcrypt:
+ * const hashedPassword = await bcrypt.hash(password, 12);
+ * const isValid = await bcrypt.compare(inputPassword, hashedPassword);
  */
 const MOCK_USERS: Record<string, { password: string; user: TokenPayload & { displayName: string } }> = {
   'admin@example.com': {
-    password: 'admin123',
+    password: 'admin123', // TODO: In production, store hashed password
     user: {
       userId: '1',
       email: 'admin@example.com',
@@ -24,7 +32,7 @@ const MOCK_USERS: Record<string, { password: string; user: TokenPayload & { disp
     },
   },
   'user@example.com': {
-    password: 'user123',
+    password: 'user123', // TODO: In production, store hashed password
     user: {
       userId: '2',
       email: 'user@example.com',
@@ -66,13 +74,13 @@ router.post('/login', (req: Request, res: Response): void => {
   // Set refresh token in HttpOnly cookie for security
   res.cookie('refresh_token', refreshToken, {
     ...jwtConfig.cookieOptions,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxAge: REFRESH_TOKEN_EXPIRY_MS,
   });
 
   // Also set access token in HttpOnly cookie for SSR compatibility
   res.cookie('access_token', accessToken, {
     ...jwtConfig.cookieOptions,
-    maxAge: 15 * 60 * 1000, // 15 minutes
+    maxAge: ACCESS_TOKEN_EXPIRY_MS,
   });
 
   res.json({
@@ -122,12 +130,12 @@ router.post('/refresh', (req: Request, res: Response): void => {
   // Update cookies with new tokens (token rotation)
   res.cookie('refresh_token', newRefreshToken, {
     ...jwtConfig.cookieOptions,
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: REFRESH_TOKEN_EXPIRY_MS,
   });
 
   res.cookie('access_token', accessToken, {
     ...jwtConfig.cookieOptions,
-    maxAge: 15 * 60 * 1000,
+    maxAge: ACCESS_TOKEN_EXPIRY_MS,
   });
 
   // Get user data for response

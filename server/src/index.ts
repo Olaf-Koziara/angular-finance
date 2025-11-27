@@ -8,7 +8,20 @@ import { authenticateToken, requireRoles } from './middleware/auth.middleware.js
 const app = express();
 const PORT = process.env['PORT'] || 3000;
 
-// Middleware
+/**
+ * Security middleware stack.
+ * 
+ * CSRF Protection:
+ * - We use sameSite: 'strict' cookies which provide CSRF protection
+ * - CORS is configured to only allow the frontend origin with credentials
+ * - For additional protection in production, consider adding a CSRF token
+ *   for state-changing operations (using packages like csurf or lusca)
+ * 
+ * Rate Limiting (recommended for production):
+ * - Add express-rate-limit to prevent brute force attacks
+ * - Example: const limiter = rateLimit({ windowMs: 15*60*1000, max: 100 });
+ * - Apply stricter limits to auth endpoints
+ */
 app.use(cors(corsConfig));
 app.use(express.json());
 app.use(cookieParser());

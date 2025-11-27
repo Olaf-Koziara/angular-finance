@@ -10,7 +10,14 @@ import { catchError, switchMap, throwError, BehaviorSubject, filter, take } from
  */
 const AUTH_ENDPOINTS = ['/api/auth/login', '/api/auth/refresh', '/api/auth/logout'];
 
-// Used to queue requests while token is being refreshed
+/**
+ * Module-level state for token refresh coordination.
+ * 
+ * Note: These are intentionally module-scoped to ensure a single refresh
+ * attempt across all interceptor invocations in the application.
+ * The BehaviorSubject acts as a queue - pending requests wait for the 
+ * refresh to complete and then retry with the new token.
+ */
 let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
@@ -82,7 +89,10 @@ function isAuthEndpoint(url: string): boolean {
 
 /**
  * Handles 401 Unauthorized errors by attempting token refresh.
- * Queues requests while refresh is in progress to avoid multiple refresh calls.
+ * Uses module-level state to coordinate between concurrent requests:
+ * - First request to fail starts the refresh
+ * - Subsequent requests wait for the refresh to complete
+ * - All requests retry with the new token once refresh succeeds
  */
 function handleUnauthorizedError(
   request: HttpRequest<unknown>,
