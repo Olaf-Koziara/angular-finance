@@ -11,25 +11,29 @@ import { routes } from './app.routes';
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideTranslateService } from '@ngx-translate/core';
-import { DEFAULT_LANGUAGE } from './shared/constants/language.constants';
+import { apiInterceptor } from './core/api/api.interceptor';
 import { authInterceptor } from './core/auth/auth.interceptor';
+import { DEFAULT_LANGUAGE } from './shared/constants/language.constants';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZonelessChangeDetection(),
+    provideZonelessChangeDetection(), 
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptors([authInterceptor])),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
         prefix: '/i18n/',
         suffix: '.json',
+        useHttpBackend:true,
+        
       }),
       useDefaultLang: true,
       fallbackLang: DEFAULT_LANGUAGE,
       lang: DEFAULT_LANGUAGE,
     
     }),
+    provideHttpClient(withInterceptors([apiInterceptor,authInterceptor])),
+
   ],
 };
