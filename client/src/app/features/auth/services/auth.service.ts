@@ -1,7 +1,8 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpBackend, HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export interface AuthResponse {
   accessToken: string;
@@ -21,12 +22,21 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface RegisterPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  acceptTerms: boolean;
+}
+
 const ACCESS_TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = new HttpClient(inject(HttpBackend));
+  
   private readonly router = inject(Router);
   private readonly storage = getSessionStorage();
 
@@ -36,7 +46,7 @@ export class AuthService {
   readonly user$ = this.userSubject.asObservable();
 
   login(credentials: LoginPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/login', credentials).pipe(
+    return this.http.post<AuthResponse>(`${environment.API_ORIGIN}/api/auth/login`, credentials).pipe(
       tap((response) => this.setSession(response)),
       catchError((error) => {
         this.clearSession();
@@ -45,8 +55,14 @@ export class AuthService {
     );
   }
 
+  register(payload: RegisterPayload): Observable<void> {
+    return this.http
+      .post<void>(`${environment.API_ORIGIN}/api/auth/register`, payload)
+      .pipe(catchError((error) => throwError(() => error)));
+  }
+
   refreshToken(): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/refresh', {}).pipe(
+    return this.http.post<AuthResponse>(`${environment.API_ORIGIN}/api/auth/refresh`, {}).pipe(
       tap((response) => this.setSession(response)),
       catchError((error) => {
         this.logout();
