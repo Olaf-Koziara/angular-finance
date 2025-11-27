@@ -5,12 +5,12 @@
 /tmp
 /out-tsc
 /bazel-out
+**/dist/
 
 # Node
 npm-debug.log
 yarn-error.log
 node_modules
-
 
 # IDEs and editors
 .idea/
@@ -43,4 +43,7 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
+# Server specific
+server/dist/
+server/node_modules/
 
