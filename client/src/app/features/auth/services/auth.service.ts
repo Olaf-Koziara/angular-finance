@@ -1,7 +1,7 @@
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export interface AuthResponse {
@@ -57,6 +57,7 @@ export class AuthService {
       withCredentials: true,
     }).pipe(
       tap((response) => this.setSession(response.data)),
+      map((response) => response.data),
       catchError((error) => {
         this.clearSession();
         return throwError(() => error);
@@ -71,6 +72,7 @@ export class AuthService {
       })
       .pipe(
         tap((response) => this.setSession(response.data)),
+        map((response) => response.data),
         catchError((error) => throwError(() => error))
       );
   }
@@ -107,6 +109,7 @@ export class AuthService {
         this.refreshInProgress = false;
         this.refreshSubject.next(true);
       }),
+      map((response) => response.data),
       catchError((error) => {
         this.refreshInProgress = false;
         this.refreshSubject.next(true);
