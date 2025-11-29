@@ -30,10 +30,19 @@ export interface LoginDto {
 
 export interface AuthResponse {
   user: UserDto;
-  token: string;
+  accessToken: string;
 }
 
 // Express Request Extensions
 export interface AuthRequest extends Request {
   userId?: string;
+}
+
+// Cookie configuration for refresh tokens
+export interface CookieOptions {
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: 'strict' | 'lax' | 'none';
+  maxAge: number;
+  path: string;
 }

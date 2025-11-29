@@ -25,7 +25,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService, RegisterPayload } from '../../services/auth.service';
 
@@ -55,6 +55,7 @@ export class RegisterComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -64,12 +65,17 @@ export class RegisterComponent {
   readonly showConfirmPassword = signal(false);
 
   readonly form = this.fb.group({
-    firstName: ['', [Validators.required, Validators.maxLength(40)]],
-    lastName: ['', [Validators.required, Validators.maxLength(40)]],
+    name: ['', [Validators.required, Validators.maxLength(100)]],
     email: ['', [Validators.required, Validators.email]],
     password: [
       '',
-      [Validators.required, Validators.minLength(8), Validators.maxLength(72)],
+      [
+        Validators.required, 
+        Validators.minLength(8), 
+        Validators.maxLength(100),
+        // Password must contain at least one uppercase, one lowercase, and one number
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)
+      ],
     ],
     confirmPassword: ['', [Validators.required]],
     terms: [false, [Validators.requiredTrue]],
@@ -77,8 +83,7 @@ export class RegisterComponent {
 
   readonly formStatus = signal<FormControlStatus>(this.form.status as FormControlStatus);
 
-  readonly firstNameInvalid = computed(() => controlInvalid(this.form.controls.firstName, this.formStatus));
-  readonly lastNameInvalid = computed(() => controlInvalid(this.form.controls.lastName, this.formStatus));
+  readonly nameInvalid = computed(() => controlInvalid(this.form.controls.name, this.formStatus));
   readonly emailInvalid = computed(() => controlInvalid(this.form.controls.email, this.formStatus));
   readonly passwordInvalid = computed(() => controlInvalid(this.form.controls.password, this.formStatus));
   readonly confirmPasswordInvalid = computed(() => {
@@ -195,11 +200,9 @@ export class RegisterComponent {
     }
 
     const payload: RegisterPayload = {
-      firstName: this.form.controls.firstName.value,
-      lastName: this.form.controls.lastName.value,
+      name: this.form.controls.name.value,
       email: this.form.controls.email.value,
       password: this.form.controls.password.value,
-      acceptTerms: this.form.controls.terms.value,
     };
 
     this.loading.set(true);
@@ -214,16 +217,9 @@ export class RegisterComponent {
       )
       .subscribe({
         next: () => {
-          this.success.set(true);
-          this.registeredEmail.set(payload.email);
-          this.form.reset({
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-            terms: false,
-          });
+          // Registration successful - user is now logged in
+          // Redirect to dashboard
+          this.router.navigate(['/dashboard']);
         },
         error: (err) => {
           const message =

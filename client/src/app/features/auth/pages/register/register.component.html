@@ -19,32 +19,19 @@
 
     <mat-card-content>
       <form class="register-form p-2" [formGroup]="form" (ngSubmit)="submit()">
-        <div class="grid two-columns">
-          <mat-form-field appearance="outline">
-            <mat-label>First name</mat-label>
-            <input
-              matInput
-              formControlName="firstName"
-              autocomplete="given-name"
-              [attr.aria-invalid]="firstNameInvalid()"
-            />
-            <mat-error *ngIf="firstNameInvalid()">First name is required</mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Last name</mat-label>
-            <input
-              matInput
-              formControlName="lastName"
-              autocomplete="family-name"
-              [attr.aria-invalid]="lastNameInvalid()"
-            />
-            <mat-error *ngIf="lastNameInvalid()">Last name is required</mat-error>
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Full name</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            autocomplete="name"
+            [attr.aria-invalid]="nameInvalid()"
+          />
+          <mat-error *ngIf="nameInvalid()">Name is required</mat-error>
+        </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Work email</mat-label>
+          <mat-label>Email</mat-label>
           <input
             matInput
             type="email"
@@ -74,9 +61,9 @@
             <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
           <mat-hint>
-            {{ form.get('password')?.value?.length ?? 0 }}/72 characters
+            Min 8 chars with uppercase, lowercase, and number
           </mat-hint>
-          <mat-error *ngIf="passwordInvalid()">Use at least 8 characters</mat-error>
+          <mat-error *ngIf="passwordInvalid()">Password must be at least 8 characters with uppercase, lowercase, and number</mat-error>
         </mat-form-field>
 
         <div class="password-meter" *ngIf="showPasswordStrength()">
@@ -126,15 +113,6 @@
           <span>{{ loading() ? 'Creating account…' : 'Create account' }}</span>
         </button>
       </form>
-
-      <div class="feedback success" *ngIf="success()" role="status">
-        <mat-icon>check_circle</mat-icon>
-        <p>
-          Account created
-          <ng-container *ngIf="registeredEmail() as email">for {{ email }}</ng-container>
-          . You can sign in when you are ready.
-        </p>
-      </div>
 
       <div class="feedback error" *ngIf="error() as message" role="alert">
         <mat-icon>error</mat-icon>
