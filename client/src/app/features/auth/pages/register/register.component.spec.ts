@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { RegisterComponent } from './register.component';
 
 interface FormShape {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -18,28 +18,36 @@ describe('RegisterComponent', () => {
   let fixture: ComponentFixture<RegisterComponent>;
   let component: RegisterComponent;
   let authService: jasmine.SpyObj<AuthService>;
+  let router: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
     authService = jasmine.createSpyObj<AuthService>('AuthService', ['register']);
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
       imports: [RegisterComponent, RouterTestingModule],
-      providers: [provideNoopAnimations(), { provide: AuthService, useValue: authService }],
+      providers: [
+        provideNoopAnimations(), 
+        { provide: AuthService, useValue: authService },
+        { provide: Router, useValue: router }
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
-    authService.register.and.returnValue(of(void 0));
+    authService.register.and.returnValue(of({ 
+      accessToken: 'test-token', 
+      user: { id: '1', email: 'ada@example.com', name: 'Ada Lovelace' } 
+    } as any));
     fixture.detectChanges();
   });
 
   function fillValidForm(overrides: Partial<FormShape> = {}): void {
     component.form.setValue({
-      firstName: 'Ada',
-      lastName: 'Lovelace',
+      name: 'Ada Lovelace',
       email: 'ada@example.com',
-      password: 'Secure123!',
-      confirmPassword: 'Secure123!',
+      password: 'Secure123',
+      confirmPassword: 'Secure123',
       terms: true,
       ...overrides,
     });
@@ -53,7 +61,7 @@ describe('RegisterComponent', () => {
   });
 
   it('blocks submission when passwords do not match', () => {
-    fillValidForm({ confirmPassword: 'Mismatch1!' });
+    fillValidForm({ confirmPassword: 'Mismatch1' });
     component.submit();
     expect(authService.register).not.toHaveBeenCalled();
     expect(component.passwordMismatch()).toBeTrue();
@@ -63,11 +71,9 @@ describe('RegisterComponent', () => {
     fillValidForm();
     component.submit();
     expect(authService.register).toHaveBeenCalledWith({
-      firstName: 'Ada',
-      lastName: 'Lovelace',
+      name: 'Ada Lovelace',
       email: 'ada@example.com',
-      password: 'Secure123!',
-      acceptTerms: true,
+      password: 'Secure123',
     });
   });
 
@@ -78,6 +84,12 @@ describe('RegisterComponent', () => {
     );
     component.submit();
     expect(component.error()).toBe('Email already used');
+  });
+
+  it('navigates to dashboard on successful registration', () => {
+    fillValidForm();
+    component.submit();
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
 });
 

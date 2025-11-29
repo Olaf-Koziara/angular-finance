@@ -1,20 +1,24 @@
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export interface AuthResponse {
   accessToken: string;
-  refreshToken?: string;
   user: AuthenticatedUser;
+}
+
+export interface RefreshResponse {
+  accessToken: string;
 }
 
 export interface AuthenticatedUser {
   id: string;
   email?: string;
-  roles: string[];
-  displayName?: string;
+  name?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface LoginPayload {
@@ -23,18 +27,17 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-  firstName: string;
-  lastName: string;
   email: string;
   password: string;
-  acceptTerms: boolean;
+  name?: string;
 }
 
-const ACCESS_TOKEN_KEY = 'auth_token';
+const ACCESS_TOKEN_KEY = 'auth_access_token';
 const USER_KEY = 'auth_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  // Use HttpBackend to bypass interceptors for auth requests
   private readonly http = new HttpClient(inject(HttpBackend));
   
   private readonly router = inject(Router);
@@ -45,9 +48,16 @@ export class AuthService {
   );
   readonly user$ = this.userSubject.asObservable();
 
+  // Flag to track if a refresh is in progress
+  private refreshInProgress = false;
+  private refreshSubject = new BehaviorSubject<boolean>(false);
+
   login(credentials: LoginPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.API_ORIGIN}/api/auth/login`, credentials).pipe(
-      tap((response) => this.setSession(response)),
+    return this.http.post<{ data: AuthResponse }>(`${environment.API_ORIGIN}/api/auth/login`, credentials, {
+      withCredentials: true,
+    }).pipe(
+      tap((response) => this.setSession(response.data)),
+      map((response) => response.data),
       catchError((error) => {
         this.clearSession();
         return throwError(() => error);
@@ -55,16 +65,54 @@ export class AuthService {
     );
   }
 
-  register(payload: RegisterPayload): Observable<void> {
+  register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http
-      .post<void>(`${environment.API_ORIGIN}/api/auth/register`, payload)
-      .pipe(catchError((error) => throwError(() => error)));
+      .post<{ data: AuthResponse }>(`${environment.API_ORIGIN}/api/auth/register`, payload, {
+        withCredentials: true, // Include cookies for refresh token
+      })
+      .pipe(
+        tap((response) => this.setSession(response.data)),
+        map((response) => response.data),
+        catchError((error) => throwError(() => error))
+      );
   }
 
-  refreshToken(): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.API_ORIGIN}/api/auth/refresh`, {}).pipe(
-      tap((response) => this.setSession(response)),
+  refreshToken(): Observable<RefreshResponse> {
+    if (this.refreshInProgress) {
+      // Return observable that waits for the refresh to complete
+      return new Observable(subscriber => {
+        const subscription = this.refreshSubject.subscribe(completed => {
+          if (completed) {
+            const token = this.getToken();
+            if (token) {
+              subscriber.next({ accessToken: token });
+              subscriber.complete();
+            } else {
+              subscriber.error(new Error('Token refresh failed'));
+            }
+            subscription.unsubscribe();
+          }
+        });
+      });
+    }
+
+    this.refreshInProgress = true;
+    this.refreshSubject.next(false);
+
+    return this.http.post<{ data: RefreshResponse }>(`${environment.API_ORIGIN}/api/auth/refresh`, {}, {
+      withCredentials: true,
+    }).pipe(
+      tap((response) => {
+        if (this.storage && response.data.accessToken) {
+          this.storage.setItem(ACCESS_TOKEN_KEY, response.data.accessToken);
+        }
+        this.refreshInProgress = false;
+        this.refreshSubject.next(true);
+      }),
+      map((response) => response.data),
       catchError((error) => {
+        this.refreshInProgress = false;
+        this.refreshSubject.next(true);
         this.logout();
         return throwError(() => error);
       })
@@ -72,10 +120,24 @@ export class AuthService {
   }
 
   logout(redirectToLogin: boolean = true): void {
-    this.clearSession();
-    if (redirectToLogin) {
-      this.router.navigate(['/login']);
-    }
+    // Call logout endpoint to clear refresh token cookie
+    this.http.post(`${environment.API_ORIGIN}/api/auth/logout`, {}, {
+      withCredentials: true,
+    }).subscribe({
+      complete: () => {
+        this.clearSession();
+        if (redirectToLogin) {
+          this.router.navigate(['/login']);
+        }
+      },
+      error: () => {
+        // Clear session even on error
+        this.clearSession();
+        if (redirectToLogin) {
+          this.router.navigate(['/login']);
+        }
+      }
+    });
   }
 
   getToken(): string | null {
@@ -91,7 +153,9 @@ export class AuthService {
   }
 
   hasRole(role: string): boolean {
-    return this.userSubject.value?.roles.includes(role) ?? false;
+    // For now, role checking is not implemented on the backend
+    // This can be extended when roles are added to the user model
+    return false;
   }
 
   private setSession(authResult: AuthResponse): void {

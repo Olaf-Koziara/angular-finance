@@ -7,11 +7,13 @@ const app = createApp();
 describe('Auth Endpoints', () => {
   beforeAll(async () => {
     // Clean up test database before tests
+    await prisma.refreshToken.deleteMany({});
     await prisma.user.deleteMany({});
   });
 
   afterAll(async () => {
     // Clean up test database after tests
+    await prisma.refreshToken.deleteMany({});
     await prisma.user.deleteMany({});
     await prisma.$disconnect();
   });
@@ -32,10 +34,13 @@ describe('Auth Endpoints', () => {
       expect(response.body.success).toBe(true);
       expect(response.body.message).toBe('User registered successfully');
       expect(response.body.data).toHaveProperty('user');
-      expect(response.body.data).toHaveProperty('token');
+      expect(response.body.data).toHaveProperty('accessToken');
       expect(response.body.data.user.email).toBe(userData.email);
       expect(response.body.data.user.name).toBe(userData.name);
       expect(response.body.data.user).not.toHaveProperty('password');
+      // Refresh token should be in HttpOnly cookie, not in response body
+      expect(response.body.data).not.toHaveProperty('refreshToken');
+      expect(response.headers['set-cookie']).toBeDefined();
     });
 
     it('should fail with invalid email', async () => {
@@ -99,8 +104,10 @@ describe('Auth Endpoints', () => {
       expect(response.body.success).toBe(true);
       expect(response.body.message).toBe('Login successful');
       expect(response.body.data).toHaveProperty('user');
-      expect(response.body.data).toHaveProperty('token');
+      expect(response.body.data).toHaveProperty('accessToken');
       expect(response.body.data.user.email).toBe(credentials.email);
+      // Refresh token should be in HttpOnly cookie
+      expect(response.headers['set-cookie']).toBeDefined();
     });
 
     it('should fail with invalid email', async () => {
@@ -146,7 +153,7 @@ describe('Auth Endpoints', () => {
           password: 'Test1234',
         });
 
-      authToken = response.body.data.token;
+      authToken = response.body.data.accessToken;
     });
 
     it('should get profile with valid token', async () => {
@@ -175,6 +182,83 @@ describe('Auth Endpoints', () => {
         .expect(401);
 
       expect(response.body.success).toBe(false);
+    });
+  });
+
+  describe('POST /api/auth/refresh', () => {
+    let refreshTokenCookie: string;
+
+    beforeAll(async () => {
+      // Login to get refresh token cookie
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'test@example.com',
+          password: 'Test1234',
+        });
+
+      const cookies = response.headers['set-cookie'] as string[];
+      refreshTokenCookie = cookies.find((cookie: string) => cookie.startsWith('refresh_token=')) || '';
+    });
+
+    it('should refresh tokens with valid refresh token cookie', async () => {
+      const response = await request(app)
+        .post('/api/auth/refresh')
+        .set('Cookie', refreshTokenCookie)
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.message).toBe('Token refreshed successfully');
+      expect(response.body.data).toHaveProperty('accessToken');
+      // New refresh token should be set in cookie
+      expect(response.headers['set-cookie']).toBeDefined();
+    });
+
+    it('should fail without refresh token cookie', async () => {
+      const response = await request(app)
+        .post('/api/auth/refresh')
+        .expect(401);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toContain('Refresh token not provided');
+    });
+  });
+
+  describe('POST /api/auth/logout', () => {
+    let refreshTokenCookie: string;
+
+    beforeAll(async () => {
+      // Login to get refresh token cookie
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'test@example.com',
+          password: 'Test1234',
+        });
+
+      const cookies = response.headers['set-cookie'] as string[];
+      refreshTokenCookie = cookies.find((cookie: string) => cookie.startsWith('refresh_token=')) || '';
+    });
+
+    it('should logout successfully', async () => {
+      const response = await request(app)
+        .post('/api/auth/logout')
+        .set('Cookie', refreshTokenCookie)
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.message).toBe('Logged out successfully');
+      // Cookie should be cleared
+      const cookies = response.headers['set-cookie'] as string[];
+      expect(cookies.some((c: string) => c.includes('refresh_token=;'))).toBe(true);
+    });
+
+    it('should succeed even without refresh token cookie', async () => {
+      const response = await request(app)
+        .post('/api/auth/logout')
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
     });
   });
 
