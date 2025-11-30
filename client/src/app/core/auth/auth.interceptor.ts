@@ -80,7 +80,8 @@ function handleUnauthorizedError(
 ): Observable<any> {
   if (!isRefreshing) {
     isRefreshing = true;
-    // Create a fresh ReplaySubject for this refresh cycle
+    // Complete any previous subject to avoid memory leaks, then create fresh one
+    refreshResultSubject.complete();
     refreshResultSubject = new ReplaySubject<RefreshResult>(1);
 
     return authService.refreshToken().pipe(
