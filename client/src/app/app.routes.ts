@@ -23,6 +23,16 @@ export const routes: Routes = [
             (m) => m.DashboardComponent
           ),
       },
+      {
+        path: 'transactions',
+        loadComponent: () =>
+          import('./features/transactions/pages/transactions-page.component').then(
+            (m) => m.TransactionsPageComponent
+          ),
+        data: {
+          pageTranslationName: 'TRANSACTIONS',
+        },
+      },
     ],
   },
   {
@@ -40,16 +50,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/unauthorized/unauthorized.component').then((m) => m.UnauthorizedComponent),
   },
-  {
-    path: 'transactions',
-    loadComponent: () =>
-      import('./features/transactions/pages/transactions-page.component').then(
-        (m) => m.TransactionsPageComponent
-      ),
-    data: {
-      pageTranslationName: 'TRANSACTIONS',
-    },
-  },
+
   {
     path: '**',
     redirectTo: '',
