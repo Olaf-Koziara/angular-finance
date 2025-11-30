@@ -4,13 +4,12 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
+import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
+import { provideTranslateService } from '@ngx-translate/core';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { DEFAULT_LANGUAGE } from './shared/constants/language.constants';
 
@@ -20,12 +19,14 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideAnimations(),
+
     provideTranslateService({
       loader: provideTranslateHttpLoader({
         prefix: '/i18n/',
         suffix: '.json',
+        useHttpBackend: true,
       }),
       useDefaultLang: true,
       fallbackLang: DEFAULT_LANGUAGE,

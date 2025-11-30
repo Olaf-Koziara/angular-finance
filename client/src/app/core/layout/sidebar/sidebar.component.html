@@ -5,7 +5,7 @@
     fixedInViewport
     [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
     [mode]="(isHandset$ | async) ? 'over' : 'side'"
-    [opened]="(isHandset$ | async) === false"
+    [opened]="!(isHandset$ | async)"
   >
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
@@ -18,12 +18,25 @@
   <mat-sidenav-content>
     <mat-toolbar color="primary">
       @if (isHandset$ | async) {
-        <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
-          <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-        </button>
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
       }
       <app-header></app-header>
+      <span class="toolbar-spacer"></span>
+      <button
+        type="button"
+        aria-label="Open user menu"
+        mat-icon-button
+        [matMenuTriggerFor]="userMenu"
+      >
+        <mat-icon>account_circle</mat-icon>
+      </button>
     </mat-toolbar>
+    <mat-menu #userMenu="matMenu">
+      <a mat-menu-item routerLink="/profile">Profile</a>
+      <button mat-menu-item type="button" (click)="logout()">Logout</button>
+    </mat-menu>
     <div class="content">
       <ng-content></ng-content>
     </div>
