@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/unauthorized/unauthorized.component.ts", "unauthorized.component.ts"],
-  "sourcesContent": ["\n      .unauthorized {\n        padding: 2rem;\n        display: flex;\n        flex-direction: column;\n        gap: 1rem;\n      }\n\n      .link {\n        color: #155eef;\n        text-decoration: underline;\n      }\n    ", ".unauthorized {\n  padding: 2rem;\n  display: flex;\n  flex-direction: column;\n  gap: 1rem;\n}\n\n.link {\n  color: #155eef;\n  text-decoration: underline;\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL2hvbWUvcnVubmVyL3dvcmsvYW5ndWxhci1maW5hbmNlL2FuZ3VsYXItZmluYW5jZS9jbGllbnQvc3JjL2FwcC9mZWF0dXJlcy91bmF1dGhvcml6ZWQvdW5hdXRob3JpemVkLmNvbXBvbmVudC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDTTtFQUNFO0VBQ0E7RUFDQTtFQUNBOzs7QUFHRjtFQUNFO0VBQ0EiLCJzb3VyY2VzQ29udGVudCI6WyJcbiAgICAgIC51bmF1dGhvcml6ZWQge1xuICAgICAgICBwYWRkaW5nOiAycmVtO1xuICAgICAgICBkaXNwbGF5OiBmbGV4O1xuICAgICAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xuICAgICAgICBnYXA6IDFyZW07XG4gICAgICB9XG5cbiAgICAgIC5saW5rIHtcbiAgICAgICAgY29sb3I6ICMxNTVlZWY7XG4gICAgICAgIHRleHQtZGVjb3JhdGlvbjogdW5kZXJsaW5lO1xuICAgICAgfVxuICAgICJdfQ== */"],
-  "mappings": ";AACM,CAAA;AACE,WAAA;AACA,WAAA;AACA,kBAAA;AACA,OAAA;ACAR;ADGM,CAAA;AACE,SAAA;AACA,mBAAA;ACAR;",
-  "names": []
-}

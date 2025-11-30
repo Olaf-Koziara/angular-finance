@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/core/layout/authenticated-template/authenticated-template.ts", "src/app/core/layout/authenticated-template/authenticated-template.html"],
-  "sourcesContent": ["import { Component } from \"@angular/core\";\nimport { RouterOutlet } from \"@angular/router\";\nimport { SidebarComponent } from \"../sidebar/sidebar.component\";\n\n@Component({\n  selector: \"authenticated-template\",\n  templateUrl: \"./authenticated-template.html\",\nimports: [RouterOutlet, SidebarComponent]\n})\nexport class AuthenticatedTemplateComponent{\n\n}", "<app-sidebar>\n    <router-outlet></router-outlet>\n</app-sidebar> "],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;AASM,IAAO,iCAAP,MAAO,gCAA8B;;qCAA9B,iCAA8B;EAAA;yEAA9B,iCAA8B,WAAA,CAAA,CAAA,wBAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,UAAA,SAAA,wCAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;ACT3C,MAAA,yBAAA,GAAA,aAAA;AACI,MAAA,oBAAA,GAAA,eAAA;AACJ,MAAA,uBAAA;;oBDKU,cAAc,gBAAgB,GAAA,eAAA,EAAA,CAAA;;;sEAE3B,gCAA8B,CAAA;UAL1C;uBACW,0BAAwB,SAE3B,CAAC,cAAc,gBAAgB,GAAC,UAAA,sEAAA,CAAA;;;;6EAE5B,gCAA8B,EAAA,WAAA,kCAAA,UAAA,wEAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
-  "names": []
-}

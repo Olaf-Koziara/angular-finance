@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/core/layout/header/header.component.scss", "src/app/core/layout/header/header.component.scss"],
-  "sourcesContent": [".app-header {\n    display: flex;\n    justify-content: space-between;\n}\n", ".app-header {\n  display: flex;\n  justify-content: space-between;\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL2hvbWUvcnVubmVyL3dvcmsvYW5ndWxhci1maW5hbmNlL2FuZ3VsYXItZmluYW5jZS9jbGllbnQvc3JjL2FwcC9jb3JlL2xheW91dC9oZWFkZXIvaGVhZGVyLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0k7RUFDQSIsInNvdXJjZXNDb250ZW50IjpbIi5hcHAtaGVhZGVyIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICAgIGp1c3RpZnktY29udGVudDogc3BhY2UtYmV0d2Vlbjtcbn1cbiJdfQ== */"],
-  "mappings": ";AAAA,CAAA;AACI,WAAA;AACA,mBAAA;ACCJ;",
-  "names": []
-}
