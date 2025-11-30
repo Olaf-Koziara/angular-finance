@@ -3,7 +3,7 @@ import { RouterOutlet } from "@angular/router";
 import { SidebarComponent } from "../sidebar/sidebar.component";
 
 @Component({
-selector:"authenticated-template",
+selector: "authenticated-template",
 templateUrl:"./authenticated-template.html",
 imports: [RouterOutlet, SidebarComponent]
 })
