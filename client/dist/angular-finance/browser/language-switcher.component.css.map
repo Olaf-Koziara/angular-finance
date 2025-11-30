@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/core/layout/language-switcher/language-switcher.component.scss", "src/app/core/layout/language-switcher/language-switcher.component.scss"],
+  "sourcesContent": ["@use \"@angular/material\" as mat;\n.language-switcher {\n    padding: 16px;\n\n    [mat-button] {\n        background-color: rgba(255, 255, 255, 0.3);\n    }\n}\n", ".language-switcher {\n  padding: 16px;\n}\n.language-switcher [mat-button] {\n  background-color: rgba(255, 255, 255, 0.3);\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL2hvbWUvcnVubmVyL3dvcmsvYW5ndWxhci1maW5hbmNlL2FuZ3VsYXItZmluYW5jZS9jbGllbnQvc3JjL2FwcC9jb3JlL2xheW91dC9sYW5ndWFnZS1zd2l0Y2hlci9sYW5ndWFnZS1zd2l0Y2hlci5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQTtFQUNJOztBQUVBO0VBQ0kiLCJzb3VyY2VzQ29udGVudCI6WyJAdXNlIFwiQGFuZ3VsYXIvbWF0ZXJpYWxcIiBhcyBtYXQ7XG4ubGFuZ3VhZ2Utc3dpdGNoZXIge1xuICAgIHBhZGRpbmc6IDE2cHg7XG5cbiAgICBbbWF0LWJ1dHRvbl0ge1xuICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiByZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMyk7XG4gICAgfVxufVxuIl19 */"],
+  "mappings": ";AACA,CAAA;AACI,WAAA;ACAJ;ADEI,CAHJ,kBAGI,CAAA;AACI,oBAAA,KAAA,GAAA,EAAA,GAAA,EAAA,GAAA,EAAA;ACAR;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/app.scss", "src/app/app.scss"],
+  "sourcesContent": [":host {\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n}\n", ":host {\n  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL2hvbWUvcnVubmVyL3dvcmsvYW5ndWxhci1maW5hbmNlL2FuZ3VsYXItZmluYW5jZS9jbGllbnQvc3JjL2FwcC9hcHAuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNJIiwic291cmNlc0NvbnRlbnQiOlsiOmhvc3Qge1xuICAgIGJhY2tncm91bmQ6IGxpbmVhci1ncmFkaWVudCgxMzVkZWcsICM2NjdlZWEgMCUsICM3NjRiYTIgMTAwJSk7XG59XG4iXX0= */"],
+  "mappings": ";AAAA;AACI;IAAA;MAAA,MAAA;MAAA,QAAA,EAAA;MAAA,QAAA;ACCJ;",
+  "names": []
+}

@@ -28,7 +28,7 @@
       />
       @if(password?.touched && password?.invalid){
         @if(password?.errors?.['required']){
-          <small class="error">Email is required</small>
+          <small class="error">Password is required</small>
         }
         @if(password?.errors?.['minlength']){
           <small class="error">Minimum length is 6</small>
