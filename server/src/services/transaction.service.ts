@@ -42,9 +42,13 @@ export class TransactionService {
       where: { id, userId },
     });
     
+    if (!updatedTransaction) {
+      throw new Error('Transaction not found after update');
+    }
+    
     return {
-      ...updatedTransaction!,
-      amount: updatedTransaction!.amount.toNumber(),
+      ...updatedTransaction,
+      amount: updatedTransaction.amount.toNumber(),
     };
   }
 
