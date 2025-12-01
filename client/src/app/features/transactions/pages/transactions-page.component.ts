@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { PageEvent } from '@angular/material/paginator';
 import { TranslateModule } from '@ngx-translate/core';
@@ -9,6 +9,7 @@ import { TransactionListComponent } from '../components/transaction-list/transac
 import { TransactionPaginationComponent } from '../components/transaction-pagination/transaction-pagination.component';
 import {
   CreateTransaction,
+  Transaction,
   TransactionFilters,
   TransactionSort,
 } from '../models/transaction.model';
@@ -40,6 +41,7 @@ export class TransactionsPageComponent {
   readonly pagination = this.transactionService.pagination;
   readonly sort = this.transactionService.sort;
   readonly pageSizeOptions = [5, 10, 25, 50];
+  readonly editingTransaction = signal<Transaction | null>(null);
 
   createTransaction(payload: CreateTransaction): void {
     this.transactionService.create(payload);
@@ -62,5 +64,20 @@ export class TransactionsPageComponent {
 
   handleSortChange(sort: TransactionSort): void {
     this.transactionService.updateSort(sort);
+  }
+
+  startEditing(transaction: Transaction): void {
+    this.editingTransaction.set(transaction);
+  }
+
+  cancelEditing(): void {
+    this.editingTransaction.set(null);
+  }
+
+  async updateTransaction(payload: { id: string; changes: CreateTransaction }): Promise<void> {
+    try {
+      await this.transactionService.update(payload.id, payload.changes);
+      this.editingTransaction.set(null);
+    } catch {}
   }
 }
