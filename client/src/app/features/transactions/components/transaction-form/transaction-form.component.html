@@ -55,8 +55,17 @@
     </div>
   </div>
   <div class="actions">
+    @if (transaction()) {
+    <button mat-stroked-button type="button" (click)="cancelEdit()">
+      {{ 'TRANSACTIONS.CANCEL_EDIT' | translate }}
+    </button>
+    }
     <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
-      {{ 'TRANSACTIONS.SAVE_TRANSACTION' | translate }}
+      {{
+        transaction()
+          ? ('TRANSACTIONS.UPDATE_TRANSACTION' | translate)
+          : ('TRANSACTIONS.SAVE_TRANSACTION' | translate)
+      }}
     </button>
   </div>
 </form>

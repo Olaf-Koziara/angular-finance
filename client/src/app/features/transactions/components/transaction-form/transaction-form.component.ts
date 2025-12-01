@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
-import { CreateTransaction, TransactionType } from '../../models/transaction.model';
+import { CreateTransaction, Transaction, TransactionType } from '../../models/transaction.model';
 import {
   TransactionCategory,
   TRANSACTION_CATEGORIES,
@@ -38,8 +38,10 @@ export class TransactionFormComponent {
   private readonly fb = inject(FormBuilder);
 
   readonly categories = input<string[]>([...TRANSACTION_CATEGORIES]);
-
+  readonly transaction = input<Transaction | null>(null);
   readonly submitted = output<CreateTransaction>();
+  readonly updated = output<{ id: string; changes: CreateTransaction }>();
+  readonly cancelled = output<void>();
 
   readonly form = this.fb.group({
     title: this.fb.control('', {
@@ -62,6 +64,27 @@ export class TransactionFormComponent {
     }),
   });
 
+  private readonly transactionEffect = effect(() => {
+    const current = this.transaction();
+    if (current) {
+      this.setFormValue({
+        title: current.title,
+        amount: current.amount,
+        category: current.category,
+        date: new Date(current.date),
+        type: current.type,
+      });
+      return;
+    }
+    this.setFormValue({
+      title: '',
+      amount: null,
+      category: '',
+      date: new Date(),
+      type: 'expense',
+    });
+  });
+
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -70,20 +93,44 @@ export class TransactionFormComponent {
     const { title, amount, category, date, type } = this.form.getRawValue();
     const parsed = typeof date === 'string' ? new Date(date) : date;
     const safeDate = parsed ?? new Date();
-    this.submitted.emit({
+    const payload = {
       title,
       amount: amount ?? 0,
       category: category as TransactionCategory,
       date: safeDate.toISOString(),
       type,
-    });
-    this.form.reset({
+    };
+    const current = this.transaction();
+    if (current) {
+      this.updated.emit({ id: current.id, changes: payload });
+      return;
+    }
+    this.submitted.emit(payload);
+    this.resetForm(safeDate, type);
+  }
+
+  cancelEdit(): void {
+    this.cancelled.emit();
+  }
+
+  private resetForm(date: Date, type: TransactionType): void {
+    this.setFormValue({
       title: '',
       amount: null,
       category: '',
-      date: safeDate,
+      date,
       type,
     });
+  }
+
+  private setFormValue(values: {
+    title: string;
+    amount: number | null;
+    category: string;
+    date: Date;
+    type: TransactionType;
+  }): void {
+    this.form.reset(values);
     Object.values(this.form.controls).forEach((control) => {
       control.setErrors(null);
     });
