@@ -39,6 +39,7 @@ export class TransactionListComponent {
   readonly sort = input.required<TransactionSort>();
 
   readonly removed = output<string>();
+  readonly edited = output<Transaction>();
   readonly sortChanged = output<TransactionSort>();
 
   readonly displayedColumns = ['date', 'title', 'category', 'type', 'amount', 'actions'] as const;
@@ -47,6 +48,10 @@ export class TransactionListComponent {
 
   remove(id: string): void {
     this.removed.emit(id);
+  }
+
+  edit(transaction: Transaction): void {
+    this.edited.emit(transaction);
   }
 
   onSortChange(sort: Sort): void {

@@ -60,6 +60,15 @@
           <button
             mat-icon-button
             type="button"
+            color="primary"
+            (click)="edit(item)"
+            [attr.aria-label]="'TRANSACTIONS.EDIT' | translate"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
             color="warn"
             (click)="remove(item.id)"
             [attr.aria-label]="'TRANSACTIONS.REMOVE' | translate"
