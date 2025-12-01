@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TransactionsPageComponent } from './transactions-page.component';
 import { TransactionService } from '../services/transaction.service';
 import { signal, WritableSignal } from '@angular/core';

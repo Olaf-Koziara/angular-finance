@@ -5,7 +5,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
 import { Component, signal } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
-import { DebugElement } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 
