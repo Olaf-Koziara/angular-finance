@@ -12,39 +12,42 @@ export class AppError extends Error {
 }
 
 export class ValidationError extends AppError {
-  constructor(
-    message: string,
-    public errors?: Record<string, string[]>
-  ) {
+  constructor(message: string, public errors?: Record<string, string[]>) {
     super(message, 400);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
   }
 }
 
 export class AuthenticationError extends AppError {
-  constructor(message: string = 'Authentication failed') {
+  constructor(message: string = "Authentication failed") {
     super(message, 401);
-    this.name = 'AuthenticationError';
+    this.name = "AuthenticationError";
   }
 }
 
 export class AuthorizationError extends AppError {
-  constructor(message: string = 'Insufficient permissions') {
+  constructor(message: string = "Insufficient permissions") {
     super(message, 403);
-    this.name = 'AuthorizationError';
+    this.name = "AuthorizationError";
   }
 }
 
 export class NotFoundError extends AppError {
-  constructor(message: string = 'Resource not found') {
+  constructor(message: string = "Resource not found") {
     super(message, 404);
-    this.name = 'NotFoundError';
+    this.name = "NotFoundError";
   }
 }
 
 export class ConflictError extends AppError {
-  constructor(message: string = 'Resource already exists') {
+  constructor(message: string = "Resource already exists") {
     super(message, 409);
-    this.name = 'ConflictError';
+    this.name = "ConflictError";
+  }
+}
+export class BadRequestError extends AppError {
+  constructor(message: string = "Bad request") {
+    super(message, 400);
+    this.name = "BadRequestError";
   }
 }
