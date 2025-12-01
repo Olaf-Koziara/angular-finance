@@ -20,8 +20,14 @@
       <mat-card-content>
         <app-transaction-filters [filters]="filters()" (changed)="handleFilterChange($event)"></app-transaction-filters>
 
-        <app-transaction-list [transactions]="transactions()" [total]="total()" [loading]="loading()"
-          (removed)="removeTransaction($event)"></app-transaction-list>
+        <app-transaction-list
+          [transactions]="transactions()"
+          [total]="total()"
+          [loading]="loading()"
+          [sort]="sort()"
+          (removed)="removeTransaction($event)"
+          (sortChanged)="handleSortChange($event)"
+        ></app-transaction-list>
       </mat-card-content>
       <app-transaction-pagination [length]="total()" [pageSize]="pagination().pageSize" [pageIndex]="pagination().pageIndex"
       [pageSizeOptions]="pageSizeOptions" (pageChange)="handlePageChange($event)"></app-transaction-pagination>
