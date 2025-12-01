@@ -123,6 +123,24 @@ export class TransactionService {
     }
   }
 
+  async update(id: string, payload: CreateTransaction): Promise<void> {
+    this.error.set(null);
+    const previousTransactions = [...this.transactions()];
+    try {
+      const transaction = await firstValueFrom(
+        this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload)
+      );
+      this.transactions.update((items) =>
+        items.map((item) => (item.id === id ? transaction : item))
+      );
+      this.refresh();
+    } catch (error) {
+      this.transactions.set(previousTransactions);
+      this.error.set('Nie udało się zaktualizować transakcji');
+      throw error;
+    }
+  }
+
   async remove(id: string): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
