@@ -21,6 +21,24 @@ export class TransactionService {
     };
   }
 
+  async update(userId: string, id: string, data: CreateTransactionInput) {
+    const transaction = await prisma.transaction.update({
+      where: {
+        id,
+      },
+      data: {
+        ...data,
+        userId,
+        amount: new Prisma.Decimal(data.amount),
+        date: new Date(data.date),
+      },
+    });
+    return {
+      ...transaction,
+      amount: transaction.amount.toNumber(),
+    };
+  }
+
   async findAll(userId: string, query: QueryTransactionInput) {
     const { page, limit, search, type, categories, sortBy, sortOrder } = query;
     const categoriesParam = query["categories[]"] || categories;

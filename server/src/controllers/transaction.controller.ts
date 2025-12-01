@@ -75,6 +75,31 @@ export class TransactionController {
       next(error);
     }
   }
+
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const result = createTransactionSchema.safeParse(req.body);
+      if (!result.success) {
+        throw new AppError(result.error.errors[0].message);
+      }
+      const userId = (req as AuthRequest).userId;
+
+      if (!userId) {
+        throw new AppError("No user ID");
+      }
+
+      const existing = await transactionService.findOne(userId, id);
+      if (!existing) {
+        throw new NotFoundError("Transaction not found");
+      }
+
+      const transaction = await transactionService.update(userId, id, result.data);
+      res.json(transaction);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const transactionController = new TransactionController();
