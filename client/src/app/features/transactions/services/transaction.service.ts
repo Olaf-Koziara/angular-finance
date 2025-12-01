@@ -1,7 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { first, firstValueFrom, Subscription } from 'rxjs';
-import { CreateTransaction, Transaction, TransactionFilters } from '../models/transaction.model';
+import {
+  CreateTransaction,
+  Transaction,
+  TransactionFilters,
+  TransactionSort,
+} from '../models/transaction.model';
 
 export interface TransactionPagination {
   pageIndex: number;
@@ -11,6 +16,7 @@ export interface TransactionPagination {
 export interface TransactionState {
   filters: TransactionFilters;
   pagination: TransactionPagination;
+  sort: TransactionSort;
 }
 
 export interface PaginatedResponse<T> {
@@ -39,9 +45,15 @@ export class TransactionService {
     pageSize: 10,
   });
 
+  readonly sort = signal<TransactionSort>({
+    column: 'date',
+    order: 'desc',
+  });
+
   private readonly state = computed<TransactionState>(() => ({
     filters: this.filters(),
     pagination: this.pagination(),
+    sort: this.sort(),
   }));
 
   private readonly fetchEffect = effect((onCleanup) => {
@@ -90,16 +102,24 @@ export class TransactionService {
     }));
   }
 
+  updateSort(sort: TransactionSort): void {
+    this.sort.set(sort);
+  }
+
   async create(payload: CreateTransaction): Promise<void> {
-    this.loading.set(true);
     this.error.set(null);
+    const tempTransactions = [...this.transactions()];
     try {
-      await firstValueFrom(this.http.post<Transaction>(this.apiUrl, payload));
-      this.refresh();
+      this.transactions.set([...tempTransactions, { id: '', ...payload }]);
+      const transaction = await firstValueFrom(this.http.post<Transaction>(this.apiUrl, payload));
+      const updatedTransactions = this.transactions().map((transactionMapItem) =>
+        transactionMapItem.id === '' ? transaction : transactionMapItem
+      );
+      this.transactions.set(updatedTransactions);
     } catch {
+      this.transactions.set(tempTransactions);
       this.error.set('Nie udało się utworzyć transakcji');
     } finally {
-      this.loading.set(false);
     }
   }
 
@@ -120,10 +140,12 @@ export class TransactionService {
     this.pagination.update((current) => ({ ...current }));
   }
 
-  private buildHttpParams({ filters, pagination }: TransactionState): HttpParams {
+  private buildHttpParams({ filters, pagination, sort }: TransactionState): HttpParams {
     let httpParams = new HttpParams()
       .set('page', pagination.pageIndex.toString())
-      .set('limit', pagination.pageSize.toString());
+      .set('limit', pagination.pageSize.toString())
+      .set('sortBy', sort.column)
+      .set('sortOrder', sort.order);
 
     if (filters.search) {
       httpParams = httpParams.set('search', filters.search);
