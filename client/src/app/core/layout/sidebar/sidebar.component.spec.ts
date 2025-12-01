@@ -23,7 +23,6 @@ describe('SidebarComponent', () => {
         { provide: AuthService, useValue: authServiceMock },
       ],
     }).compileComponents();
-  });
 
     fixture = TestBed.createComponent(SidebarComponent);
     component = fixture.componentInstance;
