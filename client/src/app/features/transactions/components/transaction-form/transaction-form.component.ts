@@ -9,7 +9,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { CreateTransaction, TransactionType } from '../../models/transaction.model';
-import { TransactionCategory, TRANSACTION_CATEGORIES } from '../../constants/transaction-categories.constant';
+import {
+  TransactionCategory,
+  TRANSACTION_CATEGORIES,
+} from '../../constants/transaction-categories.constant';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -39,6 +42,10 @@ export class TransactionFormComponent {
   readonly submitted = output<CreateTransaction>();
 
   readonly form = this.fb.group({
+    title: this.fb.control('', {
+      validators: [Validators.required, Validators.maxLength(100)],
+      nonNullable: true,
+    }),
     amount: this.fb.control<number | null>(null, {
       validators: [Validators.required, Validators.min(0.01)],
     }),
@@ -60,16 +67,18 @@ export class TransactionFormComponent {
       this.form.markAllAsTouched();
       return;
     }
-    const { amount, category, date, type } = this.form.getRawValue();
+    const { title, amount, category, date, type } = this.form.getRawValue();
     const parsed = typeof date === 'string' ? new Date(date) : date;
     const safeDate = parsed ?? new Date();
     this.submitted.emit({
+      title,
       amount: amount ?? 0,
       category: category as TransactionCategory,
       date: safeDate.toISOString(),
       type,
     });
     this.form.reset({
+      title: '',
       amount: null,
       category: '',
       date: safeDate,

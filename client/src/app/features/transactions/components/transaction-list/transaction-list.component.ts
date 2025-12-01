@@ -3,10 +3,16 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
-import { Transaction } from '../../models/transaction.model';
+import {
+  SortColumn,
+  SortOrder,
+  Transaction,
+  TransactionSort,
+} from '../../models/transaction.model';
 
 @Component({
   selector: 'app-transaction-list',
@@ -14,6 +20,7 @@ import { Transaction } from '../../models/transaction.model';
   imports: [
     CommonModule,
     MatTableModule,
+    MatSortModule,
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
@@ -29,15 +36,23 @@ export class TransactionListComponent {
   readonly transactions = input.required<readonly Transaction[]>();
   readonly total = input.required<number>();
   readonly loading = input.required<boolean>();
+  readonly sort = input.required<TransactionSort>();
 
   readonly removed = output<string>();
+  readonly sortChanged = output<TransactionSort>();
 
-  readonly displayedColumns = ['date', 'category', 'type', 'amount', 'actions'] as const;
+  readonly displayedColumns = ['date', 'title', 'category', 'type', 'amount', 'actions'] as const;
 
   readonly hasTransactions = computed(() => this.total() > 0);
 
   remove(id: string): void {
     this.removed.emit(id);
   }
-}
 
+  onSortChange(sort: Sort): void {
+    this.sortChanged.emit({
+      column: sort.active as SortColumn,
+      order: (sort.direction as SortOrder) || 'desc',
+    });
+  }
+}

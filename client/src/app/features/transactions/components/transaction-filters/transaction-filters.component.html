@@ -1,33 +1,55 @@
 <form [formGroup]="formGroup" class="transaction-filters-form" novalidate>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'TRANSACTIONS.SEARCH' | translate }}</mat-label>
-    <input matInput formControlName="search" [placeholder]="'TRANSACTIONS.CATEGORY' | translate" />
-    @if (formGroup.controls.search.value) {
+  <div class="transaction-filters-inputs">
+    <mat-form-field appearance="outline" class="filter-field filter-field--search">
+      <mat-label>{{ 'TRANSACTIONS.SEARCH' | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="search"
+        [placeholder]="'TRANSACTIONS.CATEGORY' | translate"
+      />
+      @if (formGroup.controls.search.value) {
+      <button
+        mat-icon-button
+        type="button"
+        matSuffix
+        (click)="clearSearch()"
+        [attr.aria-label]="'TRANSACTIONS.CLEAR_SEARCH' | translate"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>{{ 'TRANSACTIONS.TYPE' | translate }}</mat-label>
+      <mat-select formControlName="type">
+        <mat-option *ngFor="let option of types; trackBy: trackByType" [value]="option">{{
+          'TRANSACTIONS.TYPES.' + option.toUpperCase() | translate
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>{{ 'TRANSACTIONS.CATEGORY' | translate }}</mat-label>
+      <mat-select formControlName="categories" multiple>
+        <mat-option
+          *ngFor="let category of categories; trackBy: trackByCategory"
+          [value]="category"
+          >{{ 'TRANSACTIONS.CATEGORIES.' + category.toUpperCase() | translate }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="transaction-filters-actions">
     <button
-      mat-icon-button
+      mat-stroked-button
+      color="primary"
       type="button"
-      matSuffix
-      (click)="clearSearch()"
-      [attr.aria-label]="'TRANSACTIONS.CLEAR_SEARCH' | translate"
+      class="transaction-filters-clear"
+      (click)="clearFilters()"
+      [disabled]="!hasActiveFilters()"
+      [attr.aria-label]="'TRANSACTIONS.CLEAR_FILTERS' | translate"
     >
-      <mat-icon>close</mat-icon>
+      <mat-icon>refresh</mat-icon>
+      <span>{{ 'TRANSACTIONS.CLEAR_FILTERS' | translate }}</span>
     </button>
-    }
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'TRANSACTIONS.TYPE' | translate }}</mat-label>
-    <mat-select formControlName="type">
-      <mat-option *ngFor="let option of types" [value]="option">{{
-        'TRANSACTIONS.TYPES.' + option.toUpperCase() | translate
-      }}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'TRANSACTIONS.CATEGORY' | translate }}</mat-label>
-    <mat-select formControlName="categories" multiple>
-      <mat-option *ngFor="let category of categories" [value]="category">{{
-        'TRANSACTIONS.CATEGORIES.' + category.toUpperCase() | translate
-      }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+  </div>
 </form>
