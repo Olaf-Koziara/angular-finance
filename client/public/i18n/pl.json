@@ -60,6 +60,8 @@
   },
   "TRANSACTIONS": {
     "TITLE": "Transakcje",
+    "TITLE_LABEL": "Tytuł",
+    "TITLE_REQUIRED": "Tytuł jest wymagany",
     "DATE": "Data",
     "CATEGORY": "Kategoria",
     "TYPE": "Typ",
