@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { first, firstValueFrom, Subscription } from 'rxjs';
 import {
   CreateTransaction,
@@ -27,6 +28,7 @@ export interface PaginatedResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
   private readonly http = inject(HttpClient);
+  private readonly translate = inject(TranslateService);
   private readonly apiUrl = '/api/transactions';
 
   readonly loading = signal(false);
@@ -72,7 +74,7 @@ export class TransactionService {
             this.loading.set(false);
           },
           error: () => {
-            this.error.set('Nie udało się pobrać transakcji');
+            this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.FETCH_FAILED'));
             this.transactions.set([]);
             this.total.set(0);
             this.loading.set(false);
@@ -113,12 +115,12 @@ export class TransactionService {
       this.transactions.set([...tempTransactions, { id: '', ...payload }]);
       const transaction = await firstValueFrom(this.http.post<Transaction>(this.apiUrl, payload));
       const updatedTransactions = this.transactions().map((transactionMapItem) =>
-        transactionMapItem.id === '' ? transaction : transactionMapItem
+        transactionMapItem.id === '' ? transaction : transactionMapItem,
       );
       this.transactions.set(updatedTransactions);
     } catch {
       this.transactions.set(tempTransactions);
-      this.error.set('Nie udało się utworzyć transakcji');
+      this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.CREATE_FAILED'));
     }
   }
 
@@ -127,15 +129,15 @@ export class TransactionService {
     const previousTransactions = [...this.transactions()];
     try {
       const transaction = await firstValueFrom(
-        this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload)
+        this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload),
       );
       this.transactions.update((items) =>
-        items.map((item) => (item.id === id ? transaction : item))
+        items.map((item) => (item.id === id ? transaction : item)),
       );
       this.refresh();
     } catch (error) {
       this.transactions.set(previousTransactions);
-      this.error.set('Nie udało się zaktualizować transakcji');
+      this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.UPDATE_FAILED'));
       throw error;
     }
   }
@@ -147,7 +149,7 @@ export class TransactionService {
       await firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`));
       this.refresh();
     } catch {
-      this.error.set('Nie udało się usunąć transakcji');
+      this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.DELETE_FAILED'));
     } finally {
       this.loading.set(false);
     }

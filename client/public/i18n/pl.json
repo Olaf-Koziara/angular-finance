@@ -100,6 +100,12 @@
       "EDUCATION": "Edukacja",
       "SAVINGS": "Oszczędności",
       "OTHER": "Inne"
+    },
+    "ERRORS": {
+      "FETCH_FAILED": "Nie udało się pobrać transakcji",
+      "CREATE_FAILED": "Nie udało się utworzyć transakcji",
+      "UPDATE_FAILED": "Nie udało się zaktualizować transakcji",
+      "DELETE_FAILED": "Nie udało się usunąć transakcji"
     }
   }
 }
