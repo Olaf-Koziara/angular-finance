@@ -1,0 +1,51 @@
+<section class="page">
+  <!-- <header class="page-header">
+    <div>
+      <h1>Transactions</h1>
+    </div>
+  </header> -->
+  <div class="content">
+    <mat-card class="form-card mat-elevation-z4 transaction-form-card">
+      <mat-card-header>
+        <mat-card-title>
+          {{
+            editingTransaction()
+              ? ('TRANSACTIONS.EDIT_TRANSACTION' | translate)
+              : ('TRANSACTIONS.NEW' | translate)
+          }}
+        </mat-card-title>
+        @if (editingTransaction()) {
+        <mat-card-subtitle>{{ editingTransaction()?.title }}</mat-card-subtitle>
+        }
+      </mat-card-header>
+      <mat-card-content>
+        <app-transaction-form
+          [transaction]="editingTransaction()"
+          (submitted)="createTransaction($event)"
+          (updated)="updateTransaction($event)"
+          (cancelled)="cancelEditing()"
+        ></app-transaction-form>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="list-card mat-elevation-z4">
+      <mat-card-header>
+        <mat-card-title>{{ 'TRANSACTIONS.HISTORY' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <app-transaction-filters [filters]="filters()" (changed)="handleFilterChange($event)"></app-transaction-filters>
+
+        <app-transaction-list
+          [transactions]="transactions()"
+          [total]="total()"
+          [loading]="loading()"
+          [sort]="sort()"
+          (removed)="removeTransaction($event)"
+          (sortChanged)="handleSortChange($event)"
+          (edited)="startEditing($event)"
+        ></app-transaction-list>
+      </mat-card-content>
+      <app-transaction-pagination [length]="total()" [pageSize]="pagination().pageSize" [pageIndex]="pagination().pageIndex"
+      [pageSizeOptions]="pageSizeOptions" (pageChange)="handlePageChange($event)"></app-transaction-pagination>
+    </mat-card>
+  </div>
+</section>

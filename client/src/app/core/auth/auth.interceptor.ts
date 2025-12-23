@@ -1,26 +1,40 @@
-import { HttpErrorResponse, HttpInterceptorFn, HttpRequest, HttpHandlerFn } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpInterceptorFn,
+  HttpRequest,
+  HttpHandlerFn,
+} from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, switchMap, throwError, Observable, ReplaySubject, first, timeout, TimeoutError } from 'rxjs';
+import {
+  catchError,
+  switchMap,
+  throwError,
+  Observable,
+  ReplaySubject,
+  first,
+  timeout,
+  TimeoutError,
+} from 'rxjs';
 import { AuthService } from '../../features/auth/services/auth.service';
 
 /**
  * State machine for handling concurrent 401 errors during token refresh.
- * 
+ *
  * States:
  * - idle: No refresh in progress
  * - refreshing: A refresh request is in progress
- * 
+ *
  * The refreshResultSubject emits the result of the refresh operation:
  * - { success: true, token: string } when refresh succeeds
  * - { success: false, error: Error } when refresh fails
- * 
+ *
  * Using ReplaySubject(1) ensures:
  * 1. Late subscribers still receive the last emitted result
  * 2. Only one refresh request is made at a time
  * 3. Waiting requests properly handle both success and failure
  * 4. Subject is reset after each cycle to prevent memory leaks
- * 
+ *
  * A 30-second timeout prevents requests from hanging indefinitely.
  */
 type RefreshResult = { success: true; token: string } | { success: false; error: Error };
@@ -32,7 +46,7 @@ let refreshResultSubject = new ReplaySubject<RefreshResult>(1);
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  
+
   // Skip auth header for auth endpoints (they use HttpBackend directly or handle their own auth)
   if (isAuthEndpoint(request.url)) {
     return next(request);
@@ -68,8 +82,13 @@ function addTokenToRequest(request: HttpRequest<unknown>, token: string): HttpRe
 }
 
 function isAuthEndpoint(url: string): boolean {
-  const authEndpoints = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh', '/api/auth/logout'];
-  return authEndpoints.some(endpoint => url.includes(endpoint));
+  const authEndpoints = [
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/refresh',
+    '/api/auth/logout',
+  ];
+  return authEndpoints.some((endpoint) => url.includes(endpoint));
 }
 
 function handleUnauthorizedError(
@@ -90,7 +109,7 @@ function handleUnauthorizedError(
         // Notify waiting requests of success
         refreshResultSubject.next({ success: true, token: response.accessToken });
         refreshResultSubject.complete();
-        
+
         // Retry the original request with the new token
         return next(addTokenToRequest(request, response.accessToken));
       }),
@@ -99,7 +118,7 @@ function handleUnauthorizedError(
         // Notify waiting requests of failure
         refreshResultSubject.next({ success: false, error: refreshError });
         refreshResultSubject.complete();
-        
+
         // Refresh failed - logout and redirect to login
         authService.logout();
         return throwError(() => refreshError);

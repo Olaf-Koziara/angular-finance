@@ -1,4 +1,11 @@
 {
+  "SIDEBAR": {
+    "DASHBOARD": "Panel Finansowy",
+    "TRANSACTIONS": "Transakcje",
+    "REPORTS": "Raporty",
+    "SETTINGS": "Ustawienia"
+  },
+
   "GENERAL": {
     "LANGUAGE": "Język",
     "ENGLISH": "Angielski",
@@ -49,6 +56,56 @@
       "OCT": "Paź",
       "NOV": "Lis",
       "DEC": "Gru"
+    }
+  },
+  "TRANSACTIONS": {
+    "TITLE": "Transakcje",
+    "TITLE_LABEL": "Tytuł",
+    "TITLE_REQUIRED": "Tytuł jest wymagany",
+    "DATE": "Data",
+    "CATEGORY": "Kategoria",
+    "TYPE": "Typ",
+    "AMOUNT": "Kwota",
+    "REMOVE": "Usuń",
+    "EDIT": "Edytuj",
+    "CANCEL_EDIT": "Anuluj edycję",
+    "EDIT_TRANSACTION": "Edytuj transakcję",
+    "UPDATE_TRANSACTION": "Zapisz zmiany",
+    "NO_TRANSACTIONS": "Brak transakcji",
+    "NO_RESULTS": "Brak wyników spełniających kryteria",
+    "NEW": "Nowa transakcja",
+    "HISTORY": "Historia",
+    "SEARCH": "Szukaj",
+    "CLEAR_SEARCH": "Wyczyść wyszukiwanie",
+    "CLEAR_FILTERS": "Wyczyść filtry",
+    "SAVE_TRANSACTION": "Zapisz transakcję",
+    "AMOUNT_REQUIRED": "Kwota jest wymagana",
+    "AMOUNT_MIN": "Kwota musi być większa od zera",
+    "CATEGORY_REQUIRED": "Kategoria jest wymagana",
+    "DATE_REQUIRED": "Data jest wymagana",
+    "TYPES": {
+      "ALL": "Wszystkie",
+      "INCOME": "Przychód",
+      "EXPENSE": "Wydatek"
+    },
+    "CATEGORIES": {
+      "FOOD": "Jedzenie",
+      "TRANSPORT": "Transport",
+      "TRANSPORTATION": "Transport",
+      "HOUSING": "Mieszkanie",
+      "UTILITIES": "Media",
+      "ENTERTAINMENT": "Rozrywka",
+      "HEALTH": "Zdrowie",
+      "HEALTHCARE": "Zdrowie",
+      "EDUCATION": "Edukacja",
+      "SAVINGS": "Oszczędności",
+      "OTHER": "Inne"
+    },
+    "ERRORS": {
+      "FETCH_FAILED": "Nie udało się pobrać transakcji",
+      "CREATE_FAILED": "Nie udało się utworzyć transakcji",
+      "UPDATE_FAILED": "Nie udało się zaktualizować transakcji",
+      "DELETE_FAILED": "Nie udało się usunąć transakcji"
     }
   }
 }

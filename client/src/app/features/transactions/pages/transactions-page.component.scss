@@ -1,0 +1,43 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.page-header p {
+  margin: 0.25rem 0 0;
+  color: var(--mat-sys-outline);
+}
+
+.content {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.form-card,
+.list-card {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+@media (min-width: 992px) {
+  .content {
+    grid-template-columns: 360px minmax(0, 1fr);
+    align-items: start;
+  }
+}
+.transaction-form-card {
+  mat-card-header {
+    padding-bottom: 0.5rem;
+  }
+}

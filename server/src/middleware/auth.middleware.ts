@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { AuthenticationError } from '../utils/errors';
-import { verifyAccessToken } from '../utils/jwt';
-import { AuthRequest } from '../types';
+import { Request, Response, NextFunction } from "express";
+import { AuthenticationError } from "../utils/errors";
+import { verifyAccessToken } from "../utils/jwt";
+import { AuthRequest } from "../types";
 
 export const authenticate = async (
   req: Request,
@@ -11,8 +11,8 @@ export const authenticate = async (
   try {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new AuthenticationError('No token provided');
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new AuthenticationError("No token provided");
     }
 
     const token = authHeader.substring(7);

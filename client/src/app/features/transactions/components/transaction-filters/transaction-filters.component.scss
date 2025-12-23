@@ -1,0 +1,39 @@
+@use '@angular/material' as mat;
+.transaction-filters-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  @include mat.form-field-overrides(
+    (
+      container-vertical-padding: 8px,
+      container-height: 42px,
+    )
+  );
+}
+
+.transaction-filters-inputs {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(1rem, 1fr));
+  gap: 0.5rem;
+}
+
+.filter-field {
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+.transaction-filters-actions {
+  display: flex;
+  align-items: center;
+}
+
+.transaction-filters-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.75rem;
+  height: 2.25rem;
+}

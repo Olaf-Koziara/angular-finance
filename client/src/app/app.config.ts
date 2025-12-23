@@ -11,6 +11,7 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideTranslateService } from '@ngx-translate/core';
 import { authInterceptor } from './core/auth/auth.interceptor';
+import { apiInterceptor } from './core/interceptors/api.interceptor';
 import { DEFAULT_LANGUAGE } from './shared/constants/language.constants';
 
 export const appConfig: ApplicationConfig = {
@@ -19,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([apiInterceptor, authInterceptor])),
     provideAnimations(),
 
     provideTranslateService({
