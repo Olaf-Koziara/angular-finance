@@ -22,20 +22,33 @@ export class TransactionService {
   }
 
   async update(userId: string, id: string, data: CreateTransactionInput) {
-    const transaction = await prisma.transaction.update({
+    const transaction = await prisma.transaction.updateMany({
       where: {
         id,
+        userId,
       },
       data: {
         ...data,
-        userId,
         amount: new Prisma.Decimal(data.amount),
         date: new Date(data.date),
       },
     });
+    
+    if (transaction.count === 0) {
+      throw new Error('Transaction not found or unauthorized');
+    }
+    
+    const updatedTransaction = await prisma.transaction.findFirst({
+      where: { id, userId },
+    });
+    
+    if (!updatedTransaction) {
+      throw new Error('Transaction not found after update');
+    }
+    
     return {
-      ...transaction,
-      amount: transaction.amount.toNumber(),
+      ...updatedTransaction,
+      amount: updatedTransaction.amount.toNumber(),
     };
   }
 

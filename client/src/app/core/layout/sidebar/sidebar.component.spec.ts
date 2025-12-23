@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { AuthService } from '../../../features/auth/services/auth.service';
 import { SidebarComponent } from './sidebar.component';
-import { ActivatedRoute, provideRouter } from '@angular/router';
 
 describe('SidebarComponent', () => {
   let component: SidebarComponent;

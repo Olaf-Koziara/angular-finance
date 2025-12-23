@@ -4,7 +4,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { TransactionFilters } from '../../models/transaction.model';
 import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
 
 describe('TransactionFiltersComponent', () => {
   let component: TransactionFiltersComponent;

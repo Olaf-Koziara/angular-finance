@@ -1,13 +1,10 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick, flush } from '@angular/core/testing';
-import { TransactionService, TransactionPagination, TransactionState } from './transaction.service';
+import { TransactionService } from './transaction.service';
 import {
   CreateTransaction,
   Transaction,
-  TransactionFilters,
-  TransactionSort,
 } from '../models/transaction.model';
-import { HttpErrorResponse } from '@angular/common/http';
 
 describe('TransactionService', () => {
   let service: TransactionService;

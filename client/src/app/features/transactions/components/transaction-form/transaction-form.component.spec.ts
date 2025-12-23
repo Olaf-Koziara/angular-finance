@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TransactionFormComponent } from './transaction-form.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
-import { CreateTransaction, Transaction } from '../../models/transaction.model';
+import { Transaction } from '../../models/transaction.model';
 import { By } from '@angular/platform-browser';
 import { TRANSACTION_CATEGORIES } from '../../constants/transaction-categories.constant';
 

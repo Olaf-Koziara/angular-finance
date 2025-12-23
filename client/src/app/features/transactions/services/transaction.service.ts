@@ -119,7 +119,6 @@ export class TransactionService {
     } catch {
       this.transactions.set(tempTransactions);
       this.error.set('Nie udało się utworzyć transakcji');
-    } finally {
     }
   }
 
@@ -160,7 +159,7 @@ export class TransactionService {
 
   private buildHttpParams({ filters, pagination, sort }: TransactionState): HttpParams {
     let httpParams = new HttpParams()
-      .set('page', pagination.pageIndex.toString())
+      .set('page', (pagination.pageIndex + 1).toString())
       .set('limit', pagination.pageSize.toString())
       .set('sortBy', sort.column)
       .set('sortOrder', sort.order);
