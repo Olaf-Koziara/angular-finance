@@ -1,14 +1,13 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick, flush } from '@angular/core/testing';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TransactionService } from './transaction.service';
-import {
-  CreateTransaction,
-  Transaction,
-} from '../models/transaction.model';
+import { CreateTransaction, Transaction } from '../models/transaction.model';
 
 describe('TransactionService', () => {
   let service: TransactionService;
   let httpMock: HttpTestingController;
+  let translateService: TranslateService;
 
   const mockTransactions: Transaction[] = [
     {
@@ -31,12 +30,16 @@ describe('TransactionService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule, TranslateModule.forRoot()],
       providers: [TransactionService],
     });
 
     service = TestBed.inject(TransactionService);
     httpMock = TestBed.inject(HttpTestingController);
+    translateService = TestBed.inject(TranslateService);
+
+    // Mock translate instant to return keys for testing
+    spyOn(translateService, 'instant').and.callFake((key: string) => key);
   });
 
   afterEach(() => {
@@ -163,7 +166,7 @@ describe('TransactionService', () => {
       tick(100);
 
       const req = httpMock.expectOne((request) => request.url === '/api/transactions');
-      expect(req.request.params.get('page')).toBe('0');
+      expect(req.request.params.get('page')).toBe('1');
       expect(req.request.params.get('limit')).toBe('10');
       req.flush({ items: [], total: 0 });
     }));
@@ -184,7 +187,7 @@ describe('TransactionService', () => {
       req.flush('Error', { status: 500, statusText: 'Server Error' });
       tick();
 
-      expect(service.error()).toBe('Nie udało się pobrać transakcji');
+      expect(service.error()).toBe('TRANSACTIONS.ERRORS.FETCH_FAILED');
       expect(service.transactions()).toEqual([]);
       expect(service.total()).toBe(0);
       expect(service.loading()).toBe(false);
@@ -292,7 +295,7 @@ describe('TransactionService', () => {
       tick(100);
 
       const req = httpMock.expectOne((request) => request.url === '/api/transactions');
-      expect(req.request.params.get('page')).toBe('2');
+      expect(req.request.params.get('page')).toBe('3');
       req.flush({ items: [], total: 0 });
     }));
   });
@@ -339,7 +342,7 @@ describe('TransactionService', () => {
       service.create(newTransaction);
 
       const req = httpMock.expectOne(
-        (request) => request.method === 'POST' && request.url === '/api/transactions'
+        (request) => request.method === 'POST' && request.url === '/api/transactions',
       );
       expect(req.request.body).toEqual(newTransaction);
 
@@ -418,7 +421,7 @@ describe('TransactionService', () => {
       tick();
 
       expect(service.transactions().length).toBe(originalLength);
-      expect(service.error()).toBe('Nie udało się utworzyć transakcji');
+      expect(service.error()).toBe('TRANSACTIONS.ERRORS.CREATE_FAILED');
     }));
 
     it('should clear error before creating', fakeAsync(() => {
@@ -459,7 +462,7 @@ describe('TransactionService', () => {
       service.update('1', updates);
 
       const putReq = httpMock.expectOne(
-        (request) => request.method === 'PUT' && request.url === '/api/transactions/1'
+        (request) => request.method === 'PUT' && request.url === '/api/transactions/1',
       );
       expect(putReq.request.body).toEqual(updates);
 
@@ -525,7 +528,7 @@ describe('TransactionService', () => {
 
       expect(errorThrown).toBeTrue();
       expect(service.transactions()[0].title).toBe(originalTitle);
-      expect(service.error()).toBe('Nie udało się zaktualizować transakcji');
+      expect(service.error()).toBe('TRANSACTIONS.ERRORS.UPDATE_FAILED');
     }));
 
     it('should clear error before updating', fakeAsync(() => {
@@ -557,7 +560,7 @@ describe('TransactionService', () => {
       service.remove('1');
 
       const deleteReq = httpMock.expectOne(
-        (request) => request.method === 'DELETE' && request.url === '/api/transactions/1'
+        (request) => request.method === 'DELETE' && request.url === '/api/transactions/1',
       );
       deleteReq.flush({});
       tick(100);
@@ -612,7 +615,7 @@ describe('TransactionService', () => {
       deleteReq.flush('Error', { status: 500, statusText: 'Server Error' });
       tick();
 
-      expect(service.error()).toBe('Nie udało się usunąć transakcji');
+      expect(service.error()).toBe('TRANSACTIONS.ERRORS.DELETE_FAILED');
       expect(service.loading()).toBe(false);
     }));
 
