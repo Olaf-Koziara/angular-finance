@@ -9,6 +9,9 @@
     </div>
     <div class="card-details">
       <p class="card-label">{{ card().label | translate }}</p>
+      @if (card().detail) {
+        <p class="card-detail">{{ card().detail | translate }}</p>
+      }
       <h2 class="card-value">{{ getFormattedValue() }}</h2>
       @if (card().trend !== undefined) {
         <div class="trend-indicator" [class.positive]="(card().trend ?? 0) > 0" [class.negative]="(card().trend ?? 0) < 0">

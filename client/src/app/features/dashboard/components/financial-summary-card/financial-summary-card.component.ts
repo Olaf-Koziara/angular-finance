@@ -6,8 +6,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { formatCurrency } from '../../utils/format.utils';
 
 interface SummaryCard {
-  type: 'balance' | 'income' | 'expenses' | 'budget';
+  type: 'balance' | 'income' | 'expenses' | 'budget' | 'topIncome' | 'topExpense';
   label: string;
+  detail?: string;
   value: number | string;
   trend?: number;
   budgetUsage?: number;
@@ -32,7 +33,10 @@ export class FinancialSummaryCardComponent {
     if (card.type === 'budget') {
       return `${card.value}%`;
     }
-    return formatCurrency(card.value as number);
+    if (typeof card.value === 'string') {
+      return card.value;
+    }
+    return formatCurrency(card.value);
   }
 
   onHover(hover: boolean): void {

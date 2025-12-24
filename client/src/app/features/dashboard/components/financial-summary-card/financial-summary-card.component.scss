@@ -50,6 +50,14 @@
     background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
   }
 
+  .topIncome-icon {
+    background: linear-gradient(135deg, #00c853 0%, #64dd17 100%);
+  }
+
+  .topExpense-icon {
+    background: linear-gradient(135deg, #d50000 0%, #ff1744 100%);
+  }
+
   .card-details {
     flex: 1;
     min-width: 0;
@@ -69,6 +77,16 @@
     font-size: 2rem;
     font-weight: 700;
     color: #333;
+  }
+
+  .card-detail {
+    margin: 0 0 6px 0;
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .trend-indicator {

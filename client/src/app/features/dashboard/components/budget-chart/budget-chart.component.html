@@ -8,24 +8,26 @@
   <mat-card-content>
     <div class="budget-chart">
       @for (category of categories(); track category.name) {
-        <div class="budget-category-item">
-          <div class="category-header">
-            <span class="category-name">{{ category.name | translate }}</span>
-            <span class="category-value">
-              {{ formatCurrency(category.spent) }} / {{ formatCurrency(category.budget) }}
-            </span>
-          </div>
-          <div class="category-bar-container">
-            <div
-              class="category-bar"
-              [style.width.%]="category.percentage > 100 ? 100 : category.percentage"
-              [style.background-color]="category.color">
-              <span class="bar-percentage">{{ category.percentage.toFixed(0) }}%</span>
-            </div>
-          </div>
+      <div class="budget-category-item">
+        <div class="category-header">
+          <span class="category-name">{{ category.name | translate }}</span>
+          <span class="category-value">
+            {{ formatCurrency(category.spent) }} / {{ formatCurrency(category.budget) }}
+          </span>
         </div>
+        <div class="category-bar-container">
+          @if(category.percentage>0){
+          <div
+            class="category-bar"
+            [style.width.%]="category.percentage > 100 ? 100 : category.percentage"
+            [style.background-color]="category.color"
+          >
+            <span class="bar-percentage">{{ category.percentage.toFixed(0) }}%</span>
+          </div>
+          }
+        </div>
+      </div>
       }
     </div>
   </mat-card-content>
 </mat-card>
-
