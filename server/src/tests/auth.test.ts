@@ -197,8 +197,15 @@ describe('Auth Endpoints', () => {
           password: 'Test1234',
         });
 
-      const cookies = response.headers['set-cookie'] as string[];
-      refreshTokenCookie = cookies.find((cookie: string) => cookie.startsWith('refresh_token=')) || '';
+      const rawCookies = response.headers["set-cookie"];
+      const cookies = Array.isArray(rawCookies)
+        ? rawCookies
+        : rawCookies
+          ? [rawCookies]
+          : [];
+      refreshTokenCookie = cookies.find((cookie: string) =>
+        cookie.startsWith("refresh_token=")
+      ) || "";
     });
 
     it('should refresh tokens with valid refresh token cookie', async () => {
@@ -236,8 +243,15 @@ describe('Auth Endpoints', () => {
           password: 'Test1234',
         });
 
-      const cookies = response.headers['set-cookie'] as string[];
-      refreshTokenCookie = cookies.find((cookie: string) => cookie.startsWith('refresh_token=')) || '';
+      const rawCookies = response.headers["set-cookie"];
+      const cookies = Array.isArray(rawCookies)
+        ? rawCookies
+        : rawCookies
+          ? [rawCookies]
+          : [];
+      refreshTokenCookie = cookies.find((cookie: string) =>
+        cookie.startsWith("refresh_token=")
+      ) || "";
     });
 
     it('should logout successfully', async () => {
@@ -249,8 +263,13 @@ describe('Auth Endpoints', () => {
       expect(response.body.success).toBe(true);
       expect(response.body.message).toBe('Logged out successfully');
       // Cookie should be cleared
-      const cookies = response.headers['set-cookie'] as string[];
-      expect(cookies.some((c: string) => c.includes('refresh_token=;'))).toBe(true);
+      const rawCookies = response.headers["set-cookie"];
+      const cookies = Array.isArray(rawCookies)
+        ? rawCookies
+        : rawCookies
+          ? [rawCookies]
+          : [];
+      expect(cookies.some((c: string) => c.includes("refresh_token=;"))).toBe(true);
     });
 
     it('should succeed even without refresh token cookie', async () => {
