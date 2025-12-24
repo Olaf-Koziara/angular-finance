@@ -28,15 +28,9 @@ export class TransactionController {
 
   async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-      // Use queryTransactionSchema to parse and validate query params
-      // We might need to handle query params manually before zod if they are strings
       const result = queryTransactionSchema.safeParse(req.query);
 
       if (!result.success) {
-        // Just use defaults if parsing fails or ignore invalid params?
-        // Zod throws error, so we should handle it.
-        // But for query params often we want to be lenient.
-        // Let's log and use defaults or throw.
         throw new BadRequestError(result.error.errors[0].message);
       }
 
@@ -94,7 +88,11 @@ export class TransactionController {
         throw new NotFoundError("Transaction not found");
       }
 
-      const transaction = await transactionService.update(userId, id, result.data);
+      const transaction = await transactionService.update(
+        userId,
+        id,
+        result.data
+      );
       res.json(transaction);
     } catch (error) {
       next(error);
