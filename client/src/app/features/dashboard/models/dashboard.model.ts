@@ -32,3 +32,13 @@ export interface Alert {
   icon: string;
 }
 
+export interface TopCategory {
+  category: string;
+  amount: number;
+}
+
+export interface TopCategories {
+  expense: TopCategory | null;
+  income: TopCategory | null;
+}
+
