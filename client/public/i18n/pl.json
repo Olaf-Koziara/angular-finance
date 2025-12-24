@@ -40,6 +40,7 @@
     "STATISTICS": {
       "MONTHLY_AVERAGE": "Średnia Miesięczna",
       "HIGHEST_EXPENSE": "Najwyższy Wydatek",
+      "HIGHEST_INCOME": "Najwyższy Przychód",
       "SAVINGS_RATE": "Wskaźnik Oszczędności",
       "LAST_UPDATE": "Ostatnia Aktualizacja"
     },
@@ -56,6 +57,9 @@
       "OCT": "Paź",
       "NOV": "Lis",
       "DEC": "Gru"
+    },
+    "ERRORS": {
+      "FETCH_FAILED": "Nie udało się pobrać danych panelu"
     }
   },
   "TRANSACTIONS": {

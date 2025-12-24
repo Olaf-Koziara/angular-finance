@@ -39,6 +39,7 @@
     "STATISTICS": {
       "MONTHLY_AVERAGE": "Monthly Average",
       "HIGHEST_EXPENSE": "Highest Expense",
+      "HIGHEST_INCOME": "Highest Income",
       "SAVINGS_RATE": "Savings Rate",
       "LAST_UPDATE": "Last Updated"
     },
@@ -55,6 +56,9 @@
       "OCT": "Oct",
       "NOV": "Nov",
       "DEC": "Dec"
+    },
+    "ERRORS": {
+      "FETCH_FAILED": "Failed to fetch dashboard data"
     }
   },
   "TRANSACTIONS": {
