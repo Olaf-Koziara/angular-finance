@@ -1,6 +1,7 @@
 {
   "SIDEBAR": {
     "DASHBOARD": "Dashboard",
+    "BUDGET": "Budget",
     "TRANSACTIONS": "Transactions",
     "REPORTS": "Reports",
     "SETTINGS": "Settings"
@@ -59,6 +60,23 @@
     },
     "ERRORS": {
       "FETCH_FAILED": "Failed to fetch dashboard data"
+    }
+  },
+  "BUDGET": {
+    "TITLE": "Budget Management",
+    "SUBTITLE": "Manage your general and category budgets",
+    "GENERAL_BUDGET": "General Budget",
+    "GENERAL_BUDGET_LABEL": "Monthly Budget",
+    "CATEGORY_BUDGETS": "Category Budgets",
+    "EDIT": "Edit",
+    "CANCEL_EDIT": "Cancel",
+    "SAVE": "Save",
+    "LOADING": "Loading budget data...",
+    "TOTAL_CATEGORY_BUDGETS": "Total Category Budgets",
+    "UNALLOCATED": "Unallocated",
+    "ERRORS": {
+      "FETCH_FAILED": "Failed to load budget data",
+      "UPDATE_FAILED": "Failed to update budget"
     }
   },
   "TRANSACTIONS": {

@@ -1,6 +1,7 @@
 {
   "SIDEBAR": {
     "DASHBOARD": "Panel Finansowy",
+    "BUDGET": "Budżet",
     "TRANSACTIONS": "Transakcje",
     "REPORTS": "Raporty",
     "SETTINGS": "Ustawienia"
@@ -60,6 +61,23 @@
     },
     "ERRORS": {
       "FETCH_FAILED": "Nie udało się pobrać danych panelu"
+    }
+  },
+  "BUDGET": {
+    "TITLE": "Zarządzanie Budżetem",
+    "SUBTITLE": "Zarządzaj swoim ogólnym budżetem i budżetami kategorii",
+    "GENERAL_BUDGET": "Budżet Ogólny",
+    "GENERAL_BUDGET_LABEL": "Budżet Miesięczny",
+    "CATEGORY_BUDGETS": "Budżety Kategorii",
+    "EDIT": "Edytuj",
+    "CANCEL_EDIT": "Anuluj",
+    "SAVE": "Zapisz",
+    "LOADING": "Ładowanie danych budżetu...",
+    "TOTAL_CATEGORY_BUDGETS": "Suma Budżetów Kategorii",
+    "UNALLOCATED": "Nieprzydzielone",
+    "ERRORS": {
+      "FETCH_FAILED": "Nie udało się załadować danych budżetu",
+      "UPDATE_FAILED": "Nie udało się zaktualizować budżetu"
     }
   },
   "TRANSACTIONS": {
