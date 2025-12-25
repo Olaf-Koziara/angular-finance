@@ -1,0 +1,94 @@
+<div class="budget-container">
+  <mat-card class="budget-card">
+    <!-- <mat-card-header>
+      <div class="header-content">
+        <div class="header-title">
+          <mat-card-title>{{ 'BUDGET.TITLE' | translate }}</mat-card-title>
+          <mat-card-subtitle>{{ 'BUDGET.SUBTITLE' | translate }}</mat-card-subtitle>
+        </div>
+      </div>
+    </mat-card-header> -->
+
+    <mat-card-content>
+      @if (isLoading()) {
+      <div class="loading-state">
+        <p>{{ 'BUDGET.LOADING' | translate }}</p>
+      </div>
+      } @else if (error()) {
+      <div class="error-state">
+        <mat-icon>error</mat-icon>
+        <p>{{ error() }}</p>
+      </div>
+      } @else {
+      <div class="flex-container">
+        <section class="budget-section">
+          <h2 class="section-title">{{ 'BUDGET.GENERAL_BUDGET' | translate }}</h2>
+          <div class="budget-input-row">
+            <mat-form-field appearance="outline" class="budget-input">
+              <mat-label>{{ 'BUDGET.GENERAL_BUDGET_LABEL' | translate }}</mat-label>
+              <input
+                matInput
+                type="number"
+                [value]="generalBudget()"
+                (blur)="saveGeneralBudget($any($event.target).value)"
+                min="0"
+                step="0.01"
+              />
+              <span matPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+        </section>
+        <section class="budget-summary">
+          <div class="summary-item">
+            <span class="summary-label">{{ 'BUDGET.TOTAL_CATEGORY_BUDGETS' | translate }}:</span>
+            <span class="summary-value">${{ totalCategoryBudgets() | number : '1.2-2' }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">{{ 'BUDGET.GENERAL_BUDGET' | translate }}:</span>
+            <span class="summary-value">${{ generalBudget() | number : '1.2-2' }}</span>
+          </div>
+          @if (generalBudget() > 0) {
+          <div class="summary-item">
+            <span class="summary-label">{{ 'BUDGET.UNALLOCATED' | translate }}:</span>
+            <span
+              class="summary-value"
+              [class.warning]="generalBudget() - totalCategoryBudgets() < 0"
+            >
+              ${{ generalBudget() - totalCategoryBudgets() | number : '1.2-2' }}
+            </span>
+          </div>
+          }
+        </section>
+      </div>
+
+      <!-- Category Budgets Section -->
+      <section class="budget-section">
+        <h2 class="section-title">{{ 'BUDGET.CATEGORY_BUDGETS' | translate }}</h2>
+        <div class="category-budgets-grid">
+          @for (category of categories(); track trackByCategory($index, category)) {
+          <div class="budget-input-row">
+            <mat-form-field appearance="outline" class="budget-input">
+              <mat-label>{{
+                'TRANSACTIONS.CATEGORIES.' + category.toUpperCase() | translate
+              }}</mat-label>
+              <input
+                matInput
+                type="number"
+                [value]="getCategoryBudget(category)"
+                (blur)="saveCategoryBudget(category, $any($event.target).value)"
+                min="0"
+                step="0.01"
+              />
+              <span matPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+          }
+        </div>
+      </section>
+
+      <!-- Summary Section -->
+
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
