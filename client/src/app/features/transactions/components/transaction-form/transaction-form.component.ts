@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
-import { CommonModule } from '@angular/common';
+
 import { CreateTransaction, Transaction, TransactionType } from '../../models/transaction.model';
 import {
   TransactionCategory,
@@ -19,7 +19,6 @@ import { TranslateModule } from '@ngx-translate/core';
   selector: 'app-transaction-form',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -28,8 +27,8 @@ import { TranslateModule } from '@ngx-translate/core';
     MatNativeDateModule,
     MatButtonModule,
     MatButtonToggleModule,
-    TranslateModule,
-  ],
+    TranslateModule
+],
   templateUrl: './transaction-form.component.html',
   styleUrl: './transaction-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

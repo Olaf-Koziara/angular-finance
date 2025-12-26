@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { PageEvent } from '@angular/material/paginator';
@@ -19,14 +19,13 @@ import { TransactionService } from '../services/transaction.service';
   selector: 'app-transactions-page',
   standalone: true,
   imports: [
-    CommonModule,
     MatCardModule,
     TransactionFormComponent,
     TransactionListComponent,
     TranslateModule,
     TransactionPaginationComponent,
-    TransactionFiltersComponent,
-  ],
+    TransactionFiltersComponent
+],
   templateUrl: './transactions-page.component.html',
   styleUrl: './transactions-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

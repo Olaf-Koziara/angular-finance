@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { TranslateModule } from '@ngx-translate/core';
 import { FinancialSummaryCardComponent } from '../components/financial-summary-card/financial-summary-card.component';
 import { TrendsSectionComponent } from '../components/trends-section/trends-section.component';
@@ -13,14 +13,13 @@ import { DashboardService } from '../services/dashboard.service';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
     TranslateModule,
     FinancialSummaryCardComponent,
     TrendsSectionComponent,
     BudgetChartComponent,
     MonthlyTrendChartComponent,
-    AlertsListComponent,
-  ],
+    AlertsListComponent
+],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

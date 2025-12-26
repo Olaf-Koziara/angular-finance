@@ -1,5 +1,5 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
-import { CommonModule } from '@angular/common';
+
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, RouterLink, MatFormFieldModule,MatLabel,TextFieldModule],
+  imports: [ReactiveFormsModule, MatButtonModule, RouterLink, MatFormFieldModule, MatLabel, TextFieldModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })

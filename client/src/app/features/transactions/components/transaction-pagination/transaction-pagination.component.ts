@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-transaction-pagination',
   standalone: true,
-  imports: [CommonModule, MatPaginatorModule],
+  imports: [MatPaginatorModule],
   templateUrl: './transaction-pagination.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

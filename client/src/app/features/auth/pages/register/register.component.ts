@@ -1,4 +1,4 @@
-import { CommonModule, NgIf } from '@angular/common';
+
 import {
     ChangeDetectionStrategy,
     Component,
@@ -33,8 +33,6 @@ import { AuthService, RegisterPayload } from '../../services/auth.service';
   selector: 'app-register',
   standalone: true,
   imports: [
-    CommonModule,
-    NgIf,
     ReactiveFormsModule,
     RouterLink,
     MatCardModule,
@@ -45,8 +43,8 @@ import { AuthService, RegisterPayload } from '../../services/auth.service';
     MatDividerModule,
     MatIconModule,
     MatProgressBarModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule
+],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

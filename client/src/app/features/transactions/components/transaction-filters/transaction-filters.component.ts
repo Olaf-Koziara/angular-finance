@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -17,15 +17,14 @@ import { TranslateModule } from '@ngx-translate/core';
   selector: 'app-transaction-filters',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatIconModule,
     MatButtonModule,
-    TranslateModule,
-  ],
+    TranslateModule
+],
   templateUrl: './transaction-filters.component.html',
   styleUrl: './transaction-filters.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

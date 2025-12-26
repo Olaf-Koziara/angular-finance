@@ -9,14 +9,14 @@
         formControlName="email"
         autocomplete="username"
         >
-        @if(email?.touched && email?.invalid){
-          @if(email?.errors?.['required']){
-            <small class="error">Email is required</small>
-          }
-          @if(email?.errors?.['email']){
-            <small class="error">Wrong email</small>
-          }
+      @if(email?.touched && email?.invalid){
+        @if(email?.errors?.['required']){
+          <small class="error">Email is required</small>
         }
+        @if(email?.errors?.['email']){
+          <small class="error">Wrong email</small>
+        }
+      }
     </label>
 
     <label class="form-field">
@@ -25,7 +25,7 @@
         type="password"
         formControlName="password"
         autocomplete="current-password"
-      />
+        />
       @if(password?.touched && password?.invalid){
         @if(password?.errors?.['required']){
           <small class="error">Password is required</small>
@@ -45,5 +45,7 @@
   </form>
   <a matButton="elevated" [routerLink]="['/register']">Register</a>
 
-  <p class="error" *ngIf="error()">{{ error() }}</p>
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
 </section>

@@ -26,8 +26,10 @@
             formControlName="name"
             autocomplete="name"
             [attr.aria-invalid]="nameInvalid()"
-          />
-          <mat-error *ngIf="nameInvalid()">Name is required</mat-error>
+            />
+          @if (nameInvalid()) {
+            <mat-error>Name is required</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -38,8 +40,10 @@
             formControlName="email"
             autocomplete="email"
             [attr.aria-invalid]="emailInvalid()"
-          />
-          <mat-error *ngIf="emailInvalid()">Enter a valid email</mat-error>
+            />
+          @if (emailInvalid()) {
+            <mat-error>Enter a valid email</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -50,30 +54,34 @@
             formControlName="password"
             autocomplete="new-password"
             [attr.aria-invalid]="passwordInvalid()"
-          />
+            />
           <button
             type="button"
             mat-icon-button
             matSuffix
             (click)="togglePasswordVisibility('password')"
             [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
-          >
+            >
             <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
           <mat-hint>
             Min 8 chars with uppercase, lowercase, and number
           </mat-hint>
-          <mat-error *ngIf="passwordInvalid()">Password must be at least 8 characters with uppercase, lowercase, and number</mat-error>
+          @if (passwordInvalid()) {
+            <mat-error>Password must be at least 8 characters with uppercase, lowercase, and number</mat-error>
+          }
         </mat-form-field>
 
-        <div class="password-meter" *ngIf="showPasswordStrength()">
-          <mat-progress-bar
-            mode="determinate"
-            [value]="passwordStrengthPercent()"
-            [color]="passwordStrengthColor()"
-          ></mat-progress-bar>
-          <span>{{ passwordStrengthLabel() }}</span>
-        </div>
+        @if (showPasswordStrength()) {
+          <div class="password-meter">
+            <mat-progress-bar
+              mode="determinate"
+              [value]="passwordStrengthPercent()"
+              [color]="passwordStrengthColor()"
+            ></mat-progress-bar>
+            <span>{{ passwordStrengthLabel() }}</span>
+          </div>
+        }
 
         <mat-form-field appearance="outline">
           <mat-label>Confirm password</mat-label>
@@ -83,41 +91,48 @@
             formControlName="confirmPassword"
             autocomplete="new-password"
             [attr.aria-invalid]="confirmPasswordInvalid()"
-          />
+            />
           <button
             type="button"
             mat-icon-button
             matSuffix
             (click)="togglePasswordVisibility('confirmPassword')"
             [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'"
-          >
+            >
             <mat-icon>{{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
-          <mat-error *ngIf="confirmPasswordInvalid()">Passwords must match</mat-error>
+          @if (confirmPasswordInvalid()) {
+            <mat-error>Passwords must match</mat-error>
+          }
         </mat-form-field>
 
         <div class="checkbox-row">
           <mat-checkbox formControlName="terms">
             I agree to the terms and privacy policy
           </mat-checkbox>
-          <small *ngIf="termsInvalid()">Accept the terms to continue</small>
+          @if (termsInvalid()) {
+            <small>Accept the terms to continue</small>
+          }
         </div>
 
         <button class="" mat-flat-button color="primary" type="submit" [disabled]="submitDisabled()">
-          <mat-progress-spinner
-            *ngIf="loading()"
-            diameter="20"
-            strokeWidth="3"
-            mode="indeterminate"
-          ></mat-progress-spinner>
+          @if (loading()) {
+            <mat-progress-spinner
+              diameter="20"
+              strokeWidth="3"
+              mode="indeterminate"
+            ></mat-progress-spinner>
+          }
           <span>{{ loading() ? 'Creating account…' : 'Create account' }}</span>
         </button>
       </form>
 
-      <div class="feedback error" *ngIf="error() as message" role="alert">
-        <mat-icon>error</mat-icon>
-        <p>{{ message }}</p>
-      </div>
+      @if (error(); as message) {
+        <div class="feedback error" role="alert">
+          <mat-icon>error</mat-icon>
+          <p>{{ message }}</p>
+        </div>
+      }
     </mat-card-content>
 
     <mat-divider></mat-divider>
@@ -128,10 +143,10 @@
         mat-stroked-button
         color="primary"
         type="button"
-        
+
         [routerLink]="['/login']"
         [queryParams]="loginPrefill() ?? null"
-      >
+        >
         Go to login
       </button>
     </mat-card-actions>
