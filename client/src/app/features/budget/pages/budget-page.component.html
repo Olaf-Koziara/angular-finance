@@ -30,7 +30,7 @@
                 matInput
                 type="number"
                 [field]="form.generalBudget"
-                (blur)="saveGeneralBudget($any($event.target).value)"
+                (keydown)="preventNegative($event)"
                 step="0.01"
               />
               <span matPrefix>$&nbsp;</span>
@@ -74,12 +74,17 @@
                 matInput
                 type="number"
                 [field]="form.categoryBudgets[category]"
-                (blur)="saveCategoryBudget(category, $any($event.target).value)"
+                (keydown)="preventNegative($event)"
                 step="0.01"
               />
               <span matPrefix>$&nbsp;</span>
             </mat-form-field>
           </div>
+          } @if(form().dirty()&& form().valid()){
+          <button class="save-button" mat-raised-button (click)="saveBudget()">
+            <mat-icon>save</mat-icon>
+            {{ 'BUDGET.SAVE' | translate }}
+          </button>
           }
         </div>
       </section>
