@@ -54,7 +54,7 @@ export class AuthService {
 
   login(credentials: LoginPayload): Observable<AuthResponse> {
     return this.http
-      .post<{ data: AuthResponse }>(`${environment.API_URL}/api/auth/login`, credentials, {
+      .post<{ data: AuthResponse }>(`${environment.API_URL}/auth/login`, credentials, {
         withCredentials: true,
       })
       .pipe(
@@ -69,7 +69,7 @@ export class AuthService {
 
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http
-      .post<{ data: AuthResponse }>(`${environment.API_URL}/api/auth/register`, payload, {
+      .post<{ data: AuthResponse }>(`${environment.API_URL}/auth/register`, payload, {
         withCredentials: true, // Include cookies for refresh token
       })
       .pipe(
@@ -103,7 +103,7 @@ export class AuthService {
 
     return this.http
       .post<{ data: RefreshResponse }>(
-        `${environment.API_URL}/api/auth/refresh`,
+        `${environment.API_URL}/auth/refresh`,
         {},
         {
           withCredentials: true,
@@ -131,7 +131,7 @@ export class AuthService {
     // Call logout endpoint to clear refresh token cookie
     this.http
       .post(
-        `${environment.API_URL}/api/auth/logout`,
+        `${environment.API_URL}/auth/logout`,
         {},
         {
           withCredentials: true,

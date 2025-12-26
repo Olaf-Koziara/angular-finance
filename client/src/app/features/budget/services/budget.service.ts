@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { Budget, BudgetResponse, CategoryBudget } from '../models/budget.model';
-import { TRANSACTION_CATEGORIES } from '../../transactions/constants/transaction-categories.constant';
+import { Budget, BudgetResponse } from '../models/budget.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,77 +13,43 @@ export class BudgetService {
   private readonly apiUrl = `${environment.API_URL}/budgets`;
 
   getBudget(): Observable<Budget> {
-    // TODO: Replace with actual API call when backend is ready
-    // return this.http.get<BudgetResponse>(this.apiUrl).pipe(
-    //   map((response) => response.data),
-    //   catchError((error) => {
-    //     console.error('Error fetching budget:', error);
-    //     throw error;
-    //   })
-    // );
-
-    // Mock data for now
-    return of({
-      id: '1',
-      generalBudget: 5000,
-      categoryBudgets: TRANSACTION_CATEGORIES.map((category) => ({
-        category,
-        amount: 500,
-      })),
-    });
+    return this.http.get<BudgetResponse>(this.apiUrl).pipe(
+      tap((res) => console.log(res)),
+      map((response) => response.data),
+      catchError((error) => {
+        console.error('Error fetching budget:', error);
+        throw error;
+      })
+    );
   }
 
   updateGeneralBudget(amount: number): Observable<Budget> {
-    // TODO: Replace with actual API call when backend is ready
-    // return this.http.put<BudgetResponse>(`${this.apiUrl}/general`, { amount }).pipe(
-    //   map((response) => response.data),
-    //   catchError((error) => {
-    //     console.error('Error updating general budget:', error);
-    //     throw error;
-    //   })
-    // );
-
-    // Mock implementation
-    return this.getBudget().pipe(
-      map((budget) => ({
-        ...budget,
-        generalBudget: amount,
-      }))
+    return this.http.put<BudgetResponse>(`${this.apiUrl}/general`, { amount }).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        console.error('Error updating general budget:', error);
+        throw error;
+      })
     );
   }
 
   updateCategoryBudget(category: string, amount: number): Observable<Budget> {
-    // TODO: Replace with actual API call when backend is ready
-    // return this.http.put<BudgetResponse>(`${this.apiUrl}/category/${category}`, { amount }).pipe(
-    //   map((response) => response.data),
-    //   catchError((error) => {
-    //     console.error('Error updating category budget:', error);
-    //     throw error;
-    //   })
-    // );
-
-    // Mock implementation
-    return this.getBudget().pipe(
-      map((budget) => ({
-        ...budget,
-        categoryBudgets: budget.categoryBudgets.map((cb) =>
-          cb.category === category ? { ...cb, amount } : cb
-        ),
-      }))
+    return this.http.put<BudgetResponse>(`${this.apiUrl}/category`, { category, amount }).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        console.error('Error updating category budget:', error);
+        throw error;
+      })
     );
   }
 
   updateBudget(budget: Budget): Observable<Budget> {
-    // TODO: Replace with actual API call when backend is ready
-    // return this.http.put<BudgetResponse>(this.apiUrl, budget).pipe(
-    //   map((response) => response.data),
-    //   catchError((error) => {
-    //     console.error('Error updating budget:', error);
-    //     throw error;
-    //   })
-    // );
-
-    // Mock implementation
-    return of(budget);
+    return this.http.put<BudgetResponse>(this.apiUrl, budget).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        console.error('Error updating budget:', error);
+        throw error;
+      })
+    );
   }
 }
