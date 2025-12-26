@@ -8,13 +8,12 @@ import {
 } from "../validators/budget.validator";
 import { NotFoundError } from "../utils/errors";
 
+type CategoryBudgetsRecord = Record<string, number>;
+
 export class BudgetService {
   async getBudget(userId: string) {
     const budget = await prisma.budget.findUnique({
       where: { userId },
-      include: {
-        categoryBudgets: true,
-      },
     });
 
     if (!budget) {
@@ -24,18 +23,15 @@ export class BudgetService {
     return {
       ...budget,
       generalBudget: budget.generalBudget.toNumber(),
-      categoryBudgets: budget.categoryBudgets.map((cb) => ({
-        ...cb,
-        amount: cb.amount.toNumber(),
-      })),
+      categoryBudgets: (budget.categoryBudgets as CategoryBudgetsRecord) || {},
     };
   }
 
   async create(userId: string, data: CreateBudgetInput) {
-    // Check if budget already exists
     const existingBudget = await prisma.budget.findUnique({
       where: { userId },
     });
+    console.log(data);
 
     if (existingBudget) {
       throw new Error("Budget already exists for this user");
@@ -45,25 +41,14 @@ export class BudgetService {
       data: {
         userId,
         generalBudget: new Prisma.Decimal(data.generalBudget),
-        categoryBudgets: {
-          create: data.categoryBudgets.map((cb) => ({
-            category: cb.category,
-            amount: new Prisma.Decimal(cb.amount),
-          })),
-        },
-      },
-      include: {
-        categoryBudgets: true,
+        categoryBudgets: (data.categoryBudgets || {}) as Prisma.InputJsonValue,
       },
     });
 
     return {
       ...budget,
       generalBudget: budget.generalBudget.toNumber(),
-      categoryBudgets: budget.categoryBudgets.map((cb) => ({
-        ...cb,
-        amount: cb.amount.toNumber(),
-      })),
+      categoryBudgets: (budget.categoryBudgets as CategoryBudgetsRecord) || {},
     };
   }
 
@@ -81,76 +66,42 @@ export class BudgetService {
       data: {
         generalBudget: new Prisma.Decimal(data.amount),
       },
-      include: {
-        categoryBudgets: true,
-      },
     });
 
     return {
       ...budget,
       generalBudget: budget.generalBudget.toNumber(),
-      categoryBudgets: budget.categoryBudgets.map((cb) => ({
-        ...cb,
-        amount: cb.amount.toNumber(),
-      })),
+      categoryBudgets: (budget.categoryBudgets as CategoryBudgetsRecord) || {},
     };
   }
 
   async updateCategoryBudget(userId: string, data: UpdateCategoryBudgetInput) {
     const existingBudget = await prisma.budget.findUnique({
       where: { userId },
-      include: {
-        categoryBudgets: true,
-      },
     });
 
     if (!existingBudget) {
       throw new NotFoundError("Budget not found");
     }
 
-    // Check if category budget exists
-    const existingCategoryBudget = existingBudget.categoryBudgets.find(
-      (cb) => cb.category === data.category
-    );
+    const currentCategoryBudgets =
+      (existingBudget.categoryBudgets as CategoryBudgetsRecord) || {};
+    const updatedCategoryBudgets = {
+      ...currentCategoryBudgets,
+      [data.category]: data.amount,
+    };
 
-    if (existingCategoryBudget) {
-      // Update existing category budget
-      await prisma.categoryBudget.update({
-        where: { id: existingCategoryBudget.id },
-        data: {
-          amount: new Prisma.Decimal(data.amount),
-        },
-      });
-    } else {
-      // Create new category budget
-      await prisma.categoryBudget.create({
-        data: {
-          budgetId: existingBudget.id,
-          category: data.category,
-          amount: new Prisma.Decimal(data.amount),
-        },
-      });
-    }
-
-    // Fetch updated budget
-    const budget = await prisma.budget.findUnique({
+    const budget = await prisma.budget.update({
       where: { userId },
-      include: {
-        categoryBudgets: true,
+      data: {
+        categoryBudgets: updatedCategoryBudgets as Prisma.InputJsonValue,
       },
     });
-
-    if (!budget) {
-      throw new NotFoundError("Budget not found after update");
-    }
 
     return {
       ...budget,
       generalBudget: budget.generalBudget.toNumber(),
-      categoryBudgets: budget.categoryBudgets.map((cb) => ({
-        ...cb,
-        amount: cb.amount.toNumber(),
-      })),
+      categoryBudgets: (budget.categoryBudgets as CategoryBudgetsRecord) || {},
     };
   }
 
@@ -163,52 +114,29 @@ export class BudgetService {
       throw new NotFoundError("Budget not found");
     }
 
-    // Update general budget if provided
+    const updateData: {
+      generalBudget?: Prisma.Decimal;
+      categoryBudgets?: Prisma.InputJsonValue;
+    } = {};
+
     if (data.generalBudget !== undefined) {
-      await prisma.budget.update({
-        where: { userId },
-        data: {
-          generalBudget: new Prisma.Decimal(data.generalBudget),
-        },
-      });
+      updateData.generalBudget = new Prisma.Decimal(data.generalBudget);
     }
 
-    // Update category budgets if provided
-    if (data.categoryBudgets && data.categoryBudgets.length > 0) {
-      // Delete existing category budgets
-      await prisma.categoryBudget.deleteMany({
-        where: { budgetId: existingBudget.id },
-      });
-
-      // Create new category budgets
-      await prisma.categoryBudget.createMany({
-        data: data.categoryBudgets.map((cb) => ({
-          budgetId: existingBudget.id,
-          category: cb.category,
-          amount: new Prisma.Decimal(cb.amount),
-        })),
-      });
+    if (data.categoryBudgets !== undefined) {
+      updateData.categoryBudgets =
+        data.categoryBudgets as Prisma.InputJsonValue;
     }
 
-    // Fetch updated budget
-    const budget = await prisma.budget.findUnique({
+    const budget = await prisma.budget.update({
       where: { userId },
-      include: {
-        categoryBudgets: true,
-      },
+      data: updateData,
     });
-
-    if (!budget) {
-      throw new NotFoundError("Budget not found after update");
-    }
 
     return {
       ...budget,
       generalBudget: budget.generalBudget.toNumber(),
-      categoryBudgets: budget.categoryBudgets.map((cb) => ({
-        ...cb,
-        amount: cb.amount.toNumber(),
-      })),
+      categoryBudgets: (budget.categoryBudgets as CategoryBudgetsRecord) || {},
     };
   }
 
@@ -228,6 +156,3 @@ export class BudgetService {
 }
 
 export const budgetService = new BudgetService();
-
-
-

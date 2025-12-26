@@ -1,16 +1,13 @@
 import { z } from "zod";
 
-const categoryBudgetSchema = z.object({
-  category: z.string().min(1, "Category is required"),
-  amount: z.number().min(0, "Amount must be non-negative"),
-});
+const categoryBudgetsRecordSchema = z
+  .record(z.string(), z.number().min(0, "Amount must be non-negative"))
+  .optional()
+  .default({});
 
 export const createBudgetSchema = z.object({
   generalBudget: z.number().min(0, "General budget must be non-negative"),
-  categoryBudgets: z
-    .array(categoryBudgetSchema)
-    .optional()
-    .default([]),
+  categoryBudgets: categoryBudgetsRecordSchema,
 });
 
 export const updateGeneralBudgetSchema = z.object({
@@ -23,17 +20,18 @@ export const updateCategoryBudgetSchema = z.object({
 });
 
 export const updateBudgetSchema = z.object({
-  generalBudget: z.number().min(0, "General budget must be non-negative").optional(),
-  categoryBudgets: z
-    .array(categoryBudgetSchema)
+  generalBudget: z
+    .number()
+    .min(0, "General budget must be non-negative")
     .optional(),
+  categoryBudgets: categoryBudgetsRecordSchema.optional(),
 });
 
 export type CreateBudgetInput = z.infer<typeof createBudgetSchema>;
-export type UpdateGeneralBudgetInput = z.infer<typeof updateGeneralBudgetSchema>;
-export type UpdateCategoryBudgetInput = z.infer<typeof updateCategoryBudgetSchema>;
+export type UpdateGeneralBudgetInput = z.infer<
+  typeof updateGeneralBudgetSchema
+>;
+export type UpdateCategoryBudgetInput = z.infer<
+  typeof updateCategoryBudgetSchema
+>;
 export type UpdateBudgetInput = z.infer<typeof updateBudgetSchema>;
-export type CategoryBudgetInput = z.infer<typeof categoryBudgetSchema>;
-
-
-

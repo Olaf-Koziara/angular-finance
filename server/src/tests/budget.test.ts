@@ -9,8 +9,6 @@ describe('Budget Endpoints', () => {
   let userId: string;
 
   beforeAll(async () => {
-    // Clean up test database before tests
-    await prisma.categoryBudget.deleteMany({});
     await prisma.budget.deleteMany({});
     await prisma.transaction.deleteMany({});
     await prisma.refreshToken.deleteMany({});
@@ -30,8 +28,6 @@ describe('Budget Endpoints', () => {
   });
 
   afterAll(async () => {
-    // Clean up test database after tests
-    await prisma.categoryBudget.deleteMany({});
     await prisma.budget.deleteMany({});
     await prisma.transaction.deleteMany({});
     await prisma.refreshToken.deleteMany({});
@@ -43,11 +39,11 @@ describe('Budget Endpoints', () => {
     it('should create a new budget successfully', async () => {
       const budgetData = {
         generalBudget: 5000,
-        categoryBudgets: [
-          { category: 'Food', amount: 500 },
-          { category: 'Transport', amount: 300 },
-          { category: 'Housing', amount: 1500 },
-        ],
+        categoryBudgets: {
+          Food: 500,
+          Transport: 300,
+          Housing: 1500,
+        },
       };
 
       const response = await request(app)
@@ -58,15 +54,18 @@ describe('Budget Endpoints', () => {
 
       expect(response.body).toHaveProperty('id');
       expect(response.body.generalBudget).toBe(5000);
-      expect(response.body.categoryBudgets).toHaveLength(3);
-      expect(response.body.categoryBudgets[0]).toHaveProperty('category');
-      expect(response.body.categoryBudgets[0]).toHaveProperty('amount');
+      expect(response.body.categoryBudgets).toHaveProperty('Food');
+      expect(response.body.categoryBudgets).toHaveProperty('Transport');
+      expect(response.body.categoryBudgets).toHaveProperty('Housing');
+      expect(response.body.categoryBudgets.Food).toBe(500);
+      expect(response.body.categoryBudgets.Transport).toBe(300);
+      expect(response.body.categoryBudgets.Housing).toBe(1500);
     });
 
     it('should fail to create budget without authentication', async () => {
       const budgetData = {
         generalBudget: 5000,
-        categoryBudgets: [],
+        categoryBudgets: {},
       };
 
       await request(app)
@@ -78,7 +77,7 @@ describe('Budget Endpoints', () => {
     it('should fail to create budget with negative general budget', async () => {
       const budgetData = {
         generalBudget: -1000,
-        categoryBudgets: [],
+        categoryBudgets: {},
       };
 
       const response = await request(app)
@@ -93,14 +92,14 @@ describe('Budget Endpoints', () => {
     it('should fail to create duplicate budget', async () => {
       const budgetData = {
         generalBudget: 3000,
-        categoryBudgets: [],
+        categoryBudgets: {},
       };
 
       await request(app)
         .post('/api/budgets')
         .set('Authorization', `Bearer ${authToken}`)
         .send(budgetData)
-        .expect(500); // Budget already exists
+        .expect(500);
     });
   });
 
@@ -114,7 +113,8 @@ describe('Budget Endpoints', () => {
       expect(response.body).toHaveProperty('id');
       expect(response.body).toHaveProperty('generalBudget');
       expect(response.body).toHaveProperty('categoryBudgets');
-      expect(Array.isArray(response.body.categoryBudgets)).toBe(true);
+      expect(typeof response.body.categoryBudgets).toBe('object');
+      expect(Array.isArray(response.body.categoryBudgets)).toBe(false);
     });
 
     it('should fail to get budget without authentication', async () => {
@@ -161,10 +161,7 @@ describe('Budget Endpoints', () => {
         .send({ category: 'Food', amount: 700 })
         .expect(200);
 
-      const foodBudget = response.body.categoryBudgets.find(
-        (cb: any) => cb.category === 'Food'
-      );
-      expect(foodBudget.amount).toBe(700);
+      expect(response.body.categoryBudgets.Food).toBe(700);
     });
 
     it('should create new category budget if not exists', async () => {
@@ -174,11 +171,8 @@ describe('Budget Endpoints', () => {
         .send({ category: 'Entertainment', amount: 400 })
         .expect(200);
 
-      const entertainmentBudget = response.body.categoryBudgets.find(
-        (cb: any) => cb.category === 'Entertainment'
-      );
-      expect(entertainmentBudget).toBeDefined();
-      expect(entertainmentBudget.amount).toBe(400);
+      expect(response.body.categoryBudgets.Entertainment).toBeDefined();
+      expect(response.body.categoryBudgets.Entertainment).toBe(400);
     });
 
     it('should fail with invalid data', async () => {
@@ -201,11 +195,11 @@ describe('Budget Endpoints', () => {
     it('should update entire budget successfully', async () => {
       const updateData = {
         generalBudget: 7000,
-        categoryBudgets: [
-          { category: 'Food', amount: 600 },
-          { category: 'Transport', amount: 400 },
-          { category: 'Utilities', amount: 250 },
-        ],
+        categoryBudgets: {
+          Food: 600,
+          Transport: 400,
+          Utilities: 250,
+        },
       };
 
       const response = await request(app)
@@ -215,7 +209,9 @@ describe('Budget Endpoints', () => {
         .expect(200);
 
       expect(response.body.generalBudget).toBe(7000);
-      expect(response.body.categoryBudgets).toHaveLength(3);
+      expect(response.body.categoryBudgets.Food).toBe(600);
+      expect(response.body.categoryBudgets.Transport).toBe(400);
+      expect(response.body.categoryBudgets.Utilities).toBe(250);
     });
 
     it('should update only general budget', async () => {
@@ -264,6 +260,9 @@ describe('Budget Endpoints', () => {
     });
   });
 });
+
+
+
 
 
 

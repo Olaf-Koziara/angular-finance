@@ -8,6 +8,7 @@ import {
 } from "../validators/budget.validator";
 import { AppError, BadRequestError, NotFoundError } from "../utils/errors";
 import { AuthRequest } from "../types";
+import { sendSuccess } from "../utils/response";
 
 export class BudgetController {
   async getBudget(req: Request, res: Response, next: NextFunction) {
@@ -24,7 +25,7 @@ export class BudgetController {
         throw new NotFoundError("Budget not found");
       }
 
-      res.json(budget);
+      sendSuccess(res, budget, "Budget retrieved successfully");
     } catch (error) {
       next(error);
     }
@@ -33,7 +34,7 @@ export class BudgetController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       const result = createBudgetSchema.safeParse(req.body);
-      
+
       if (!result.success) {
         throw new BadRequestError(result.error.errors[0].message);
       }
@@ -46,7 +47,7 @@ export class BudgetController {
 
       const budget = await budgetService.create(userId, result.data);
 
-      res.status(201).json(budget);
+      sendSuccess(res, budget, "Budget created successfully", 201);
     } catch (error) {
       next(error);
     }
@@ -55,7 +56,7 @@ export class BudgetController {
   async updateGeneralBudget(req: Request, res: Response, next: NextFunction) {
     try {
       const result = updateGeneralBudgetSchema.safeParse(req.body);
-      
+
       if (!result.success) {
         throw new BadRequestError(result.error.errors[0].message);
       }
@@ -66,9 +67,12 @@ export class BudgetController {
         throw new AppError("No user ID");
       }
 
-      const budget = await budgetService.updateGeneralBudget(userId, result.data);
+      const budget = await budgetService.updateGeneralBudget(
+        userId,
+        result.data
+      );
 
-      res.json(budget);
+      sendSuccess(res, budget, "General budget updated successfully");
     } catch (error) {
       next(error);
     }
@@ -77,7 +81,7 @@ export class BudgetController {
   async updateCategoryBudget(req: Request, res: Response, next: NextFunction) {
     try {
       const result = updateCategoryBudgetSchema.safeParse(req.body);
-      
+
       if (!result.success) {
         throw new BadRequestError(result.error.errors[0].message);
       }
@@ -88,9 +92,12 @@ export class BudgetController {
         throw new AppError("No user ID");
       }
 
-      const budget = await budgetService.updateCategoryBudget(userId, result.data);
+      const budget = await budgetService.updateCategoryBudget(
+        userId,
+        result.data
+      );
 
-      res.json(budget);
+      sendSuccess(res, budget, "Category budget updated successfully");
     } catch (error) {
       next(error);
     }
@@ -99,7 +106,7 @@ export class BudgetController {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const result = updateBudgetSchema.safeParse(req.body);
-      
+
       if (!result.success) {
         throw new BadRequestError(result.error.errors[0].message);
       }
@@ -112,7 +119,7 @@ export class BudgetController {
 
       const budget = await budgetService.update(userId, result.data);
 
-      res.json(budget);
+      sendSuccess(res, budget, "Budget updated successfully");
     } catch (error) {
       next(error);
     }
@@ -136,6 +143,3 @@ export class BudgetController {
 }
 
 export const budgetController = new BudgetController();
-
-
-

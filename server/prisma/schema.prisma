@@ -56,28 +56,14 @@ model Transaction {
 }
 
 model Budget {
-  id             String           @id @default(uuid())
-  userId         String           @unique
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  generalBudget  Decimal          @db.Decimal(10, 2)
-  categoryBudgets CategoryBudget[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generalBudget  Decimal  @db.Decimal(10, 2)
+  categoryBudgets Json    @default("{}")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([userId])
   @@map("budgets")
-}
-
-model CategoryBudget {
-  id        String   @id @default(uuid())
-  budgetId  String
-  budget    Budget   @relation(fields: [budgetId], references: [id], onDelete: Cascade)
-  category  String
-  amount    Decimal  @db.Decimal(10, 2)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([budgetId, category])
-  @@index([budgetId])
-  @@map("category_budgets")
 }
