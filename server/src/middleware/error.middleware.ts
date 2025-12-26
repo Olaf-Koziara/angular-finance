@@ -20,12 +20,14 @@ export const errorHandler = (
 
   // Handle known operational errors
   // NOTE: In some runtime setups (ts-jest/tsx) `instanceof` can fail due to module duplication.
-  // We therefore also fall back to checking by `name`.
-  if (err instanceof ValidationError || (err as any)?.name === "ValidationError") {
+  // We therefore also fall back to checking by `name` and `isOperational` for our custom errors.
+  if (err instanceof ValidationError || 
+      ((err as any)?.name === "ValidationError" && (err as any)?.isOperational === true)) {
     return sendError(res, err.message, (err as any).statusCode ?? 400, (err as any).errors);
   }
 
-  if (err instanceof AppError || (err as any)?.statusCode) {
+  if (err instanceof AppError || 
+      ((err as any)?.isOperational === true && typeof (err as any)?.statusCode === 'number')) {
     return sendError(res, err.message, (err as any).statusCode ?? 500);
   }
 
