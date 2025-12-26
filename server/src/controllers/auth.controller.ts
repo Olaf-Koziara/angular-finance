@@ -1,17 +1,19 @@
-import { Request, Response, NextFunction } from 'express';
-import { authService } from '../services/auth.service';
-import { sendSuccess } from '../utils/response';
-import { RegisterInput, LoginInput } from '../validators/auth.validator';
-import { AuthRequest } from '../types';
-import { NotFoundError, AuthenticationError } from '../utils/errors';
-import { config } from '../config';
+import { Request, Response, NextFunction } from "express";
+import { authService } from "../services/auth.service";
+import { sendSuccess } from "../utils/response";
+import { RegisterInput, LoginInput } from "../validators/auth.validator";
+import { AuthRequest } from "../types";
+import { NotFoundError, AuthenticationError } from "../utils/errors";
+import { config } from "../config";
+import { budgetService } from "../services/budget.service";
+import { TRANSACTION_CATEGORIES } from "../constants/categories.constant";
 
-const REFRESH_TOKEN_COOKIE = 'refresh_token';
+const REFRESH_TOKEN_COOKIE = "refresh_token";
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
 /**
  * Set refresh token as HttpOnly cookie with secure settings.
- * 
+ *
  * Security considerations:
  * - httpOnly: Prevents JavaScript access (XSS protection)
  * - secure: Only sent over HTTPS in production
@@ -22,9 +24,9 @@ const setRefreshTokenCookie = (res: Response, refreshToken: string): void => {
   res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, {
     httpOnly: true,
     secure: config.COOKIE_SECURE,
-    sameSite: 'strict',
+    sameSite: "strict",
     maxAge: REFRESH_TOKEN_MAX_AGE,
-    path: '/api/auth',
+    path: "/api/auth",
   });
 };
 
@@ -35,10 +37,14 @@ const clearRefreshTokenCookie = (res: Response): void => {
   res.clearCookie(REFRESH_TOKEN_COOKIE, {
     httpOnly: true,
     secure: config.COOKIE_SECURE,
-    sameSite: 'strict',
-    path: '/api/auth',
+    sameSite: "strict",
+    path: "/api/auth",
   });
 };
+const budgetCategories = TRANSACTION_CATEGORIES.reduce((acc, category) => {
+  acc[category] = 0;
+  return acc;
+}, {} as Record<string, number>);
 
 export class AuthController {
   async register(
@@ -49,22 +55,26 @@ export class AuthController {
     try {
       const data: RegisterInput = req.body;
       const result = await authService.register(data);
-
+      await budgetService.create(result.user.id, {
+        generalBudget: 0,
+        categoryBudgets: budgetCategories,
+      });
       // Set refresh token as HttpOnly cookie
       setRefreshTokenCookie(res, result.refreshToken);
 
       // Return access token in response body (not the refresh token)
-      sendSuccess(res, { user: result.user, accessToken: result.accessToken }, 'User registered successfully', 201);
+      sendSuccess(
+        res,
+        { user: result.user, accessToken: result.accessToken },
+        "User registered successfully",
+        201
+      );
     } catch (error) {
       next(error);
     }
   }
 
-  async login(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const data: LoginInput = req.body;
       const result = await authService.login(data);
@@ -73,7 +83,11 @@ export class AuthController {
       setRefreshTokenCookie(res, result.refreshToken);
 
       // Return access token in response body (not the refresh token)
-      sendSuccess(res, { user: result.user, accessToken: result.accessToken }, 'Login successful');
+      sendSuccess(
+        res,
+        { user: result.user, accessToken: result.accessToken },
+        "Login successful"
+      );
     } catch (error) {
       next(error);
     }
@@ -88,7 +102,7 @@ export class AuthController {
       const refreshToken = req.cookies?.[REFRESH_TOKEN_COOKIE];
 
       if (!refreshToken) {
-        throw new AuthenticationError('Refresh token not provided');
+        throw new AuthenticationError("Refresh token not provided");
       }
 
       const tokens = await authService.refreshAccessToken(refreshToken);
@@ -97,7 +111,11 @@ export class AuthController {
       setRefreshTokenCookie(res, tokens.refreshToken);
 
       // Return new access token in response body
-      sendSuccess(res, { accessToken: tokens.accessToken }, 'Token refreshed successfully');
+      sendSuccess(
+        res,
+        { accessToken: tokens.accessToken },
+        "Token refreshed successfully"
+      );
     } catch (error) {
       // Clear the invalid cookie
       clearRefreshTokenCookie(res);
@@ -105,11 +123,7 @@ export class AuthController {
     }
   }
 
-  async logout(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const refreshToken = req.cookies?.[REFRESH_TOKEN_COOKIE];
 
@@ -120,7 +134,7 @@ export class AuthController {
       // Always clear the cookie
       clearRefreshTokenCookie(res);
 
-      sendSuccess(res, null, 'Logged out successfully');
+      sendSuccess(res, null, "Logged out successfully");
     } catch (error) {
       // Clear cookie even on error
       clearRefreshTokenCookie(res);
@@ -137,7 +151,7 @@ export class AuthController {
       const userId = (req as AuthRequest).userId;
 
       if (!userId) {
-        throw new AuthenticationError('User not authenticated');
+        throw new AuthenticationError("User not authenticated");
       }
 
       await authService.logoutAll(userId);
@@ -145,7 +159,7 @@ export class AuthController {
       // Clear the cookie
       clearRefreshTokenCookie(res);
 
-      sendSuccess(res, null, 'All sessions logged out successfully');
+      sendSuccess(res, null, "All sessions logged out successfully");
     } catch (error) {
       next(error);
     }
@@ -160,16 +174,16 @@ export class AuthController {
       const userId = (req as AuthRequest).userId;
 
       if (!userId) {
-        throw new NotFoundError('User not found');
+        throw new NotFoundError("User not found");
       }
 
       const user = await authService.getUserById(userId);
 
       if (!user) {
-        throw new NotFoundError('User not found');
+        throw new NotFoundError("User not found");
       }
 
-      sendSuccess(res, user, 'Profile retrieved successfully');
+      sendSuccess(res, user, "Profile retrieved successfully");
     } catch (error) {
       next(error);
     }

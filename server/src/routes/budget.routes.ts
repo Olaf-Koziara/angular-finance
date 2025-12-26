@@ -15,6 +15,3 @@ router.put("/category", budgetController.updateCategoryBudget);
 router.delete("/", budgetController.delete);
 
 export default router;
-
-
-
