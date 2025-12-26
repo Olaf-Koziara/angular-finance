@@ -9,7 +9,7 @@ export interface Budget {
   id?: string;
   userId?: string;
   generalBudget: number;
-  categoryBudgets: CategoryBudget[];
+  categoryBudgets: Record<TransactionCategory, number>;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -19,4 +19,3 @@ export interface BudgetResponse {
   data: Budget;
   message?: string;
 }
-
