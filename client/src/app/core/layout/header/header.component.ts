@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, computed, inject } from '@angular/core';
 import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
@@ -8,7 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, LanguageSwitcherComponent, TranslateModule],
+  imports: [LanguageSwitcherComponent, TranslateModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })

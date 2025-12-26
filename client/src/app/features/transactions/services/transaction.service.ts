@@ -29,7 +29,7 @@ export interface PaginatedResponse<T> {
 export class TransactionService {
   private readonly http = inject(HttpClient);
   private readonly translate = inject(TranslateService);
-  private readonly apiUrl = '/api/transactions';
+  private readonly apiUrl = '/transactions';
 
   readonly loading = signal(false);
   readonly transactions = signal<Transaction[]>([]);
@@ -115,7 +115,7 @@ export class TransactionService {
       this.transactions.set([...tempTransactions, { id: '', ...payload }]);
       const transaction = await firstValueFrom(this.http.post<Transaction>(this.apiUrl, payload));
       const updatedTransactions = this.transactions().map((transactionMapItem) =>
-        transactionMapItem.id === '' ? transaction : transactionMapItem,
+        transactionMapItem.id === '' ? transaction : transactionMapItem
       );
       this.transactions.set(updatedTransactions);
     } catch {
@@ -129,10 +129,10 @@ export class TransactionService {
     const previousTransactions = [...this.transactions()];
     try {
       const transaction = await firstValueFrom(
-        this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload),
+        this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload)
       );
       this.transactions.update((items) =>
-        items.map((item) => (item.id === id ? transaction : item)),
+        items.map((item) => (item.id === id ? transaction : item))
       );
       this.refresh();
     } catch (error) {

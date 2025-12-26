@@ -1,131 +1,76 @@
-import { Component, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+
 import { TranslateModule } from '@ngx-translate/core';
 import { FinancialSummaryCardComponent } from '../components/financial-summary-card/financial-summary-card.component';
 import { TrendsSectionComponent } from '../components/trends-section/trends-section.component';
 import { BudgetChartComponent } from '../components/budget-chart/budget-chart.component';
 import { MonthlyTrendChartComponent } from '../components/monthly-trend-chart/monthly-trend-chart.component';
 import { AlertsListComponent } from '../components/alerts-list/alerts-list.component';
-import {
-  FinancialSummary,
-  TrendData,
-  BudgetCategory,
-  MonthlyData,
-  Alert,
-} from '../models/dashboard.model';
+import { DashboardService } from '../services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
     TranslateModule,
     FinancialSummaryCardComponent,
     TrendsSectionComponent,
     BudgetChartComponent,
     MonthlyTrendChartComponent,
-    AlertsListComponent,
-  ],
+    AlertsListComponent
+],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
-  financialSummary = signal<FinancialSummary>({
-    balance: 25430.5,
-    income: 8500.0,
-    expenses: 5240.3,
-    budgetUsage: 68,
-    alerts: 3,
-  });
+  private readonly dashboardService = inject(DashboardService);
 
-  trends = signal<TrendData[]>([
-    { label: 'DASHBOARD.BALANCE_CHANGE', value: 3260.2, change: 12.5 },
-    { label: 'DASHBOARD.STATISTICS.MONTHLY_AVERAGE', value: 6850.0, change: -3.2 },
-    { label: 'DASHBOARD.STATISTICS.SAVINGS_RATE', value: 38.4, change: 5.8 },
-  ]);
+  // Data signals (populated by GET /api/transactions/statistics)
+  readonly financialSummary = this.dashboardService.financialSummary;
+  readonly trends = this.dashboardService.trends;
+  readonly budgetCategories = this.dashboardService.budgetCategories;
+  readonly monthlyData = this.dashboardService.monthlyData;
+  readonly alerts = this.dashboardService.alerts;
+  readonly topCategories = this.dashboardService.topCategories;
 
-  budgetCategories = signal<BudgetCategory[]>([
-    {
-      name: 'DASHBOARD.CATEGORIES.FOOD',
-      spent: 1200,
-      budget: 1000,
-      percentage: 120,
-      color: '#f44336',
-    },
-    {
-      name: 'DASHBOARD.CATEGORIES.TRANSPORT',
-      spent: 450,
-      budget: 600,
-      percentage: 75,
-      color: '#4caf50',
-    },
-    {
-      name: 'DASHBOARD.CATEGORIES.ENTERTAINMENT',
-      spent: 820,
-      budget: 800,
-      percentage: 102.5,
-      color: '#ff9800',
-    },
-    {
-      name: 'DASHBOARD.CATEGORIES.UTILITIES',
-      spent: 380,
-      budget: 500,
-      percentage: 76,
-      color: '#4caf50',
-    },
-    {
-      name: 'DASHBOARD.CATEGORIES.HEALTHCARE',
-      spent: 290,
-      budget: 400,
-      percentage: 72.5,
-      color: '#4caf50',
-    },
-    {
-      name: 'DASHBOARD.CATEGORIES.OTHER',
-      spent: 180,
-      budget: 300,
-      percentage: 60,
-      color: '#2196f3',
-    },
-  ]);
-
-  monthlyData = signal<MonthlyData[]>([
-    { month: 'DASHBOARD.MONTHS.JAN', income: 8200, expenses: 5100 },
-    { month: 'DASHBOARD.MONTHS.FEB', income: 8300, expenses: 5300 },
-    { month: 'DASHBOARD.MONTHS.MAR', income: 8100, expenses: 4900 },
-    { month: 'DASHBOARD.MONTHS.APR', income: 8600, expenses: 5400 },
-    { month: 'DASHBOARD.MONTHS.MAY', income: 8400, expenses: 5200 },
-    { month: 'DASHBOARD.MONTHS.JUN', income: 8500, expenses: 5240 },
-  ]);
-
-  alerts = signal<Alert[]>([
-    { type: 'error', message: 'DASHBOARD.ALERTS_LIST.BUDGET_EXCEEDED', icon: 'error' },
-    { type: 'warning', message: 'DASHBOARD.ALERTS_LIST.LOW_BALANCE', icon: 'warning' },
-    { type: 'info', message: 'DASHBOARD.ALERTS_LIST.UNUSUAL_SPENDING', icon: 'info' },
-  ]);
+  // Optional UI state if you want to surface loader/error in template later
+  readonly loading = this.dashboardService.loading;
+  readonly error = this.dashboardService.error;
 
   summaryCards = computed(() => {
     const summary = this.financialSummary();
-    return [
+    const monthly = this.monthlyData();
+    const top = this.topCategories();
+    const current = monthly.at(-1);
+    const prev = monthly.at(-2);
+
+    const currentNet = current ? current.income - current.expenses : 0;
+    const prevNet = prev ? prev.income - prev.expenses : 0;
+    const balanceTrend = percentChange(currentNet, prevNet);
+    const incomeTrend = percentChange(current?.income ?? 0, prev?.income ?? 0);
+    const expenseTrend = percentChange(current?.expenses ?? 0, prev?.expenses ?? 0);
+
+    const cards = [
       {
         type: 'balance' as const,
         label: 'DASHBOARD.BALANCE',
         value: summary.balance,
-        trend: 12.5,
+        trend: round1(balanceTrend),
         icon: 'account_balance_wallet',
       },
       {
         type: 'income' as const,
         label: 'DASHBOARD.INCOME',
         value: summary.income,
-        trend: 8.2,
+        trend: round1(incomeTrend),
         icon: 'arrow_upward',
       },
       {
         type: 'expenses' as const,
         label: 'DASHBOARD.EXPENSES',
         value: summary.expenses,
-        trend: -3.2,
+        trend: round1(expenseTrend),
         icon: 'arrow_downward',
       },
       {
@@ -135,6 +80,59 @@ export class DashboardComponent {
         budgetUsage: summary.budgetUsage,
         icon: 'pie_chart',
       },
-    ];
+    ] as const;
+
+    const extras: Array<{
+      type: 'topIncome' | 'topExpense';
+      label: string;
+      detail?: string;
+      value: number;
+      icon: string;
+    }> = [];
+
+    if (top.income) {
+      extras.push({
+        type: 'topIncome',
+        label: 'DASHBOARD.STATISTICS.HIGHEST_INCOME',
+        detail: categoryToTranslationKey(top.income.category),
+        value: top.income.amount,
+        icon: 'trending_up',
+      });
+    }
+
+    if (top.expense) {
+      extras.push({
+        type: 'topExpense',
+        label: 'DASHBOARD.STATISTICS.HIGHEST_EXPENSE',
+        detail: categoryToTranslationKey(top.expense.category),
+        value: top.expense.amount,
+        icon: 'trending_down',
+      });
+    }
+
+    return [...cards, ...extras];
   });
+}
+
+function percentChange(current: number, previous: number): number {
+  if (previous === 0) {
+    if (current === 0) return 0;
+    return 100;
+  }
+  return ((current - previous) / Math.abs(previous)) * 100;
+}
+
+function round1(value: number): number {
+  return Math.round(value * 10) / 10;
+}
+
+function categoryToTranslationKey(category: string): string {
+  // Try to re-use TRANSACTIONS category translations.
+  // Falls back to the raw category string if we can't map reliably.
+  const normalized = category.trim();
+  if (!normalized) return category;
+
+  // Common server values match the enum-like strings in i18n.
+  const key = normalized.toUpperCase().replace(/\s+/g, '_');
+  return `TRANSACTIONS.CATEGORIES.${key}`;
 }

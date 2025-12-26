@@ -39,7 +39,7 @@ const USER_KEY = 'auth_user';
 export class AuthService {
   // Use HttpBackend to bypass interceptors for auth requests
   private readonly http = new HttpClient(inject(HttpBackend));
-  
+
   private readonly router = inject(Router);
   private readonly storage = getSessionStorage();
 
@@ -53,21 +53,23 @@ export class AuthService {
   private refreshSubject = new BehaviorSubject<boolean>(false);
 
   login(credentials: LoginPayload): Observable<AuthResponse> {
-    return this.http.post<{ data: AuthResponse }>(`${environment.API_ORIGIN}/api/auth/login`, credentials, {
-      withCredentials: true,
-    }).pipe(
-      tap((response) => this.setSession(response.data)),
-      map((response) => response.data),
-      catchError((error) => {
-        this.clearSession();
-        return throwError(() => error);
+    return this.http
+      .post<{ data: AuthResponse }>(`${environment.API_URL}/auth/login`, credentials, {
+        withCredentials: true,
       })
-    );
+      .pipe(
+        tap((response) => this.setSession(response.data)),
+        map((response) => response.data),
+        catchError((error) => {
+          this.clearSession();
+          return throwError(() => error);
+        })
+      );
   }
 
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http
-      .post<{ data: AuthResponse }>(`${environment.API_ORIGIN}/api/auth/register`, payload, {
+      .post<{ data: AuthResponse }>(`${environment.API_URL}/auth/register`, payload, {
         withCredentials: true, // Include cookies for refresh token
       })
       .pipe(
@@ -80,8 +82,8 @@ export class AuthService {
   refreshToken(): Observable<RefreshResponse> {
     if (this.refreshInProgress) {
       // Return observable that waits for the refresh to complete
-      return new Observable(subscriber => {
-        const subscription = this.refreshSubject.subscribe(completed => {
+      return new Observable((subscriber) => {
+        const subscription = this.refreshSubject.subscribe((completed) => {
           if (completed) {
             const token = this.getToken();
             if (token) {
@@ -99,45 +101,57 @@ export class AuthService {
     this.refreshInProgress = true;
     this.refreshSubject.next(false);
 
-    return this.http.post<{ data: RefreshResponse }>(`${environment.API_ORIGIN}/api/auth/refresh`, {}, {
-      withCredentials: true,
-    }).pipe(
-      tap((response) => {
-        if (this.storage && response.data.accessToken) {
-          this.storage.setItem(ACCESS_TOKEN_KEY, response.data.accessToken);
+    return this.http
+      .post<{ data: RefreshResponse }>(
+        `${environment.API_URL}/auth/refresh`,
+        {},
+        {
+          withCredentials: true,
         }
-        this.refreshInProgress = false;
-        this.refreshSubject.next(true);
-      }),
-      map((response) => response.data),
-      catchError((error) => {
-        this.refreshInProgress = false;
-        this.refreshSubject.next(true);
-        this.logout();
-        return throwError(() => error);
-      })
-    );
+      )
+      .pipe(
+        tap((response) => {
+          if (this.storage && response.data.accessToken) {
+            this.storage.setItem(ACCESS_TOKEN_KEY, response.data.accessToken);
+          }
+          this.refreshInProgress = false;
+          this.refreshSubject.next(true);
+        }),
+        map((response) => response.data),
+        catchError((error) => {
+          this.refreshInProgress = false;
+          this.refreshSubject.next(true);
+          this.logout();
+          return throwError(() => error);
+        })
+      );
   }
 
   logout(redirectToLogin: boolean = true): void {
     // Call logout endpoint to clear refresh token cookie
-    this.http.post(`${environment.API_ORIGIN}/api/auth/logout`, {}, {
-      withCredentials: true,
-    }).subscribe({
-      complete: () => {
-        this.clearSession();
-        if (redirectToLogin) {
-          this.router.navigate(['/login']);
+    this.http
+      .post(
+        `${environment.API_URL}/auth/logout`,
+        {},
+        {
+          withCredentials: true,
         }
-      },
-      error: () => {
-        // Clear session even on error
-        this.clearSession();
-        if (redirectToLogin) {
-          this.router.navigate(['/login']);
-        }
-      }
-    });
+      )
+      .subscribe({
+        complete: () => {
+          this.clearSession();
+          if (redirectToLogin) {
+            this.router.navigate(['/login']);
+          }
+        },
+        error: () => {
+          // Clear session even on error
+          this.clearSession();
+          if (redirectToLogin) {
+            this.router.navigate(['/login']);
+          }
+        },
+      });
   }
 
   getToken(): string | null {

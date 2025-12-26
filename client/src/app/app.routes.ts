@@ -24,6 +24,16 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'budget',
+        loadComponent: () =>
+          import('./features/budget/pages/budget-page.component').then(
+            (m) => m.BudgetPageComponent
+          ),
+        data: {
+          pageTranslationName: 'BUDGET',
+        },
+      },
+      {
         path: 'transactions',
         loadComponent: () =>
           import('./features/transactions/pages/transactions-page.component').then(
