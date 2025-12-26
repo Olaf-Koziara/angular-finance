@@ -6,7 +6,6 @@ import { TrendsSectionComponent } from '../components/trends-section/trends-sect
 import { BudgetChartComponent } from '../components/budget-chart/budget-chart.component';
 import { MonthlyTrendChartComponent } from '../components/monthly-trend-chart/monthly-trend-chart.component';
 import { AlertsListComponent } from '../components/alerts-list/alerts-list.component';
-import { TrendData } from '../models/dashboard.model';
 import { DashboardService } from '../services/dashboard.service';
 
 @Component({

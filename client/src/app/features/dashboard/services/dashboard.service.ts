@@ -24,7 +24,7 @@ export interface DashboardStatisticsResponse {
 export class DashboardService {
   private readonly http = inject(HttpClient);
   private readonly translate = inject(TranslateService);
-  private readonly apiUrl = '/api/transactions/statistics';
+  private readonly apiUrl = '/transactions/statistics';
 
   readonly months = signal(6);
   readonly loading = signal(false);
@@ -43,6 +43,8 @@ export class DashboardService {
   readonly alerts = signal<Alert[]>([]);
   readonly topCategories = signal<TopCategories>({ expense: null, income: null });
 
+  // Effect to fetch dashboard data when months signal changes
+  // This is safe because the service is providedIn: 'root' (singleton lifecycle)
   private readonly fetchEffect = effect((onCleanup) => {
     const months = this.months();
 

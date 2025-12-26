@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { Budget, BudgetResponse } from '../models/budget.model';
 
@@ -14,7 +14,6 @@ export class BudgetService {
 
   getBudget(): Observable<Budget> {
     return this.http.get<BudgetResponse>(this.apiUrl).pipe(
-      tap((res) => console.log(res)),
       map((response) => response.data),
       catchError((error) => {
         console.error('Error fetching budget:', error);

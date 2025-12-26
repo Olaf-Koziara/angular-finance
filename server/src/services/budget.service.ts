@@ -31,7 +31,6 @@ export class BudgetService {
     const existingBudget = await prisma.budget.findUnique({
       where: { userId },
     });
-    console.log(data);
 
     if (existingBudget) {
       throw new Error("Budget already exists for this user");
