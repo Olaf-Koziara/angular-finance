@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -84,7 +83,7 @@ export class BudgetPageComponent {
         this.isLoading.set(false);
       },
       error: (err) => {
-        if (err.status != '404') {
+        if (err.status !== 404) {
           console.error('Failed to load budget:', err);
           this.error.set('Failed to load budget data');
         }

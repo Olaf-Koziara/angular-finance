@@ -80,7 +80,7 @@
               <span matPrefix>$&nbsp;</span>
             </mat-form-field>
           </div>
-          } @if(form().dirty()&& form().valid()){
+          } @if (form().dirty() && form().valid()) {
           <button class="save-button" mat-raised-button (click)="saveBudget()">
             <mat-icon>save</mat-icon>
             {{ 'BUDGET.SAVE' | translate }}

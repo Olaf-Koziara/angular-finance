@@ -6,7 +6,6 @@ const app = createApp();
 
 describe('Budget Endpoints', () => {
   let authToken: string;
-  let userId: string;
 
   beforeAll(async () => {
     await prisma.budget.deleteMany({});
@@ -24,7 +23,6 @@ describe('Budget Endpoints', () => {
       });
 
     authToken = registerResponse.body.data.accessToken;
-    userId = registerResponse.body.data.user.id;
   });
 
   afterAll(async () => {
@@ -240,7 +238,7 @@ describe('Budget Endpoints', () => {
         .expect(204);
 
       // Verify budget is deleted
-      const response = await request(app)
+      await request(app)
         .get('/api/budgets')
         .set('Authorization', `Bearer ${authToken}`)
         .expect(404);
