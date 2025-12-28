@@ -1,5 +1,9 @@
 import { Alert, BudgetCategory } from "./types";
 
+// Alert threshold constants
+const LOW_BALANCE_THRESHOLD = 1000;
+const UNUSUAL_SPENDING_THRESHOLD = 1.5;
+
 /**
  * Builds alerts based on budget categories, balance, and spending patterns.
  */
@@ -56,7 +60,7 @@ export function buildAlerts(
   }
 
   // Low balance warning
-  if (balance < 1000) {
+  if (balance < LOW_BALANCE_THRESHOLD) {
     alerts.push({
       type: "warning",
       message: "DASHBOARD.ALERTS_LIST.LOW_BALANCE",
@@ -65,7 +69,7 @@ export function buildAlerts(
   }
 
   // Unusual spending pattern
-  if (entertainmentAvg > 0 && entertainmentSpent > entertainmentAvg * 1.5) {
+  if (entertainmentAvg > 0 && entertainmentSpent > entertainmentAvg * UNUSUAL_SPENDING_THRESHOLD) {
     alerts.push({
       type: "info",
       message: "DASHBOARD.ALERTS_LIST.UNUSUAL_SPENDING",

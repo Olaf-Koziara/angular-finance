@@ -99,6 +99,30 @@ describe('Budget Endpoints', () => {
         .send(budgetData)
         .expect(500);
     });
+
+    it('should fail to create budget when category budgets exceed general budget', async () => {
+      // First delete the existing budget to test creation
+      await prisma.budget.deleteMany({
+        where: { userId: (await prisma.user.findUnique({ where: { email: 'budget-test@example.com' } }))!.id }
+      });
+
+      const budgetData = {
+        generalBudget: 2000,
+        categoryBudgets: {
+          Food: 1000,
+          Transport: 500,
+          Housing: 1500, // Total: 3000, exceeds 2000
+        },
+      };
+
+      const response = await request(app)
+        .post('/api/budgets')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(budgetData)
+        .expect(400);
+
+      expect(response.body.message).toContain('cannot exceed general budget');
+    });
   });
 
   describe('GET /api/budgets', () => {
@@ -149,6 +173,35 @@ describe('Budget Endpoints', () => {
         .send({ amount: 7000 })
         .expect(401);
     });
+
+    it('should fail when new general budget is less than existing category budgets', async () => {
+      // First, create a budget with category budgets
+      await prisma.budget.deleteMany({
+        where: { userId: (await prisma.user.findUnique({ where: { email: 'budget-test@example.com' } }))!.id }
+      });
+
+      await request(app)
+        .post('/api/budgets')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          generalBudget: 5000,
+          categoryBudgets: {
+            Food: 1000,
+            Transport: 500,
+            Housing: 1500, // Total: 3000
+          },
+        })
+        .expect(201);
+
+      // Try to update general budget to less than category budgets sum
+      const response = await request(app)
+        .put('/api/budgets/general')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ amount: 2000 }) // Less than 3000
+        .expect(400);
+
+      expect(response.body.message).toContain('cannot exceed general budget');
+    });
   });
 
   describe('PUT /api/budgets/category', () => {
@@ -186,6 +239,34 @@ describe('Budget Endpoints', () => {
         .put('/api/budgets/category')
         .send({ category: 'Food', amount: 800 })
         .expect(401);
+    });
+
+    it('should fail when updated category budget causes sum to exceed general budget', async () => {
+      // First, ensure we have a budget with known state
+      await prisma.budget.deleteMany({
+        where: { userId: (await prisma.user.findUnique({ where: { email: 'budget-test@example.com' } }))!.id }
+      });
+
+      await request(app)
+        .post('/api/budgets')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          generalBudget: 3000,
+          categoryBudgets: {
+            Food: 1000,
+            Transport: 500,
+          },
+        })
+        .expect(201);
+
+      // Try to update a category to cause sum to exceed general budget
+      const response = await request(app)
+        .put('/api/budgets/category')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ category: 'Housing', amount: 2000 }) // Total would be 3500, exceeds 3000
+        .expect(400);
+
+      expect(response.body.message).toContain('cannot exceed general budget');
     });
   });
 
@@ -227,6 +308,59 @@ describe('Budget Endpoints', () => {
         .put('/api/budgets')
         .send({ generalBudget: 9000 })
         .expect(401);
+    });
+
+    it('should fail when both general and category budgets are updated with invalid values', async () => {
+      const updateData = {
+        generalBudget: 2000,
+        categoryBudgets: {
+          Food: 1000,
+          Transport: 800,
+          Housing: 1500, // Total: 3300, exceeds 2000
+        },
+      };
+
+      const response = await request(app)
+        .put('/api/budgets')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(updateData)
+        .expect(400);
+
+      expect(response.body.message).toContain('cannot exceed general budget');
+    });
+
+    it('should fail when only category budgets are updated to exceed existing general budget', async () => {
+      // First, ensure we have a budget with known state
+      await prisma.budget.deleteMany({
+        where: { userId: (await prisma.user.findUnique({ where: { email: 'budget-test@example.com' } }))!.id }
+      });
+
+      await request(app)
+        .post('/api/budgets')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          generalBudget: 3000,
+          categoryBudgets: {
+            Food: 500,
+          },
+        })
+        .expect(201);
+
+      const updateData = {
+        categoryBudgets: {
+          Food: 1000,
+          Transport: 1000,
+          Housing: 1500, // Total: 3500, exceeds 3000
+        },
+      };
+
+      const response = await request(app)
+        .put('/api/budgets')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(updateData)
+        .expect(400);
+
+      expect(response.body.message).toContain('cannot exceed general budget');
     });
   });
 
