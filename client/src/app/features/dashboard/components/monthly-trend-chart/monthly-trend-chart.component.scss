@@ -58,6 +58,7 @@
     align-items: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    height: 100%;
 
     &:hover {
       transform: translateY(-8px);
@@ -173,4 +174,3 @@
     }
   }
 }
-
