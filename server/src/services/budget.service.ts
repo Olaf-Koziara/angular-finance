@@ -7,11 +7,11 @@ import {
   UpdateBudgetInput,
 } from "../validators/budget.validator";
 import { NotFoundError } from "../utils/errors";
-
-type CategoryBudgetsRecord = Record<string, number>;
+import { Budget, CategoryBudgetsRecord } from "../types/budget";
+import { validateCategoryBudgetsAgainstGeneral } from "../utils/budget.utils";
 
 export class BudgetService {
-  async getBudget(userId: string) {
+  async getBudget(userId: string): Promise<Budget | null> {
     const budget = await prisma.budget.findUnique({
       where: { userId },
     });
@@ -36,11 +36,15 @@ export class BudgetService {
       throw new Error("Budget already exists for this user");
     }
 
+    // Validate category budgets against general budget
+    const categoryBudgets = data.categoryBudgets || {};
+    validateCategoryBudgetsAgainstGeneral(categoryBudgets, data.generalBudget);
+
     const budget = await prisma.budget.create({
       data: {
         userId,
         generalBudget: new Prisma.Decimal(data.generalBudget),
-        categoryBudgets: (data.categoryBudgets || {}) as Prisma.InputJsonValue,
+        categoryBudgets: categoryBudgets as Prisma.InputJsonValue,
       },
     });
 
@@ -59,6 +63,10 @@ export class BudgetService {
     if (!existingBudget) {
       throw new NotFoundError("Budget not found");
     }
+
+    const currentCategoryBudgets =
+      (existingBudget.categoryBudgets as CategoryBudgetsRecord) || {};
+    validateCategoryBudgetsAgainstGeneral(currentCategoryBudgets, data.amount);
 
     const budget = await prisma.budget.update({
       where: { userId },
@@ -90,6 +98,13 @@ export class BudgetService {
       [data.category]: data.amount,
     };
 
+    // Validate updated category budgets against general budget
+    const generalBudget = existingBudget.generalBudget.toNumber();
+    validateCategoryBudgetsAgainstGeneral(
+      updatedCategoryBudgets,
+      generalBudget
+    );
+
     const budget = await prisma.budget.update({
       where: { userId },
       data: {
@@ -111,6 +126,26 @@ export class BudgetService {
 
     if (!existingBudget) {
       throw new NotFoundError("Budget not found");
+    }
+
+    // Determine the general budget to use for validation
+    const generalBudget =
+      data.generalBudget !== undefined
+        ? data.generalBudget
+        : existingBudget.generalBudget.toNumber();
+
+    // Determine the category budgets to use for validation
+    const categoryBudgets =
+      data.categoryBudgets !== undefined
+        ? (data.categoryBudgets as CategoryBudgetsRecord)
+        : (existingBudget.categoryBudgets as CategoryBudgetsRecord) || {};
+
+    // Validate if both are being updated or if category budgets are being updated
+    if (
+      data.categoryBudgets !== undefined ||
+      data.generalBudget !== undefined
+    ) {
+      validateCategoryBudgetsAgainstGeneral(categoryBudgets, generalBudget);
     }
 
     const updateData: {
