@@ -22,6 +22,9 @@ export const routes: Routes = [
           import('./features/dashboard/pages/dashboard.component').then(
             (m) => m.DashboardComponent
           ),
+        data: {
+          pageTranslationName: 'DASHBOARD',
+        },
       },
       {
         path: 'budget',

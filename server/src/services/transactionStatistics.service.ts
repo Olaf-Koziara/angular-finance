@@ -1,168 +1,24 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../config/database";
-
-type TrendData = {
-  label: string;
-  value: number;
-  change: number;
-};
-
-type FinancialSummary = {
-  balance: number;
-  income: number;
-  expenses: number;
-  budgetUsage: number;
-  alerts: number;
-};
-
-type BudgetCategory = {
-  name: string;
-  spent: number;
-  budget: number;
-  percentage: number;
-  color: string;
-};
-
-type MonthlyData = {
-  month: string;
-  income: number;
-  expenses: number;
-};
-
-type Alert = {
-  type: "warning" | "error" | "info";
-  message: string;
-  icon: string;
-};
-
-type TopCategory = {
-  category: string;
-  amount: number;
-};
-
-export type TransactionStatisticsResponse = {
-  financialSummary: FinancialSummary;
-  trends: TrendData[];
-  budgetCategories: BudgetCategory[];
-  monthlyData: MonthlyData[];
-  alerts: Alert[];
-  topCategories: {
-    expense: TopCategory | null;
-    income: TopCategory | null;
-  };
-};
-
-type BudgetConfig = {
-  key: string;
-  categoryMatchers: string[];
-  budget: number;
-  color: string;
-  translationKey: string;
-};
-
-const DASHBOARD_BUDGETS: BudgetConfig[] = [
-  {
-    key: "Food",
-    categoryMatchers: ["Food"],
-    budget: 1000,
-    color: "#f44336",
-    translationKey: "DASHBOARD.CATEGORIES.FOOD",
-  },
-  {
-    key: "Transport",
-    categoryMatchers: ["Transport", "Transportation"],
-    budget: 600,
-    color: "#4caf50",
-    translationKey: "DASHBOARD.CATEGORIES.TRANSPORT",
-  },
-  {
-    key: "Entertainment",
-    categoryMatchers: ["Entertainment"],
-    budget: 800,
-    color: "#ff9800",
-    translationKey: "DASHBOARD.CATEGORIES.ENTERTAINMENT",
-  },
-  {
-    key: "Utilities",
-    categoryMatchers: ["Utilities"],
-    budget: 500,
-    color: "#4caf50",
-    translationKey: "DASHBOARD.CATEGORIES.UTILITIES",
-  },
-  {
-    key: "Healthcare",
-    categoryMatchers: ["Health", "Healthcare"],
-    budget: 400,
-    color: "#4caf50",
-    translationKey: "DASHBOARD.CATEGORIES.HEALTHCARE",
-  },
-  {
-    key: "Other",
-    categoryMatchers: ["Other", "Housing", "Education"],
-    budget: 300,
-    color: "#2196f3",
-    translationKey: "DASHBOARD.CATEGORIES.OTHER",
-  },
-];
-
-const MONTH_KEYS = [
-  "JAN",
-  "FEB",
-  "MAR",
-  "APR",
-  "MAY",
-  "JUN",
-  "JUL",
-  "AUG",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DEC",
-] as const;
-
-function startOfMonth(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0);
-}
-
-function addMonths(date: Date, delta: number): Date {
-  return new Date(date.getFullYear(), date.getMonth() + delta, 1, 0, 0, 0, 0);
-}
-
-function decimalToNumber(value: Prisma.Decimal | null | undefined): number {
-  if (!value) return 0;
-  return Number(value.toString());
-}
-
-function percentChange(current: number, previous: number): number {
-  if (previous === 0) {
-    if (current === 0) return 0;
-    return 100;
-  }
-  return ((current - previous) / Math.abs(previous)) * 100;
-}
-
-type MonthBucket = {
-  monthStart: Date;
-  income: number;
-  expenses: number;
-};
-
-function buildMonthBuckets(months: number, now: Date): MonthBucket[] {
-  const start = startOfMonth(addMonths(now, -(months - 1)));
-  const buckets: MonthBucket[] = [];
-  for (let i = 0; i < months; i++) {
-    buckets.push({
-      monthStart: addMonths(start, i),
-      income: 0,
-      expenses: 0,
-    });
-  }
-  return buckets;
-}
-
-function monthKey(date: Date): string {
-  return `DASHBOARD.MONTHS.${MONTH_KEYS[date.getMonth()]}`;
-}
+import { BudgetService } from "./budget.service";
+import {
+  TransactionStatisticsResponse,
+  FinancialSummary,
+  BudgetCategory,
+  MonthlyData,
+  TopCategory,
+} from "./transactionStatistics/types";
+import { DASHBOARD_BUDGETS } from "../constants/dashboard-budgets.config";
+import { mapBudgetsToConfig } from "./transactionStatistics/budget-mapper";
+import { buildAlerts } from "./transactionStatistics/alerts.builder";
+import { buildTrends } from "./transactionStatistics/trends.builder";
+import {
+  startOfMonth,
+  addMonths,
+  buildMonthBuckets,
+  monthKey,
+} from "../utils/date.utils";
+import { decimalToNumber, round2 } from "../utils/number.utils";
 
 export class TransactionStatisticsService {
   async getDashboardStatistics(
@@ -175,6 +31,11 @@ export class TransactionStatisticsService {
     const monthsBuckets = buildMonthBuckets(months, now);
     const rangeStart = monthsBuckets[0]?.monthStart ?? startOfMonth(now);
     const rangeEnd = addMonths(startOfMonth(now), 1);
+
+    // Fetch budget and populate config with real values
+    const budgetService = new BudgetService();
+    const budget = await budgetService.getBudget(userId);
+    const populatedConfigs = mapBudgetsToConfig(budget, DASHBOARD_BUDGETS);
 
     const [incomeAgg, expenseAgg, recentTransactions] = await Promise.all([
       prisma.transaction.aggregate({
@@ -224,10 +85,10 @@ export class TransactionStatisticsService {
     }));
 
     const currentMonth = monthsBuckets[monthsBuckets.length - 1]!;
-    const prevMonth = monthsBuckets.length >= 2 ? monthsBuckets[monthsBuckets.length - 2]! : null;
-
-    const currentNet = currentMonth.income - currentMonth.expenses;
-    const prevNet = prevMonth ? prevMonth.income - prevMonth.expenses : 0;
+    const prevMonth =
+      monthsBuckets.length >= 2
+        ? monthsBuckets[monthsBuckets.length - 2]!
+        : null;
 
     // Budget categories for current month expenses (by known categories)
     const nextMonthStart = addMonths(currentMonthStart, 1);
@@ -282,94 +143,71 @@ export class TransactionStatisticsService {
           }
         : null;
 
+    // Map expenses to budget categories
     const spentByKey = new Map<string, number>();
     for (const item of currentMonthExpensesByCategory) {
       const amt = decimalToNumber(item.amount);
-      const cfg = DASHBOARD_BUDGETS.find((c) =>
-        c.categoryMatchers.some((m) => m.toLowerCase() === item.category.toLowerCase())
+      const cfg = populatedConfigs.find((c) =>
+        c.categoryMatchers.some(
+          (m) => m.toLowerCase() === item.category.toLowerCase()
+        )
       );
       const key = cfg?.key ?? "Other";
       spentByKey.set(key, (spentByKey.get(key) ?? 0) + amt);
     }
 
-    const budgetCategories: BudgetCategory[] = DASHBOARD_BUDGETS.map((cfg) => {
+    // Build budget categories with real budgets
+    const budgetCategories: BudgetCategory[] = populatedConfigs.map((cfg) => {
       const spent = spentByKey.get(cfg.key) ?? 0;
-      const percentage = cfg.budget > 0 ? (spent / cfg.budget) * 100 : 0;
+      const budgetAmount = cfg.budget ?? 0;
+      const percentage = budgetAmount > 0 ? (spent / budgetAmount) * 100 : 0;
       return {
         name: cfg.translationKey,
         spent: round2(spent),
-        budget: round2(cfg.budget),
+        budget: round2(budgetAmount),
         percentage: round2(percentage),
         color: cfg.color,
       };
     });
 
-    const totalBudget = DASHBOARD_BUDGETS.reduce((acc, c) => acc + c.budget, 0);
+    // Use generalBudget for overall budget usage calculation
     const totalSpent = budgetCategories.reduce((acc, c) => acc + c.spent, 0);
-    const budgetUsage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+    const generalBudget = budget?.generalBudget ?? 0;
+    const budgetUsage =
+      generalBudget > 0 ? (totalSpent / generalBudget) * 100 : 0;
+
+    // Calculate enhanced budget metrics
+    const totalCategoryBudgets = budgetCategories.reduce(
+      (acc, c) => acc + c.budget,
+      0
+    );
+    const unallocatedBudget =
+      generalBudget > 0 ? generalBudget - totalCategoryBudgets : undefined;
+    const categoryBudgetUsage =
+      totalCategoryBudgets > 0
+        ? (totalSpent / totalCategoryBudgets) * 100
+        : undefined;
 
     const allTimeIncome = decimalToNumber(incomeAgg._sum.amount);
     const allTimeExpenses = decimalToNumber(expenseAgg._sum.amount);
     const balance = allTimeIncome - allTimeExpenses;
 
-    // Alerts
-    const alerts: Alert[] = [];
-    const foodCategory = budgetCategories.find((c) => c.name === "DASHBOARD.CATEGORIES.FOOD");
-    if ((foodCategory?.percentage ?? 0) > 100) {
-      alerts.push({
-        type: "error",
-        message: "DASHBOARD.ALERTS_LIST.BUDGET_EXCEEDED",
-        icon: "error",
-      });
-    }
-    if (balance < 1000) {
-      alerts.push({
-        type: "warning",
-        message: "DASHBOARD.ALERTS_LIST.LOW_BALANCE",
-        icon: "warning",
-      });
-    }
+    // Build alerts
     const entertainmentSpent = spentByKey.get("Entertainment") ?? 0;
     const entertainmentAvg = averageEntertainmentExpense(recentTransactions);
-    if (entertainmentAvg > 0 && entertainmentSpent > entertainmentAvg * 1.5) {
-      alerts.push({
-        type: "info",
-        message: "DASHBOARD.ALERTS_LIST.UNUSUAL_SPENDING",
-        icon: "info",
-      });
-    }
+    const alerts = buildAlerts(
+      budgetCategories,
+      balance,
+      entertainmentSpent,
+      entertainmentAvg,
+      unallocatedBudget,
+      totalCategoryBudgets,
+      generalBudget,
+      totalSpent
+    );
 
-    const savingsRate =
-      currentMonth.income > 0 ? ((currentMonth.income - currentMonth.expenses) / currentMonth.income) * 100 : 0;
-    const prevSavingsRate =
-      prevMonth && prevMonth.income > 0
-        ? ((prevMonth.income - prevMonth.expenses) / prevMonth.income) * 100
-        : 0;
-
-    const avgMonthlyExpenses =
-      monthsBuckets.length > 0
-        ? monthsBuckets.reduce((acc, b) => acc + b.expenses, 0) / monthsBuckets.length
-        : 0;
-
-    const trends: TrendData[] = [
-      {
-        label: "DASHBOARD.BALANCE_CHANGE",
-        value: round2(currentNet),
-        change: round2(percentChange(currentNet, prevNet)),
-      },
-      {
-        label: "DASHBOARD.STATISTICS.MONTHLY_AVERAGE",
-        value: round2(avgMonthlyExpenses),
-        change: round2(
-          percentChange(currentMonth.expenses, prevMonth ? prevMonth.expenses : 0)
-        ),
-      },
-      {
-        label: "DASHBOARD.STATISTICS.SAVINGS_RATE",
-        value: round2(savingsRate),
-        change: round2(percentChange(savingsRate, prevSavingsRate)),
-      },
-    ];
+    // Build trends
+    const trends = buildTrends(currentMonth, prevMonth, monthsBuckets);
 
     const financialSummary: FinancialSummary = {
       balance: round2(balance),
@@ -377,6 +215,14 @@ export class TransactionStatisticsService {
       expenses: round2(currentMonth.expenses),
       budgetUsage: round2(budgetUsage),
       alerts: alerts.length,
+      categoryBudgetUsage:
+        categoryBudgetUsage !== undefined
+          ? round2(categoryBudgetUsage)
+          : undefined,
+      unallocatedBudget:
+        unallocatedBudget !== undefined ? round2(unallocatedBudget) : undefined,
+      totalCategoryBudgets:
+        totalCategoryBudgets > 0 ? round2(totalCategoryBudgets) : undefined,
     };
 
     return {
@@ -393,18 +239,22 @@ export class TransactionStatisticsService {
   }
 }
 
-function round2(value: number): number {
-  return Math.round(value * 100) / 100;
-}
-
+/**
+ * Computes average monthly entertainment expense for the last 3 full months
+ * (excluding current month).
+ */
 function averageEntertainmentExpense(
-  recentTransactions: Array<{ amount: Prisma.Decimal; type: string; category: string; date: Date }>
+  recentTransactions: Array<{
+    amount: Prisma.Decimal;
+    type: string;
+    category: string;
+    date: Date;
+  }>
 ): number {
   const now = new Date();
   const currentMonthStart = startOfMonth(now);
   const threeMonthsStart = startOfMonth(addMonths(now, -3));
 
-  // Compute average monthly entertainment expense for the last 3 full months (excluding current month)
   const byMonth = new Map<string, number>();
   for (const tx of recentTransactions) {
     if (tx.type !== "expense") continue;
@@ -423,5 +273,3 @@ function averageEntertainmentExpense(
 }
 
 export const transactionStatisticsService = new TransactionStatisticsService();
-
-
