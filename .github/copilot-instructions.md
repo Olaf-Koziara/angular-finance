@@ -80,7 +80,7 @@ client/src/app/
 4. **Guards**: Use functional guards (`CanActivateFn`) over class-based guards
 5. **Interceptors**: Use functional interceptors for HTTP middleware
 6. **Routing**: Define clear route structures with proper guards
-7. **i18n**: Use `@ngx-translate` for internationalization
+7. **i18n**: This project uses `@ngx-translate` for internationalization
 8. **Forms**: Use reactive forms with proper validation
 9. **Accessibility**: Follow WCAG guidelines for accessible components
 10. **Testing**: Write unit tests for components, services, and guards using Jasmine/Karma
