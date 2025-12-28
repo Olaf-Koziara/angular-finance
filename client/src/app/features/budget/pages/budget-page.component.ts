@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -16,8 +17,10 @@ import { BudgetService } from '../services/budget.service';
 import { Budget } from '../models/budget.model';
 import { TRANSACTION_CATEGORIES } from '../../transactions/constants/transaction-categories.constant';
 import { form, Field, min, required, validate } from '@angular/forms/signals';
-import { MatAnchor } from '@angular/material/button';
+import { MatAnchor, MatIconButton } from '@angular/material/button';
 import { numericValidator } from '../../../shared/utils/validators';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-budget-page',
   standalone: true,
@@ -38,6 +41,7 @@ import { numericValidator } from '../../../shared/utils/validators';
 })
 export class BudgetPageComponent {
   private readonly budgetService = inject(BudgetService);
+  private readonly _snackBar = inject(MatSnackBar);
   readonly budget = signal<Budget>({
     generalBudget: 0,
     categoryBudgets: TRANSACTION_CATEGORIES.reduce(
@@ -71,6 +75,13 @@ export class BudgetPageComponent {
 
   constructor() {
     this.loadBudget();
+    effect(() => {
+      const message = this.error();
+      if (message) {
+        this._snackBar.open(message, 'close', { panelClass: 'mat-mdc-snack-bar--danger' });
+        this.error.set(null);
+      }
+    });
   }
 
   private loadBudget(): void {
@@ -83,7 +94,7 @@ export class BudgetPageComponent {
         this.isLoading.set(false);
       },
       error: (err) => {
-        if (err.status !== 404) {
+        if (err.status != '404') {
           console.error('Failed to load budget:', err);
           this.error.set('Failed to load budget data');
         }
@@ -125,6 +136,7 @@ export class BudgetPageComponent {
   saveBudget(): void {
     this.budgetService.updateBudget(this.budget()).subscribe({
       next: (savedBudget) => this.budget.set(savedBudget),
+      error: (err: HttpErrorResponse) => this.error.set(err.error.message),
       complete: () => {
         this.form().reset();
       },

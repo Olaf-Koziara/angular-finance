@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -45,7 +45,7 @@ export class BudgetService {
   updateBudget(budget: Budget): Observable<Budget> {
     return this.http.put<BudgetResponse>(this.apiUrl, budget).pipe(
       map((response) => response.data),
-      catchError((error) => {
+      catchError((error: HttpErrorResponse) => {
         console.error('Error updating budget:', error);
         throw error;
       })

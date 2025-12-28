@@ -14,11 +14,7 @@
       <div class="loading-state">
         <p>{{ 'BUDGET.LOADING' | translate }}</p>
       </div>
-      } @else if (error()) {
-      <div class="error-state">
-        <mat-icon>error</mat-icon>
-        <p>{{ error() }}</p>
-      </div>
+
       } @else {
       <div class="flex-container">
         <section class="budget-section">
