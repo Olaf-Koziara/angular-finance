@@ -11,7 +11,8 @@
     "test:watch": "jest --watch",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "seed:transactions": "tsx src/scripts/seed-transactions.ts"
   },
   "keywords": [
     "express",
