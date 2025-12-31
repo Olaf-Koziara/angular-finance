@@ -12,6 +12,12 @@ npm-debug.log
 yarn-error.log
 node_modules
 
+# Client
+client/dist
+client/.env
+client/coverage
+client/src/environments
+
 # Server
 server/dist
 server/.env
