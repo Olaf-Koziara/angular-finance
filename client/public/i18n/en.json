@@ -128,5 +128,11 @@
       "UPDATE_FAILED": "Failed to update transaction",
       "DELETE_FAILED": "Failed to delete transaction"
     }
+  },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "VISUAL": {
+      "BACKGROUND_SELECT": "Background"
+    }
   }
 }
