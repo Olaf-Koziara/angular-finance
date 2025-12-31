@@ -1,0 +1,9 @@
+<mat-form-field>
+  <mat-label>Currency</mat-label>
+  <input type="text" matInput [matAutocomplete]="auto" [formControl]="currencyControl" />
+  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+    @for (currency of filteredCurrencies(); track currency.code) {
+    <mat-option [value]="currency.code"> ({{ currency.code }}) {{ currency.name }} </mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>

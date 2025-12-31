@@ -1,0 +1,15 @@
+{{ 'SETTINGS.VISUAL.BACKGROUND_SELECT' | translate }}
+<button
+  matButton=""
+  [matMenuTriggerFor]="backgroundMenu"
+  [ngStyle]="{ background: selectedBackground() }"
+></button>
+<mat-menu #backgroundMenu="matMenu">
+  @for(background of backgrounds;track background ){
+  <div
+    class="background-item"
+    (click)="updateSelectedBackground(background)"
+    [ngStyle]="{ background: background }"
+  ></div>
+  }
+</mat-menu>
