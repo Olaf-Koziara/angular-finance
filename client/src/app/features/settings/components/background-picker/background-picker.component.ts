@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, model, signal } from '@angular/core';
 import { backgrounds } from '../../../../shared/constants/backgrounds.constants';
 import { MatAnchor } from '@angular/material/button';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
@@ -12,10 +12,9 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrl: './background-picker.component.scss',
 })
 export class BackgroundPicker {
-  readonly settingService = inject(SettingsService);
   readonly backgrounds = backgrounds;
-  readonly selectedBackground = this.settingService.background;
+  selectedBackground = model<string>();
   updateSelectedBackground(background: string) {
-    this.settingService.updateSetting('background', background);
+    this.selectedBackground.set(background);
   }
 }

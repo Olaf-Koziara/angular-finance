@@ -1,5 +1,33 @@
-<mat-card class="settings-card">
-  <mat-card-content>
-    <app-visual-settings></app-visual-settings>
-  </mat-card-content>
-</mat-card>
+<div class="settings-container mx-auto p-6 max-w-4xl">
+
+  <mat-card>
+
+
+    <div class="grid gap-6 md:grid-cols-2 p-3">
+
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-blue-50 rounded-lg text-blue-500">
+            <lucide-icon [img]="icons.Palette" class="w-5 h-5"></lucide-icon>
+          </div>
+          <h3 class="text-md font-semibold m-0">Appearance</h3>
+        </div>
+
+        <app-background-picker [selectedBackground]="settingsService.background()"
+          (selectedBackgroundChange)="updateSetting('background', $event)" />
+      </div>
+
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-green-50 rounded-lg text-green-500">
+            <lucide-icon [img]="icons.Wallet" class="w-5 h-5"></lucide-icon>
+          </div>
+          <h3 class="text-md font-semibold m-0">Preferences</h3>
+        </div>
+
+        <app-currency-picker [currency]="settingsService.currency()"
+          (currencyChange)="updateSetting('currency', $event)" />
+      </div>
+    </div>
+  </mat-card>
+</div>
