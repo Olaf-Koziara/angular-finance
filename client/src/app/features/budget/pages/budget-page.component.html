@@ -22,34 +22,26 @@
           <div class="budget-input-row">
             <mat-form-field appearance="outline" class="budget-input">
               <mat-label>{{ 'BUDGET.GENERAL_BUDGET_LABEL' | translate }}</mat-label>
-              <input
-                matInput
-                type="number"
-                [field]="form.generalBudget"
-                (keydown)="preventNegative($event)"
-                step="0.01"
-              />
-              <span matPrefix>$&nbsp;</span>
+              <input matInput type="number" [field]="form.generalBudget" (keydown)="preventNegative($event)"
+                step="0.01" />
+              <span matPrefix>{{ "" | appCurrency}}</span>
             </mat-form-field>
           </div>
         </section>
         <section class="budget-summary">
           <div class="summary-item">
             <span class="summary-label">{{ 'BUDGET.TOTAL_CATEGORY_BUDGETS' | translate }}:</span>
-            <span class="summary-value">${{ totalCategoryBudgets() | number : '1.2-2' }}</span>
+            <span class="summary-value">{{""|appCurrency}}{{ totalCategoryBudgets() | number : '1.2-2' }}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">{{ 'BUDGET.GENERAL_BUDGET' | translate }}:</span>
-            <span class="summary-value">${{ budget().generalBudget | number : '1.2-2' }}</span>
+            <span class="summary-value">{{""|appCurrency}}{{ budget().generalBudget | number : '1.2-2' }}</span>
           </div>
           @if (budget().generalBudget > 0) {
           <div class="summary-item">
             <span class="summary-label">{{ 'BUDGET.UNALLOCATED' | translate }}:</span>
-            <span
-              class="summary-value"
-              [class.warning]="budget().generalBudget - totalCategoryBudgets() < 0"
-            >
-              ${{ budget().generalBudget - totalCategoryBudgets() | number : '1.2-2' }}
+            <span class="summary-value" [class.warning]="budget().generalBudget - totalCategoryBudgets() < 0">
+              {{""|appCurrency}}{{ budget().generalBudget - totalCategoryBudgets() | number : '1.2-2' }}
             </span>
           </div>
           }
@@ -65,15 +57,10 @@
             <mat-form-field appearance="outline" class="budget-input">
               <mat-label>{{
                 'TRANSACTIONS.CATEGORIES.' + category.toUpperCase() | translate
-              }}</mat-label>
-              <input
-                matInput
-                type="number"
-                [field]="form.categoryBudgets[category]"
-                (keydown)="preventNegative($event)"
-                step="0.01"
-              />
-              <span matPrefix>$&nbsp;</span>
+                }}</mat-label>
+              <input matInput type="number" [field]="form.categoryBudgets[category]" (keydown)="preventNegative($event)"
+                step="0.01" />
+              <span matPrefix>{{ "" | appCurrency}}</span>
             </mat-form-field>
           </div>
           } @if (form().dirty() && form().valid()) {

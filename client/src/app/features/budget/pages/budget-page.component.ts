@@ -21,6 +21,7 @@ import { MatAnchor } from '@angular/material/button';
 import { numericValidator } from '../../../shared/utils/validators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AppCurrencyPipe } from "../../../shared/pipes/app-currency.pipe";
 @Component({
   selector: 'app-budget-page',
   standalone: true,
@@ -37,6 +38,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     TranslateModule,
     Field,
     MatAnchor,
+    AppCurrencyPipe
   ],
 })
 export class BudgetPageComponent {

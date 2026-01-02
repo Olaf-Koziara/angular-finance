@@ -12,16 +12,13 @@
         <div class="category-header">
           <span class="category-name">{{ category.name | translate }}</span>
           <span class="category-value">
-            {{ formatCurrency(category.spent) }} / {{ formatCurrency(category.budget) }}
+            {{ category.spent | appCurrency }} / {{ category.budget | appCurrency }}
           </span>
         </div>
         <div class="category-bar-container">
           @if (category.percentage > 0) {
-          <div
-            class="category-bar"
-            [style.width.%]="category.percentage > 100 ? 100 : category.percentage"
-            [style.background-color]="category.color"
-          >
+          <div class="category-bar" [style.width.%]="category.percentage > 100 ? 100 : category.percentage"
+            [style.background-color]="category.color">
             <span class="bar-percentage">{{ category.percentage.toFixed(0) }}%</span>
           </div>
           }
