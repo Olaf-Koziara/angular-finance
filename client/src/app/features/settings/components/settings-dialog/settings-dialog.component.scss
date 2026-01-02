@@ -1,6 +1,11 @@
-@use '@angular/material' as mat;
-
-
+@use "@angular/material" as mat;
+:host {
+    @include mat.dialog-overrides(
+        (
+            headline-padding: 1rem 1rem 0.5rem
+        )
+    );
+}
 
 .dialog-title {
     display: flex;
@@ -8,8 +13,7 @@
     gap: 0.5rem;
 
     .icon {
-        width: 1.25rem;
-        height: 1.25rem;
+        display: flex;
     }
 }
 
@@ -50,8 +54,7 @@
     justify-content: center;
 
     .icon {
-        width: 1.25rem;
-        height: 1.25rem;
+        display: flex;
     }
 
     &.appearance {
