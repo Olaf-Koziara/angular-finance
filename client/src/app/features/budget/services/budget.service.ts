@@ -12,7 +12,7 @@ export class BudgetService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.API_URL}/budgets`;
 
-  getBudget(): Observable<Budget> {
+  get(): Observable<Budget> {
     return this.http.get<BudgetResponse>(this.apiUrl).pipe(
       map((response) => response.data),
       catchError((error) => {
@@ -42,7 +42,7 @@ export class BudgetService {
     );
   }
 
-  updateBudget(budget: Budget): Observable<Budget> {
+  update(budget: Budget): Observable<Budget> {
     return this.http.put<BudgetResponse>(this.apiUrl, budget).pipe(
       map((response) => response.data),
       catchError((error: HttpErrorResponse) => {

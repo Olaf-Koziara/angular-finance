@@ -21,6 +21,7 @@ import { MatAnchor } from '@angular/material/button';
 import { numericValidator } from '../../../shared/utils/validators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AppCurrencyPipe } from "../../../shared/pipes/app-currency.pipe";
 @Component({
   selector: 'app-budget-page',
   standalone: true,
@@ -37,6 +38,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     TranslateModule,
     Field,
     MatAnchor,
+    AppCurrencyPipe
   ],
 })
 export class BudgetPageComponent {
@@ -88,7 +90,7 @@ export class BudgetPageComponent {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.budgetService.getBudget().subscribe({
+    this.budgetService.get().subscribe({
       next: (budget) => {
         this.budget.set(budget);
         this.isLoading.set(false);
@@ -103,38 +105,8 @@ export class BudgetPageComponent {
     });
   }
 
-  saveGeneralBudget(value: number): void {
-    if (isNaN(value) || value < 0) {
-      return;
-    }
-
-    this.budgetService.updateGeneralBudget(value).subscribe({
-      next: (updatedBudget) => {},
-      error: (err) => {
-        console.error('Failed to update general budget:', err);
-        this.error.set('Failed to update general budget');
-      },
-    });
-  }
-
-  saveCategoryBudget(category: string, value: string): void {
-    const amount = parseFloat(value);
-    if (isNaN(amount) || amount < 0) {
-      return;
-    }
-
-    this.budgetService.updateCategoryBudget(category, amount).subscribe({
-      next: (updatedBudget) => {
-        this.budget.set(updatedBudget);
-      },
-      error: (err) => {
-        console.error('Failed to update category budget:', err);
-        this.error.set('Failed to update category budget');
-      },
-    });
-  }
   saveBudget(): void {
-    this.budgetService.updateBudget(this.budget()).subscribe({
+    this.budgetService.update(this.budget()).subscribe({
       next: (savedBudget) => this.budget.set(savedBudget),
       error: (err: HttpErrorResponse) => this.error.set(err.error.message),
       complete: () => {

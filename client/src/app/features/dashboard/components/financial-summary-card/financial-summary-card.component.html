@@ -1,8 +1,4 @@
-<mat-card
-  class="summary-card"
-  [class.hovered]="hovered()"
-  (mouseenter)="onHover(true)"
-  (mouseleave)="onHover(false)">
+<mat-card class="summary-card" [class.hovered]="hovered()" (mouseenter)="onHover(true)" (mouseleave)="onHover(false)">
   <mat-card-content>
     <div class="card-icon" [class]="card().type + '-icon'">
       <mat-icon>{{ card().icon }}</mat-icon>
@@ -10,22 +6,19 @@
     <div class="card-details">
       <p class="card-label">{{ card().label | translate }}</p>
       @if (card().detail) {
-        <p class="card-detail">{{ card().detail | translate }}</p>
+      <p class="card-detail">{{ card().detail | translate }}</p>
       }
-      <h2 class="card-value">{{ getFormattedValue() }}</h2>
+      <h2 class="card-value">{{ card().value | appCurrency }}</h2>
       @if (card().trend !== undefined) {
-        <div class="trend-indicator" [class.positive]="(card().trend ?? 0) > 0" [class.negative]="(card().trend ?? 0) < 0">
-          <mat-icon>{{ (card().trend ?? 0) > 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
-          <span>{{ card().trend! > 0 ? '+' : '' }}{{ card().trend }}%</span>
-        </div>
+      <div class="trend-indicator" [class.positive]="(card().trend ?? 0) > 0"
+        [class.negative]="(card().trend ?? 0) < 0">
+        <mat-icon>{{ (card().trend ?? 0) > 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+        <span>{{ card().trend! > 0 ? '+' : '' }}{{ card().trend }}%</span>
+      </div>
       }
       @if (card().budgetUsage !== undefined) {
-        <mat-progress-bar
-          mode="determinate"
-          [value]="card().budgetUsage"
-          class="budget-progress"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="card().budgetUsage" class="budget-progress"></mat-progress-bar>
       }
     </div>
   </mat-card-content>
 </mat-card>
-

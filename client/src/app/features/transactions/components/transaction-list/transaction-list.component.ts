@@ -13,6 +13,7 @@ import {
   Transaction,
   TransactionSort,
 } from '../../models/transaction.model';
+import { AppCurrencyPipe } from "../../../../shared/pipes/app-currency.pipe";
 
 @Component({
   selector: 'app-transaction-list',
@@ -26,6 +27,7 @@ import {
     MatChipsModule,
     TranslateModule,
     LoaderComponent,
+    AppCurrencyPipe
   ],
   templateUrl: './transaction-list.component.html',
   styleUrl: './transaction-list.component.scss',

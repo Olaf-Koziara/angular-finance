@@ -128,5 +128,15 @@
       "UPDATE_FAILED": "Failed to update transaction",
       "DELETE_FAILED": "Failed to delete transaction"
     }
+  },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "APPEARANCE": "Appearance",
+    "PREFERENCES": "Preferences",
+    "CURRENCY": "Currency",
+    "CLOSE": "Close",
+    "VISUAL": {
+      "BACKGROUND_SELECT": "Background"
+    }
   }
 }

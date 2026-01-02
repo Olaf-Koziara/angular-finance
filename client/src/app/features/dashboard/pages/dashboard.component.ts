@@ -18,7 +18,7 @@ import { DashboardService } from '../services/dashboard.service';
     BudgetChartComponent,
     MonthlyTrendChartComponent,
     AlertsListComponent
-],
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -127,12 +127,10 @@ function round1(value: number): number {
 }
 
 function categoryToTranslationKey(category: string): string {
-  // Try to re-use TRANSACTIONS category translations.
-  // Falls back to the raw category string if we can't map reliably.
+
   const normalized = category.trim();
   if (!normalized) return category;
 
-  // Common server values match the enum-like strings in i18n.
   const key = normalized.toUpperCase().replace(/\s+/g, '_');
   return `TRANSACTIONS.CATEGORIES.${key}`;
 }

@@ -1,0 +1,11 @@
+<button class="background-picker" [matMenuTriggerFor]="backgroundMenu">
+  <div class="background-preview" [ngStyle]="{ background: selectedBackground() }"></div>
+  <span class="label">{{ 'SETTINGS.VISUAL.BACKGROUND_SELECT' | translate }}</span>
+</button>
+
+<mat-menu #backgroundMenu="matMenu">
+  @for(background of backgrounds;track background ){
+  <div class="background-item" (click)="updateSelectedBackground(background)" [ngStyle]="{ background: background }">
+  </div>
+  }
+</mat-menu>

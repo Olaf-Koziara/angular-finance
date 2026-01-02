@@ -129,5 +129,15 @@
       "UPDATE_FAILED": "Nie udało się zaktualizować transakcji",
       "DELETE_FAILED": "Nie udało się usunąć transakcji"
     }
+  },
+  "SETTINGS": {
+    "TITLE": "Ustawienia",
+    "APPEARANCE": "Wygląd",
+    "PREFERENCES": "Preferencje",
+    "CURRENCY": "Waluta",
+    "CLOSE": "Zamknij",
+    "VISUAL": {
+      "BACKGROUND_SELECT": "Tło"
+    }
   }
 }

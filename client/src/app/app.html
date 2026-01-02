@@ -1,1 +1,3 @@
-<router-outlet></router-outlet>
+<div class="app-container" [ngStyle]="{ background: selectedBackground() || backgrounds[0] }">
+  <router-outlet></router-outlet>
+</div>

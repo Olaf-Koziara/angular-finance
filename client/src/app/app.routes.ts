@@ -46,8 +46,10 @@ export const routes: Routes = [
           pageTranslationName: 'TRANSACTIONS',
         },
       },
+  
     ],
   },
+
   {
     path: 'login',
     loadComponent: () =>

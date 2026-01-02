@@ -43,8 +43,6 @@ export class DashboardService {
   readonly alerts = signal<Alert[]>([]);
   readonly topCategories = signal<TopCategories>({ expense: null, income: null });
 
-  // Effect to fetch dashboard data when months signal changes
-  // This is safe because the service is providedIn: 'root' (singleton lifecycle)
   private readonly fetchEffect = effect((onCleanup) => {
     const months = this.months();
 
@@ -80,7 +78,6 @@ export class DashboardService {
   }
 
   refresh(): void {
-    // Trigger re-fetch without changing value
     this.months.update((current) => current);
   }
 }
