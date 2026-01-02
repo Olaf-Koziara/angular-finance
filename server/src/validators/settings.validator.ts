@@ -10,18 +10,21 @@ const backgroundSchema = z
   .optional()
   .nullable();
 
-export const settingsSchemas = {
+export const settingsSchemas = z.object({
   theme: themeSchema,
   background: backgroundSchema,
   currency: z.string().optional().nullable(),
-} as const;
-
-export type SettingKey = keyof typeof settingsSchemas;
+})
+export type Settings = z.infer<typeof settingsSchemas>
 
 
 export const updateSettingsSchema = z.object({
   background: backgroundSchema,
   theme: themeSchema.optional().nullable(),
-});
+  currency: z.string().optional().nullable(),
 
+
+});
+export type SettingKey = keyof typeof settingsSchemas.shape;
+export type SettingSchema<K extends SettingKey> = (typeof settingsSchemas.shape)[K] & z.ZodTypeAny;
 export type UpdateSettingsInput = z.infer<typeof updateSettingsSchema>;

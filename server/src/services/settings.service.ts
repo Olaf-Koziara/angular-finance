@@ -1,10 +1,14 @@
+import { z } from "zod";
 import { prisma } from "../config/database";
 import { UserSettings } from "../types/settings";
-import { settingsSchemas } from "../validators/settings.validator";
-import { UpdateSettingsInput } from "../validators/settings.validator";
 import { logger } from "../utils/logger";
-import { z } from "zod";
+import { SettingKey, Settings, SettingSchema, settingsSchemas, UpdateSettingsInput } from "../validators/settings.validator";
 
+const defaultInitalSettings:Settings = {
+    background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    theme:'light',
+    currency:'USD'
+}
 export class SettingsService {
   /**
    * Get user settings by userId
@@ -42,9 +46,10 @@ export class SettingsService {
    * @param data - Settings data to update
    * @returns Updated UserSettings
    */
+ 
   async createOrUpdateSettings(
     userId: string,
-    data: UpdateSettingsInput
+    data: UpdateSettingsInput = defaultInitalSettings
   ): Promise<UserSettings> {
     try {
       const settings = await prisma.userSettings.upsert({
@@ -53,7 +58,7 @@ export class SettingsService {
           userId,
           background: data.background ?? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           theme: data.theme ?? 'light',
-          currency: "USD",
+          currency: data.currency?? "USD"
         },
         update: {
           background: data.background ?? null,
@@ -85,14 +90,14 @@ export class SettingsService {
    * @param value - New value for the setting
    * @returns Updated UserSettings
    */
-  async updateSetting<K extends keyof typeof settingsSchemas>(
+  async updateSetting<K extends SettingKey>(
     userId: string,
     key: K,
-    value: z.infer<typeof settingsSchemas[K]>
+    value: z.infer<SettingSchema<K>>
   ): Promise<UserSettings> {
     try {
       // Validate value against schema
-      const schema = settingsSchemas[key];
+      const schema = settingsSchemas.shape[key];
       const result = schema.safeParse(value);
 
       if (!result.success) {
