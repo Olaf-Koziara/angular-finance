@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
+import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Palette, Settings as SettingsIcon, Wallet } from 'lucide-angular';
 import { Settings } from '../../models/settings.model';
 import { SettingsService } from '../../services/settings.service';
@@ -16,6 +17,7 @@ import { CurrencyPicker } from '../currency-picker/currency-picker';
         MatButtonModule,
         LucideAngularModule,
         MatCardModule,
+        TranslateModule,
         BackgroundPicker, 
         CurrencyPicker, 
     ],

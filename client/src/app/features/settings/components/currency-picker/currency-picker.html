@@ -1,5 +1,5 @@
 <mat-form-field>
-  <mat-label>Currency</mat-label>
+  <mat-label>{{ 'SETTINGS.CURRENCY' | translate }}</mat-label>
   <input type="text" matInput [matAutocomplete]="auto" [ngModel]="currentSearch()"
     (ngModelChange)="onSearchChange($event)" (blur)="onBlur()" />
   <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onCurrencySelected($event)">

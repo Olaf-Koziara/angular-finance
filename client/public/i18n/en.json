@@ -131,6 +131,10 @@
   },
   "SETTINGS": {
     "TITLE": "Settings",
+    "APPEARANCE": "Appearance",
+    "PREFERENCES": "Preferences",
+    "CURRENCY": "Currency",
+    "CLOSE": "Close",
     "VISUAL": {
       "BACKGROUND_SELECT": "Background"
     }

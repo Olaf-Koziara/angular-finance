@@ -16,6 +16,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { Currency } from '../../../../shared/models/currency.model';
 import { currencyIncludesString } from '../../../../shared/utils/currency';
 
@@ -28,6 +29,7 @@ import { currencyIncludesString } from '../../../../shared/utils/currency';
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
+    TranslateModule,
   ],
   templateUrl: './currency-picker.html',
   styleUrl: './currency-picker.scss',

@@ -132,6 +132,10 @@
   },
   "SETTINGS": {
     "TITLE": "Ustawienia",
+    "APPEARANCE": "Wygląd",
+    "PREFERENCES": "Preferencje",
+    "CURRENCY": "Waluta",
+    "CLOSE": "Zamknij",
     "VISUAL": {
       "BACKGROUND_SELECT": "Tło"
     }

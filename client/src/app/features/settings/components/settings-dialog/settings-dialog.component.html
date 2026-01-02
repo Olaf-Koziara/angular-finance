@@ -1,6 +1,6 @@
 <h2 mat-dialog-title class="dialog-title">
     <lucide-icon [img]="icons.Settings" class="icon"></lucide-icon>
-    Settings
+    {{ 'SETTINGS.TITLE' | translate }}
 </h2>
 
 <mat-dialog-content>
@@ -16,7 +16,7 @@
                 <div class="p-2 bg-blue-50 rounded-lg text-blue-500 icon-wrapper ">
                   <lucide-icon [img]="icons.Palette" class="w-5 h-5 icon"></lucide-icon>
                 </div>
-                <h3 class="text-md font-semibold m-0">Appearance</h3>
+                <h3 class="text-md font-semibold m-0">{{ 'SETTINGS.APPEARANCE' | translate }}</h3>
               </div>
       
               <app-background-picker [selectedBackground]="settingsService.background()"
@@ -28,7 +28,7 @@
                 <div class="icon-wrapper p-2 bg-green-50 rounded-lg text-green-500">
                   <lucide-icon [img]="icons.Wallet" class="w-5 h-5 icon"></lucide-icon>
                 </div>
-                <h3 class="text-md font-semibold m-0">Preferences</h3>
+                <h3 class="text-md font-semibold m-0">{{ 'SETTINGS.PREFERENCES' | translate }}</h3>
               </div>
       
               <app-currency-picker [currency]="settingsService.currency()"
@@ -40,5 +40,5 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Close</button>
+    <button mat-button mat-dialog-close>{{ 'SETTINGS.CLOSE' | translate }}</button>
 </mat-dialog-actions>
