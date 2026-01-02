@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { CurrencyPicker } from './currency-picker';
 
@@ -8,7 +9,7 @@ describe('CurrencyPicker', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CurrencyPicker]
+      imports: [CurrencyPicker, TranslateModule.forRoot()]
     })
     .compileComponents();
 
