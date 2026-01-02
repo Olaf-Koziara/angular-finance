@@ -46,16 +46,7 @@ export const routes: Routes = [
           pageTranslationName: 'TRANSACTIONS',
         },
       },
-      {
-        path: 'settings',
-        loadComponent: () =>
-          import('./features/settings/pages/settings-page/settings-page').then(
-            (m) => m.SettingsPage
-          ),
-        data: {
-          pageTranslationName: 'SETTINGS',
-        },
-      },
+  
     ],
   },
 
