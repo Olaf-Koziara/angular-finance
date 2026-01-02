@@ -3,6 +3,7 @@ export interface UserSettings {
   userId?: string;
   background?: string | null;
   theme?: string | null;
+  currency?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }

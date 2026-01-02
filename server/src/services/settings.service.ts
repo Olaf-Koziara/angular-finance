@@ -1,7 +1,9 @@
 import { prisma } from "../config/database";
 import { UserSettings } from "../types/settings";
+import { settingsSchemas } from "../validators/settings.validator";
 import { UpdateSettingsInput } from "../validators/settings.validator";
 import { logger } from "../utils/logger";
+import { z } from "zod";
 
 export class SettingsService {
   /**
@@ -24,6 +26,7 @@ export class SettingsService {
         userId: settings.userId,
         background: settings.background,
         theme: settings.theme,
+        currency: settings.currency,
         createdAt: settings.createdAt,
         updatedAt: settings.updatedAt,
       };
@@ -48,8 +51,9 @@ export class SettingsService {
         where: { userId },
         create: {
           userId,
-          background: data.background ?? null,
-          theme: data.theme ?? null,
+          background: data.background ?? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          theme: data.theme ?? 'light',
+          currency: "USD",
         },
         update: {
           background: data.background ?? null,
@@ -64,6 +68,7 @@ export class SettingsService {
         userId: settings.userId,
         background: settings.background,
         theme: settings.theme,
+        currency: settings.currency,
         createdAt: settings.createdAt,
         updatedAt: settings.updatedAt,
       };
@@ -74,74 +79,50 @@ export class SettingsService {
   }
 
   /**
-   * Update only background setting
+   * Update a specific setting
    * @param userId - User ID
-   * @param background - Background value
+   * @param key - Setting key to update
+   * @param value - New value for the setting
    * @returns Updated UserSettings
    */
-  async updateBackground(
+  async updateSetting<K extends keyof typeof settingsSchemas>(
     userId: string,
-    background: string | null
+    key: K,
+    value: z.infer<typeof settingsSchemas[K]>
   ): Promise<UserSettings> {
     try {
+      // Validate value against schema
+      const schema = settingsSchemas[key];
+      const result = schema.safeParse(value);
+
+      if (!result.success) {
+        throw new Error(result.error.errors[0].message);
+      }
+
       const settings = await prisma.userSettings.upsert({
         where: { userId },
         create: {
           userId,
-          background,
+          [key]: value,
         },
         update: {
-          background,
+          [key]: value,
         },
       });
 
-      logger.info("User background updated", { userId });
+      logger.info(`User setting '${key}' updated`, { userId });
 
       return {
         id: settings.id,
         userId: settings.userId,
         background: settings.background,
         theme: settings.theme,
+        currency: settings.currency,
         createdAt: settings.createdAt,
         updatedAt: settings.updatedAt,
       };
     } catch (error) {
-      logger.error("Error updating user background", { userId, error });
-      throw error;
-    }
-  }
-
-  /**
-   * Update only theme setting
-   * @param userId - User ID
-   * @param theme - Theme value ('light' or 'dark')
-   * @returns Updated UserSettings
-   */
-  async updateTheme(userId: string, theme: "light" | "dark" | null): Promise<UserSettings> {
-    try {
-      const settings = await prisma.userSettings.upsert({
-        where: { userId },
-        create: {
-          userId,
-          theme,
-        },
-        update: {
-          theme,
-        },
-      });
-
-      logger.info("User theme updated", { userId, theme });
-
-      return {
-        id: settings.id,
-        userId: settings.userId,
-        background: settings.background,
-        theme: settings.theme,
-        createdAt: settings.createdAt,
-        updatedAt: settings.updatedAt,
-      };
-    } catch (error) {
-      logger.error("Error updating user theme", { userId, error });
+      logger.error(`Error updating user setting '${key}'`, { userId, error });
       throw error;
     }
   }

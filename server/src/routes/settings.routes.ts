@@ -13,11 +13,8 @@ router.get("/", settingsController.getSettings);
 // Update user settings (full update)
 router.put("/", settingsController.updateSettings);
 
-// Update only background
-router.put("/background", settingsController.updateBackground);
-
-// Update only theme
-router.put("/theme", settingsController.updateTheme);
+// Update specific setting
+router.patch("/:key", settingsController.updateSetting);
 
 // Delete user settings
 router.delete("/", settingsController.deleteSettings);

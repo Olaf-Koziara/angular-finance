@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { settingsService } from "../services/settings.service";
-import { updateSettingsSchema } from "../validators/settings.validator";
+import { updateSettingsSchema, settingsSchemas, SettingKey } from "../validators/settings.validator";
+import { UserSettings } from "../types/settings";
 import { AppError, BadRequestError } from "../utils/errors";
 import { AuthRequest } from "../types";
 import { sendSuccess } from "../utils/response";
@@ -23,13 +24,15 @@ export class SettingsController {
       // Return empty object if settings don't exist (not an error)
       const settingsData = settings
         ? {
-            background: settings.background,
-            theme: settings.theme,
-          }
+          background: settings.background,
+          theme: settings.theme,
+          currency: settings.currency,
+        }
         : {
-            background: null,
-            theme: null,
-          };
+          background: null,
+          theme: null,
+          currency: null,
+        };
 
       sendSuccess(res, settingsData, "Settings retrieved successfully");
     } catch (error) {
@@ -63,6 +66,7 @@ export class SettingsController {
       const settingsData = {
         background: settings.background,
         theme: settings.theme,
+        currency: settings.currency,
       };
 
       sendSuccess(res, settingsData, "Settings updated successfully");
@@ -72,19 +76,16 @@ export class SettingsController {
   }
 
   /**
-   * Update only background
-   * PUT /api/settings/background
+   * Update a specific setting
+   * PATCH /api/settings/:key
    */
-  async updateBackground(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async updateSetting(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { background } = req.body;
+      const { key } = req.params;
+      const { value } = req.body;
 
-      if (background !== undefined && typeof background !== "string" && background !== null) {
-        throw new BadRequestError("Background must be a string or null");
-      }
-
-      if (background && background.length > 500) {
-        throw new BadRequestError("Background value is too long");
+      if (!key || !Object.keys(settingsSchemas).includes(key)) {
+        throw new BadRequestError(`Invalid setting key: ${key}`);
       }
 
       const userId = (req as AuthRequest).userId;
@@ -93,42 +94,17 @@ export class SettingsController {
         throw new AppError("No user ID");
       }
 
-      const settings = await settingsService.updateBackground(userId, background ?? null);
+      const settings = await settingsService.updateSetting(
+        userId,
+        key as SettingKey,
+        value
+      );
 
       sendSuccess(
         res,
-        { background: settings.background },
-        "Background updated successfully"
+        { [key]: settings[key as keyof UserSettings] },
+        `Setting '${key}' updated successfully`
       );
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Update only theme
-   * PUT /api/settings/theme
-   */
-  async updateTheme(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const { theme } = req.body;
-
-      if (theme !== undefined && theme !== null && theme !== "light" && theme !== "dark") {
-        throw new BadRequestError("Theme must be either 'light' or 'dark'");
-      }
-
-      const userId = (req as AuthRequest).userId;
-
-      if (!userId) {
-        throw new AppError("No user ID");
-      }
-
-      const settings = await settingsService.updateTheme(
-        userId,
-        theme ?? null
-      );
-
-      sendSuccess(res, { theme: settings.theme }, "Theme updated successfully");
     } catch (error) {
       next(error);
     }
