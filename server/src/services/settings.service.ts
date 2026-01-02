@@ -61,8 +61,7 @@ export class SettingsService {
           currency: data.currency?? "USD"
         },
         update: {
-          background: data.background ?? null,
-          theme: data.theme ?? null,
+          ...data
         },
       });
 
