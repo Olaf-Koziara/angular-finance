@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { authService } from "../services/auth.service";
-import { sendSuccess } from "../utils/response";
-import { RegisterInput, LoginInput } from "../validators/auth.validator";
-import { AuthRequest } from "../types";
-import { NotFoundError, AuthenticationError } from "../utils/errors";
+import { NextFunction, Request, Response } from "express";
 import { config } from "../config";
-import { budgetService } from "../services/budget.service";
 import { TRANSACTION_CATEGORIES } from "../constants/categories.constant";
+import { authService } from "../services/auth.service";
+import { budgetService } from "../services/budget.service";
+import { settingsService } from "../services/settings.service";
+import { AuthRequest } from "../types";
+import { AuthenticationError, NotFoundError } from "../utils/errors";
+import { sendSuccess } from "../utils/response";
+import { LoginInput, RegisterInput } from "../validators/auth.validator";
 
 const REFRESH_TOKEN_COOKIE = "refresh_token";
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
@@ -59,6 +60,7 @@ export class AuthController {
         generalBudget: 0,
         categoryBudgets: budgetCategories,
       });
+      await settingsService.createOrUpdateSettings(result.user.id)
       // Set refresh token as HttpOnly cookie
       setRefreshTokenCookie(res, result.refreshToken);
 
