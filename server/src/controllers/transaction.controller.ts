@@ -3,9 +3,11 @@ import { transactionService } from "../services/transaction.service";
 import {
   createTransactionSchema,
   queryTransactionSchema,
+  suggestCategorySchema,
 } from "../validators/transaction.validator";
 import { AppError, BadRequestError, NotFoundError } from "../utils/errors";
 import { AuthRequest } from "../types";
+import { aiCategoryService } from "../services/ai-category.service";
 
 export class TransactionController {
   async create(req: Request, res: Response, next: NextFunction) {
@@ -94,6 +96,22 @@ export class TransactionController {
         result.data
       );
       res.json(transaction);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async suggestCategory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = suggestCategorySchema.safeParse(req.body);
+      if (!result.success) {
+        throw new BadRequestError(result.error.errors[0].message);
+      }
+
+      const { title } = result.data;
+      const category = await aiCategoryService.suggestCategory(title);
+
+      res.json({ category });
     } catch (error) {
       next(error);
     }

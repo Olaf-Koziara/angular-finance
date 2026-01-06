@@ -5,7 +5,6 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { CreateTransaction, Transaction, TransactionType } from '../../models/transaction.model';
@@ -14,6 +13,7 @@ import {
   TRANSACTION_CATEGORIES,
 } from '../../constants/transaction-categories.constant';
 import { TranslateModule } from '@ngx-translate/core';
+import { CategoryPickerComponent } from '../category-picker/category-picker.component';
 
 @Component({
   selector: 'app-transaction-form',
@@ -22,12 +22,12 @@ import { TranslateModule } from '@ngx-translate/core';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatButtonModule,
     MatButtonToggleModule,
-    TranslateModule
+    TranslateModule,
+    CategoryPickerComponent,
 ],
   templateUrl: './transaction-form.component.html',
   styleUrl: './transaction-form.component.scss',

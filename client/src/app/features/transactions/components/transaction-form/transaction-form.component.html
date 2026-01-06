@@ -25,21 +25,14 @@
         }}</mat-error>
       }
     </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'TRANSACTIONS.CATEGORY' | translate }}</mat-label>
-      <mat-select formControlName="category">
-        @for (category of categories(); track category) {
-          <mat-option [value]="category">{{
-            `TRANSACTIONS.CATEGORIES.${category.toUpperCase()}` | translate
-          }}</mat-option>
-        }
-      </mat-select>
-      @if (form.controls.category.hasError('required')) {
-        <mat-error>{{
-          'TRANSACTIONS.CATEGORY_REQUIRED' | translate
-        }}</mat-error>
-      }
-    </mat-form-field>
+    <app-category-picker
+      [categories]="categories()"
+      [title]="form.controls.title.value"
+      [selectedCategory]="form.controls.category.value"
+      [hasError]="form.controls.category.hasError('required') && form.controls.category.touched"
+      [errorMessage]="'TRANSACTIONS.CATEGORY_REQUIRED' | translate"
+      (categoryChange)="form.controls.category.setValue($event)"
+    />
   </div>
   <div class="row">
     <mat-form-field appearance="outline">

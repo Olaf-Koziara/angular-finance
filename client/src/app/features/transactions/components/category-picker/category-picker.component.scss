@@ -1,0 +1,22 @@
+.category-picker {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  mat-form-field {
+    flex: 1;
+  }
+
+  .ai-suggest-button {
+    margin-top: 0.25rem;
+    color: #673ab7;
+
+    &:disabled {
+      color: rgba(0, 0, 0, 0.26);
+    }
+
+    mat-icon {
+      font-size: 24px;
+    }
+  }
+}

@@ -104,6 +104,7 @@
     "AMOUNT_MIN": "Amount must be greater than zero",
     "CATEGORY_REQUIRED": "Category is required",
     "DATE_REQUIRED": "Date is required",
+    "AI_SUGGEST_CATEGORY": "AI Suggest Category",
     "TYPES": {
       "ALL": "All",
       "INCOME": "Income",

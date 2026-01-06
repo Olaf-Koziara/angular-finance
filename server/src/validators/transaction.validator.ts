@@ -35,5 +35,10 @@ export const queryTransactionSchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
 });
 
+export const suggestCategorySchema = z.object({
+  title: z.string().min(1, "Title is required").max(100, "Title is too long"),
+});
+
 export type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
 export type QueryTransactionInput = z.infer<typeof queryTransactionSchema>;
+export type SuggestCategoryInput = z.infer<typeof suggestCategorySchema>;

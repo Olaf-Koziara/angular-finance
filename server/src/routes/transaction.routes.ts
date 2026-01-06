@@ -9,6 +9,7 @@ const router = Router();
 router.use(authenticate);
 
 router.post("/", transactionController.create);
+router.post("/suggest-category", transactionController.suggestCategory);
 router.get("/statistics", transactionStatisticsController.getDashboard);
 router.get("/", transactionController.findAll);
 router.put("/:id", transactionController.update);

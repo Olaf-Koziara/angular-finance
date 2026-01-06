@@ -105,6 +105,7 @@
     "AMOUNT_MIN": "Kwota musi być większa od zera",
     "CATEGORY_REQUIRED": "Kategoria jest wymagana",
     "DATE_REQUIRED": "Data jest wymagana",
+    "AI_SUGGEST_CATEGORY": "Sugeruj kategorię AI",
     "TYPES": {
       "ALL": "Wszystkie",
       "INCOME": "Przychód",
