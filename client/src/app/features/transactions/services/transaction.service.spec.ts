@@ -91,7 +91,7 @@ describe('TransactionService', () => {
     it('should fetch transactions on initialization', fakeAsync(() => {
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.method).toBe('GET');
 
       req.flush({ items: mockTransactions, total: 2 });
@@ -106,7 +106,7 @@ describe('TransactionService', () => {
       tick(100);
       expect(service.loading()).toBe(true);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       req.flush({ items: [], total: 0 });
       tick();
 
@@ -120,7 +120,7 @@ describe('TransactionService', () => {
       service.updateFilters({ search: 'grocery' });
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('search')).toBe('grocery');
       req.flush({ items: [], total: 0 });
     }));
@@ -132,7 +132,7 @@ describe('TransactionService', () => {
       service.updateFilters({ type: 'income' });
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('type')).toBe('income');
       req.flush({ items: [], total: 0 });
     }));
@@ -144,7 +144,7 @@ describe('TransactionService', () => {
       service.updateFilters({ type: 'all' });
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('type')).toBeNull();
       req.flush({ items: [], total: 0 });
     }));
@@ -156,7 +156,7 @@ describe('TransactionService', () => {
       service.updateFilters({ categories: ['Food', 'Transport'] });
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       const categoriesParams = req.request.params.getAll('categories[]');
       expect(categoriesParams).toEqual(['Food', 'Transport']);
       req.flush({ items: [], total: 0 });
@@ -165,7 +165,7 @@ describe('TransactionService', () => {
     it('should include pagination params', fakeAsync(() => {
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('page')).toBe('1');
       expect(req.request.params.get('limit')).toBe('10');
       req.flush({ items: [], total: 0 });
@@ -174,7 +174,7 @@ describe('TransactionService', () => {
     it('should include sort params', fakeAsync(() => {
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('sortBy')).toBe('date');
       expect(req.request.params.get('sortOrder')).toBe('desc');
       req.flush({ items: [], total: 0 });
@@ -183,7 +183,7 @@ describe('TransactionService', () => {
     it('should handle fetch errors', fakeAsync(() => {
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       req.flush('Error', { status: 500, statusText: 'Server Error' });
       tick();
 
@@ -204,7 +204,7 @@ describe('TransactionService', () => {
       service.updateFilters({ search: 'abc' });
       tick(100);
 
-      const requests = httpMock.match((request) => request.url === '/api/transactions');
+      const requests = httpMock.match((request) => request.url === '/transactions');
       expect(requests.length).toBe(1);
       requests[0].flush({ items: [], total: 0 });
     }));
@@ -259,7 +259,7 @@ describe('TransactionService', () => {
       service.updateFilters({ search: 'test' });
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('search')).toBe('test');
       req.flush({ items: [], total: 0 });
     }));
@@ -294,7 +294,7 @@ describe('TransactionService', () => {
       service.updatePagination({ pageIndex: 2 });
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('page')).toBe('3');
       req.flush({ items: [], total: 0 });
     }));
@@ -319,7 +319,7 @@ describe('TransactionService', () => {
       service.updateSort({ column: 'amount', order: 'asc' });
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('sortBy')).toBe('amount');
       expect(req.request.params.get('sortOrder')).toBe('asc');
       req.flush({ items: [], total: 0 });
@@ -342,7 +342,7 @@ describe('TransactionService', () => {
       service.create(newTransaction);
 
       const req = httpMock.expectOne(
-        (request) => request.method === 'POST' && request.url === '/api/transactions',
+        (request) => request.method === 'POST' && request.url === '/transactions',
       );
       expect(req.request.body).toEqual(newTransaction);
 
@@ -462,7 +462,7 @@ describe('TransactionService', () => {
       service.update('1', updates);
 
       const putReq = httpMock.expectOne(
-        (request) => request.method === 'PUT' && request.url === '/api/transactions/1',
+        (request) => request.method === 'PUT' && request.url === '/transactions/1',
       );
       expect(putReq.request.body).toEqual(updates);
 
@@ -498,7 +498,7 @@ describe('TransactionService', () => {
       tick(100);
 
       const getReq = httpMock.expectOne((request) => request.method === 'GET');
-      expect(getReq.request.url).toBe('/api/transactions');
+      expect(getReq.request.url).toBe('/transactions');
       getReq.flush({ items: [], total: 0 });
     }));
 
@@ -560,7 +560,7 @@ describe('TransactionService', () => {
       service.remove('1');
 
       const deleteReq = httpMock.expectOne(
-        (request) => request.method === 'DELETE' && request.url === '/api/transactions/1',
+        (request) => request.method === 'DELETE' && request.url === '/transactions/1',
       );
       deleteReq.flush({});
       tick(100);
@@ -601,7 +601,7 @@ describe('TransactionService', () => {
       tick(100);
 
       const getReq = httpMock.expectOne((request) => request.method === 'GET');
-      expect(getReq.request.url).toBe('/api/transactions');
+      expect(getReq.request.url).toBe('/transactions');
       getReq.flush({ items: [], total: 0 });
     }));
 
@@ -634,7 +634,7 @@ describe('TransactionService', () => {
     it('should handle empty response', fakeAsync(() => {
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       req.flush({ items: [], total: 0 });
       tick();
 
@@ -649,7 +649,7 @@ describe('TransactionService', () => {
       service.updateFilters({ categories: null });
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       const categoriesParams = req.request.params.getAll('categories[]');
       expect(categoriesParams).toEqual([]);
       req.flush({ items: [], total: 0 });
@@ -662,7 +662,7 @@ describe('TransactionService', () => {
       service.updateFilters({ search: '' });
       tick(100);
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.has('search')).toBeFalse();
       req.flush({ items: [], total: 0 });
     }));
@@ -676,7 +676,7 @@ describe('TransactionService', () => {
       }
       tick(100);
 
-      const requests = httpMock.match((request) => request.url === '/api/transactions');
+      const requests = httpMock.match((request) => request.url === '/transactions');
       requests.forEach((req) => req.flush({ items: [], total: 0 }));
 
       expect(() => flush()).not.toThrow();
@@ -694,7 +694,7 @@ describe('TransactionService', () => {
         type: 'expense' as const,
       }));
 
-      const req = httpMock.expectOne((request) => request.url === '/api/transactions');
+      const req = httpMock.expectOne((request) => request.url === '/transactions');
       req.flush({ items: largeDataset, total: 1000 });
       tick();
 

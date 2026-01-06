@@ -1,5 +1,8 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { AuthService } from '../../../features/auth/services/auth.service';
 import { SidebarComponent } from './sidebar.component';
@@ -13,13 +16,31 @@ describe('SidebarComponent', () => {
   const authServiceMock = {
     logout: jasmine.createSpy('logout'),
   };
+  const routerMock = {
+    navigate: jasmine.createSpy('navigate'),
+    events: of(),
+    createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue({}),
+  } as any;
+  const activatedRouteMock = {
+    root: {
+      firstChild: null,
+      snapshot: { data: {} },
+    },
+    snapshot: { data: {} },
+  } as any;
+  const matDialogMock = {
+    open: jasmine.createSpy('open'),
+  } as any;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent],
+      imports: [SidebarComponent, TranslateModule.forRoot()],
       providers: [
         { provide: BreakpointObserver, useValue: breakpointObserverMock },
         { provide: AuthService, useValue: authServiceMock },
+        { provide: Router, useValue: routerMock },
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
+        { provide: MatDialog, useValue: matDialogMock },
       ],
     }).compileComponents();
 

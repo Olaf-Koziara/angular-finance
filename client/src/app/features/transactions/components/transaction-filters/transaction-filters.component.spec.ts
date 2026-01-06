@@ -490,7 +490,8 @@ describe('TransactionFiltersComponent', () => {
 
   describe('Component Properties', () => {
     it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe('TransactionFiltersComponent');
+      const metadata = (component.constructor as any).ɵcmp;
+      expect(metadata.onPush).toBeTrue();
     });
 
     it('should be standalone component', () => {

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TransactionFormComponent } from './transaction-form.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Transaction } from '../../models/transaction.model';
 import { By } from '@angular/platform-browser';
 import { TRANSACTION_CATEGORIES } from '../../constants/transaction-categories.constant';
@@ -9,6 +9,7 @@ import { TRANSACTION_CATEGORIES } from '../../constants/transaction-categories.c
 describe('TransactionFormComponent', () => {
   let component: TransactionFormComponent;
   let fixture: ComponentFixture<TransactionFormComponent>;
+  let translateService: TranslateService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -17,6 +18,8 @@ describe('TransactionFormComponent', () => {
 
     fixture = TestBed.createComponent(TransactionFormComponent);
     component = fixture.componentInstance;
+    translateService = TestBed.inject(TranslateService);
+    spyOn(translateService, 'instant').and.callFake((key: string) => key);
     fixture.detectChanges();
   });
 
@@ -452,7 +455,7 @@ describe('TransactionFormComponent', () => {
       fixture.componentRef.setInput('transaction', mockTransaction);
       fixture.detectChanges();
 
-      const cancelButton = fixture.debugElement.query(By.css('button[type="button"]'));
+      const cancelButton = fixture.debugElement.query(By.css('button[mat-stroked-button]'));
       expect(cancelButton).toBeTruthy();
       expect(cancelButton.nativeElement.textContent).toContain('TRANSACTIONS.CANCEL_EDIT');
     });
@@ -461,7 +464,7 @@ describe('TransactionFormComponent', () => {
       fixture.componentRef.setInput('transaction', null);
       fixture.detectChanges();
 
-      const cancelButton = fixture.debugElement.query(By.css('button[type="button"]'));
+      const cancelButton = fixture.debugElement.query(By.css('button[mat-stroked-button]'));
       expect(cancelButton).toBeFalsy();
     });
 
@@ -595,7 +598,8 @@ describe('TransactionFormComponent', () => {
 
   describe('Component Properties', () => {
     it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe('TransactionFormComponent');
+      const metadata = (component.constructor as any).ɵcmp;
+      expect(metadata.onPush).toBeTrue();
     });
 
     it('should be standalone component', () => {
