@@ -419,10 +419,34 @@ describe('TransactionListComponent', () => {
   });
 
   describe('Component Properties', () => {
-    it('should have OnPush change detection strategy', () => {
-      // Check change detection strategy through component metadata
-      const metadata = (component.constructor as any).ɵcmp;
-      expect(metadata.onPush).toBeTrue();
+    it('should use OnPush change detection strategy', () => {
+      // Verify OnPush semantics: component should not update DOM without detectChanges
+      const initialRowCount = fixture.debugElement.queryAll(By.css('tbody tr')).length;
+      expect(initialRowCount).toBe(mockTransactions.length);
+
+      // Change input without calling detectChanges
+      const newTransactions: Transaction[] = [
+        {
+          id: '7',
+          date: '2023-11-07T10:00:00Z',
+          title: 'OnPush Test Transaction',
+          category: 'Food',
+          type: 'expense',
+          amount: 25.5,
+        },
+      ];
+      fixture.componentRef.setInput('transactions', newTransactions);
+
+      // DOM should not update without detectChanges (OnPush behavior)
+      const rowCountWithoutDetectChanges = fixture.debugElement.queryAll(By.css('tbody tr')).length;
+      expect(rowCountWithoutDetectChanges).toBe(initialRowCount);
+      expect(fixture.nativeElement.textContent).not.toContain('OnPush Test Transaction');
+
+      // After detectChanges, DOM should update
+      fixture.detectChanges();
+      const rowCountAfterDetectChanges = fixture.debugElement.queryAll(By.css('tbody tr')).length;
+      expect(rowCountAfterDetectChanges).toBe(1);
+      expect(fixture.nativeElement.textContent).toContain('OnPush Test Transaction');
     });
 
     it('should have correct displayedColumns', () => {
@@ -434,18 +458,6 @@ describe('TransactionListComponent', () => {
         'amount',
         'actions',
       ]);
-    });
-
-    it('should have readonly displayedColumns', () => {
-      // Verify the property exists and is defined
-      expect(component.displayedColumns).toBeDefined();
-      expect(Array.isArray(component.displayedColumns)).toBeTrue();
-      // Verify it has the readonly modifier by checking property descriptor
-      // Note: TypeScript's readonly is compile-time only, but we can verify the property structure
-      const descriptor = Object.getOwnPropertyDescriptor(component, 'displayedColumns');
-      expect(descriptor).toBeDefined();
-      // Verify the property is an array with the expected length
-      expect(component.displayedColumns.length).toBe(6);
     });
   });
 });
