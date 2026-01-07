@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
 
 import { TranslateModule } from '@ngx-translate/core';
-import { FinancialSummaryCardComponent } from '../components/financial-summary-card/financial-summary-card.component';
-import { TrendsSectionComponent } from '../components/trends-section/trends-section.component';
-import { BudgetChartComponent } from '../components/budget-chart/budget-chart.component';
-import { MonthlyTrendChartComponent } from '../components/monthly-trend-chart/monthly-trend-chart.component';
 import { AlertsListComponent } from '../components/alerts-list/alerts-list.component';
+import { BudgetChartComponent } from '../components/budget-chart/budget-chart.component';
+import { FinancialSummaryCardComponent } from '../components/financial-summary-card/financial-summary-card.component';
+import { MonthlyTrendChartComponent } from '../components/monthly-trend-chart/monthly-trend-chart.component';
+import { TrendsSectionComponent } from '../components/trends-section/trends-section.component';
 import { DashboardService } from '../services/dashboard.service';
 
 @Component({
@@ -23,10 +23,9 @@ import { DashboardService } from '../services/dashboard.service';
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   private readonly dashboardService = inject(DashboardService);
 
-  // Data signals (populated by GET /api/transactions/statistics)
   readonly financialSummary = this.dashboardService.financialSummary;
   readonly trends = this.dashboardService.trends;
   readonly budgetCategories = this.dashboardService.budgetCategories;
@@ -34,10 +33,12 @@ export class DashboardComponent {
   readonly alerts = this.dashboardService.alerts;
   readonly topCategories = this.dashboardService.topCategories;
 
-  // Optional UI state if you want to surface loader/error in template later
+ 
   readonly loading = this.dashboardService.loading;
   readonly error = this.dashboardService.error;
-
+  ngOnInit(): void {
+    this.dashboardService.refresh();
+  }
   summaryCards = computed(() => {
     const summary = this.financialSummary();
     const monthly = this.monthlyData();

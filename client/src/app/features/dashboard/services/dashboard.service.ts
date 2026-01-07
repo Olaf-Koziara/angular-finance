@@ -44,12 +44,14 @@ export class DashboardService {
   readonly topCategories = signal<TopCategories>({ expense: null, income: null });
 
   private readonly fetchEffect = effect((onCleanup) => {
-    const months = this.months();
-
+    this.months();
+    this.fetchData();
+  });
+  private fetchData():void{
     this.loading.set(true);
     this.error.set(null);
 
-    const params = new HttpParams().set('months', months.toString());
+    const params = new HttpParams().set('months', this.months().toString());
     const subscription: Subscription = this.http
       .get<DashboardStatisticsResponse>(this.apiUrl, { params })
       .pipe(first())
@@ -68,16 +70,13 @@ export class DashboardService {
           this.loading.set(false);
         },
       });
-
-    onCleanup(() => subscription.unsubscribe());
-  });
-
+  }
   setMonths(months: number): void {
     const safe = Math.max(1, Math.min(24, Math.floor(months)));
     this.months.set(safe);
   }
 
   refresh(): void {
-    this.months.update((current) => current);
+    this.fetchData();
   }
 }
