@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { first, firstValueFrom, Subscription } from 'rxjs';
+import { first, Subscription } from 'rxjs';
 import {
   CreateTransaction,
   Transaction,
@@ -60,8 +60,7 @@ export class TransactionService {
 
   private readonly fetchEffect = effect((onCleanup) => {
     const currentState = this.state();
-    const timer = setTimeout(() => {
-      this.loading.set(true);
+   
       this.error.set(null);
       const params = this.buildHttpParams(currentState);
       const subscription: Subscription = this.http
@@ -81,9 +80,7 @@ export class TransactionService {
           },
         });
       onCleanup(() => subscription.unsubscribe());
-    }, 100);
-
-    onCleanup(() => clearTimeout(timer));
+  
   });
 
   updateFilters(changes: Partial<TransactionFilters>): void {
@@ -110,53 +107,51 @@ export class TransactionService {
 
   create(payload: CreateTransaction): void {
     this.error.set(null);
-    const tempTransactions = [...this.transactions()];
-    this.transactions.set([...tempTransactions, { id: '', ...payload }]);
+    const previousTransactionsValue = [...this.transactions()];
+    this.transactions.set([...previousTransactionsValue, { id: '', ...payload }]);
     
-    firstValueFrom(this.http.post<Transaction>(this.apiUrl, payload))
-      .then((transaction) => {
+    this.http.post<Transaction>(this.apiUrl, payload).subscribe({
+      next:((transaction) => {
         const updatedTransactions = this.transactions().map((transactionMapItem) =>
           transactionMapItem.id === '' ? transaction : transactionMapItem
         );
         this.transactions.set(updatedTransactions);
-      })
-      .catch(() => {
-        this.transactions.set(tempTransactions);
+      }),
+      error:() => {
+        this.transactions.set(previousTransactionsValue);
         this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.CREATE_FAILED'));
-      });
+      }
+    })
+    
   }
 
-  update(id: string, payload: CreateTransaction): Promise<void> {
+  update(id: string, payload: CreateTransaction): void {
     this.error.set(null);
-    const previousTransactions = [...this.transactions()];
-    
-    return firstValueFrom(
-      this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload)
-    )
-      .then((transaction) => {
-        this.transactions.update((items) =>
-          items.map((item) => (item.id === id ? transaction : item))
-        );
-        this.refresh();
+    const previousTransactionsValue = [...this.transactions()];
+    this.transactions.update((transactions)=>transactions.map((transaction)=>transaction.id === id?({...payload,id}):transaction));
+   
+      this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload).subscribe({
+        error:(error) => {
+          this.transactions.set(previousTransactionsValue);
+          this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.UPDATE_FAILED'));
+          throw error;
+        }
       })
-      .catch((error) => {
-        this.transactions.set(previousTransactions);
-        this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.UPDATE_FAILED'));
-        throw error;
-      });
+    
+     
   }
 
   remove(id: string): void {
-    this.loading.set(true);
     this.error.set(null);
-    firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`))
-      .then(() => {
-        this.refresh();
-      })
-      .catch(() => {
-        this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.DELETE_FAILED'));
-        this.loading.set(false);
-      });
+    const previousTransactionsValue = [...this.transactions()];
+    this.transactions.update(transactions=>transactions.filter(transaction=>transaction.id !== id))
+    this.http.delete(`${this.apiUrl}/${id}`).subscribe({next:()=>{
+      this.refresh()
+    },error:() => {
+      this.transactions.set(previousTransactionsValue)
+      this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.DELETE_FAILED'));
+    }})
+
   }
 
   private refresh(): void {
