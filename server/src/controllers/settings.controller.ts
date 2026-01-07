@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { settingsService } from "../services/settings.service";
-import { updateSettingsSchema, settingsSchemas, SettingKey } from "../validators/settings.validator";
+import { AuthRequest } from "../types";
 import { UserSettings } from "../types/settings";
 import { AppError, BadRequestError } from "../utils/errors";
-import { AuthRequest } from "../types";
 import { sendSuccess } from "../utils/response";
+import { SettingKey, settingsSchemas, updateSettingsSchema } from "../validators/settings.validator";
 
 export class SettingsController {
   /**
@@ -83,8 +83,8 @@ export class SettingsController {
     try {
       const { key } = req.params;
       const { value } = req.body;
-
-      if (!key || !Object.keys(settingsSchemas).includes(key)) {
+   
+      if (!key || !Object.keys(settingsSchemas.shape).includes(key)) {
         throw new BadRequestError(`Invalid setting key: ${key}`);
       }
 
