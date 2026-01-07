@@ -128,17 +128,29 @@ export class TransactionService {
   update(id: string, payload: CreateTransaction): void {
     this.error.set(null);
     const previousTransactionsValue = [...this.transactions()];
-    this.transactions.update((transactions)=>transactions.map((transaction)=>transaction.id === id?({...payload,id}):transaction));
-   
-      this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload).subscribe({
-        error:(error) => {
-          this.transactions.set(previousTransactionsValue);
-          this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.UPDATE_FAILED'));
-          throw error;
-        }
-      })
-    
-     
+    this.transactions.update((transactions) =>
+      transactions.map((transaction) =>
+        transaction.id === id ? { ...payload, id } : transaction
+      )
+    );
+
+    this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload).subscribe({
+      next: (updatedTransaction) => {
+        this.transactions.update((transactions) =>
+          transactions.map((transaction) =>
+            transaction.id === id ? updatedTransaction : transaction
+          )
+        );
+        this.refresh();
+      },
+      error: (error) => {
+        this.transactions.set(previousTransactionsValue);
+        this.error.set(
+          this.translate.instant('TRANSACTIONS.ERRORS.UPDATE_FAILED')
+        );
+        throw error;
+      },
+    });
   }
 
   remove(id: string): void {
