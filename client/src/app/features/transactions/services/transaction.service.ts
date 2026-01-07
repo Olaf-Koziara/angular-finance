@@ -108,55 +108,60 @@ export class TransactionService {
     this.sort.set(sort);
   }
 
-  async create(payload: CreateTransaction): Promise<void> {
+  create(payload: CreateTransaction): void {
     this.error.set(null);
     const tempTransactions = [...this.transactions()];
-    try {
-      this.transactions.set([...tempTransactions, { id: '', ...payload }]);
-      const transaction = await firstValueFrom(this.http.post<Transaction>(this.apiUrl, payload));
-      const updatedTransactions = this.transactions().map((transactionMapItem) =>
-        transactionMapItem.id === '' ? transaction : transactionMapItem
-      );
-      this.transactions.set(updatedTransactions);
-    } catch {
-      this.transactions.set(tempTransactions);
-      this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.CREATE_FAILED'));
-    }
+    this.transactions.set([...tempTransactions, { id: '', ...payload }]);
+    
+    firstValueFrom(this.http.post<Transaction>(this.apiUrl, payload))
+      .then((transaction) => {
+        const updatedTransactions = this.transactions().map((transactionMapItem) =>
+          transactionMapItem.id === '' ? transaction : transactionMapItem
+        );
+        this.transactions.set(updatedTransactions);
+      })
+      .catch(() => {
+        this.transactions.set(tempTransactions);
+        this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.CREATE_FAILED'));
+      });
   }
 
-  async update(id: string, payload: CreateTransaction): Promise<void> {
+  update(id: string, payload: CreateTransaction): Promise<void> {
     this.error.set(null);
     const previousTransactions = [...this.transactions()];
-    try {
-      const transaction = await firstValueFrom(
-        this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload)
-      );
-      this.transactions.update((items) =>
-        items.map((item) => (item.id === id ? transaction : item))
-      );
-      this.refresh();
-    } catch (error) {
-      this.transactions.set(previousTransactions);
-      this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.UPDATE_FAILED'));
-      throw error;
-    }
+    
+    return firstValueFrom(
+      this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload)
+    )
+      .then((transaction) => {
+        this.transactions.update((items) =>
+          items.map((item) => (item.id === id ? transaction : item))
+        );
+        this.refresh();
+      })
+      .catch((error) => {
+        this.transactions.set(previousTransactions);
+        this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.UPDATE_FAILED'));
+        throw error;
+      });
   }
 
-  async remove(id: string): Promise<void> {
+  remove(id: string): void {
     this.loading.set(true);
     this.error.set(null);
-    try {
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`));
-      this.refresh();
-    } catch {
-      this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.DELETE_FAILED'));
-    } finally {
-      this.loading.set(false);
-    }
+    firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`))
+      .then(() => {
+        this.refresh();
+      })
+      .catch(() => {
+        this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.DELETE_FAILED'));
+        this.loading.set(false);
+      });
   }
 
   private refresh(): void {
-    this.pagination.update((current) => ({ ...current }));
+    const current = this.pagination();
+    this.pagination.set({ ...current });
   }
 
   private buildHttpParams({ filters, pagination, sort }: TransactionState): HttpParams {

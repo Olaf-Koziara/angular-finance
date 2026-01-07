@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { RegisterComponent } from './register.component';
@@ -22,14 +21,29 @@ describe('RegisterComponent', () => {
 
   beforeEach(async () => {
     authService = jasmine.createSpyObj<AuthService>('AuthService', ['register']);
-    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    router = jasmine.createSpyObj<Router>('Router', ['navigate', 'createUrlTree']);
+    const mockUrlTree: UrlTree = {
+      root: {} as any,
+      queryParams: {},
+      fragment: null,
+    } as UrlTree;
+    (router.createUrlTree as jasmine.Spy).and.returnValue(mockUrlTree);
+    
+    const activatedRouteMock = {
+      root: {
+        firstChild: null,
+        snapshot: { data: {} },
+      },
+      snapshot: { data: {} },
+    } as any;
 
     await TestBed.configureTestingModule({
-      imports: [RegisterComponent, RouterTestingModule],
+      imports: [RegisterComponent],
       providers: [
-        provideNoopAnimations(), 
+        provideNoopAnimations(),
         { provide: AuthService, useValue: authService },
-        { provide: Router, useValue: router }
+        { provide: Router, useValue: router },
+        { provide: ActivatedRoute, useValue: activatedRouteMock }
       ],
     }).compileComponents();
 
