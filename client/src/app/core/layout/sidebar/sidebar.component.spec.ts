@@ -2,7 +2,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { AuthService } from '../../../features/auth/services/auth.service';
 import { SidebarComponent } from './sidebar.component';
@@ -20,6 +20,7 @@ describe('SidebarComponent', () => {
     navigate: jasmine.createSpy('navigate'),
     events: of(),
     createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue({}),
+    serializeUrl: jasmine.createSpy('serializeUrl').and.returnValue(''),
   } as any;
   const activatedRouteMock = {
     root: {
@@ -43,6 +44,9 @@ describe('SidebarComponent', () => {
         { provide: MatDialog, useValue: matDialogMock },
       ],
     }).compileComponents();
+
+    const translateService = TestBed.inject(TranslateService);
+    spyOn(translateService, 'instant').and.callFake((key: string) => key || '');
 
     fixture = TestBed.createComponent(SidebarComponent);
     component = fixture.componentInstance;

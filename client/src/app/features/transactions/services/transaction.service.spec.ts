@@ -1,8 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick, flush } from '@angular/core/testing';
+import { fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { TransactionService } from './transaction.service';
 import { CreateTransaction, Transaction } from '../models/transaction.model';
+import { TransactionService } from './transaction.service';
 
 describe('TransactionService', () => {
   let service: TransactionService;
@@ -38,7 +38,6 @@ describe('TransactionService', () => {
     httpMock = TestBed.inject(HttpTestingController);
     translateService = TestBed.inject(TranslateService);
 
-    // Mock translate instant to return keys for testing
     spyOn(translateService, 'instant').and.callFake((key: string) => key);
   });
 
@@ -89,6 +88,7 @@ describe('TransactionService', () => {
 
   describe('Fetch Effect', () => {
     it('should fetch transactions on initialization', fakeAsync(() => {
+      tick(0);
       tick(100);
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
@@ -103,6 +103,7 @@ describe('TransactionService', () => {
     }));
 
     it('should set loading to true while fetching', fakeAsync(() => {
+      tick(0);
       tick(100);
       expect(service.loading()).toBe(true);
 
@@ -114,73 +115,106 @@ describe('TransactionService', () => {
     }));
 
     it('should include search param when filter is set', fakeAsync(() => {
+      tick(0);
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.updateFilters({ search: 'grocery' });
       tick(100);
+      tick();
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('search')).toBe('grocery');
       req.flush({ items: [], total: 0 });
+      tick();
     }));
 
     it('should include type param when filter is set', fakeAsync(() => {
+      tick(0);
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.updateFilters({ type: 'income' });
       tick(100);
+      tick();
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('type')).toBe('income');
       req.flush({ items: [], total: 0 });
+      tick();
     }));
 
     it('should not include type param when type is all', fakeAsync(() => {
+      tick(0);
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.updateFilters({ type: 'all' });
       tick(100);
+      tick();
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('type')).toBeNull();
       req.flush({ items: [], total: 0 });
+      tick();
     }));
 
     it('should include categories params when filter is set', fakeAsync(() => {
+      tick(0);
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.updateFilters({ categories: ['Food', 'Transport'] });
       tick(100);
+      tick();
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
       const categoriesParams = req.request.params.getAll('categories[]');
       expect(categoriesParams).toEqual(['Food', 'Transport']);
       req.flush({ items: [], total: 0 });
+      tick();
     }));
 
     it('should include pagination params', fakeAsync(() => {
+      tick(0);
       tick(100);
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('page')).toBe('1');
       expect(req.request.params.get('limit')).toBe('10');
       req.flush({ items: [], total: 0 });
+      tick();
     }));
 
     it('should include sort params', fakeAsync(() => {
+      tick(0);
       tick(100);
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('sortBy')).toBe('date');
       expect(req.request.params.get('sortOrder')).toBe('desc');
       req.flush({ items: [], total: 0 });
+      tick();
     }));
 
     it('should handle fetch errors', fakeAsync(() => {
+      tick(0);
       tick(100);
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
@@ -194,8 +228,13 @@ describe('TransactionService', () => {
     }));
 
     it('should debounce fetch requests', fakeAsync(() => {
+      tick(0);
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.updateFilters({ search: 'a' });
       tick(50);
@@ -206,14 +245,20 @@ describe('TransactionService', () => {
 
       const requests = httpMock.match((request) => request.url === '/transactions');
       expect(requests.length).toBe(1);
-      requests[0].flush({ items: [], total: 0 });
+      if (requests.length > 0) {
+        requests[0].flush({ items: [], total: 0 });
+      }
+      tick();
     }));
   });
 
   describe('Update Filters', () => {
     it('should update filters signal', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.updateFilters({ search: 'test' });
 
@@ -222,7 +267,10 @@ describe('TransactionService', () => {
 
     it('should merge filter changes with existing filters', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.updateFilters({ search: 'test' });
       service.updateFilters({ type: 'income' });
@@ -234,7 +282,10 @@ describe('TransactionService', () => {
 
     it('should reset pageIndex to 0 when filters change', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.pagination.set({ pageIndex: 5, pageSize: 10 });
       service.updateFilters({ search: 'test' });
@@ -244,7 +295,10 @@ describe('TransactionService', () => {
 
     it('should preserve pageSize when filters change', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.pagination.set({ pageIndex: 5, pageSize: 25 });
       service.updateFilters({ search: 'test' });
@@ -254,7 +308,11 @@ describe('TransactionService', () => {
 
     it('should trigger new fetch when filters change', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.updateFilters({ search: 'test' });
       tick(100);
@@ -262,13 +320,17 @@ describe('TransactionService', () => {
       const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('search')).toBe('test');
       req.flush({ items: [], total: 0 });
+      tick();
     }));
   });
 
   describe('Update Pagination', () => {
     it('should update pagination signal', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.updatePagination({ pageIndex: 2 });
 
@@ -277,7 +339,10 @@ describe('TransactionService', () => {
 
     it('should merge pagination changes with existing pagination', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.updatePagination({ pageIndex: 2 });
       service.updatePagination({ pageSize: 25 });
@@ -289,7 +354,11 @@ describe('TransactionService', () => {
 
     it('should trigger new fetch when pagination changes', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.updatePagination({ pageIndex: 2 });
       tick(100);
@@ -297,13 +366,17 @@ describe('TransactionService', () => {
       const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.get('page')).toBe('3');
       req.flush({ items: [], total: 0 });
+      tick();
     }));
   });
 
   describe('Update Sort', () => {
     it('should update sort signal', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.updateSort({ column: 'amount', order: 'asc' });
 
@@ -314,7 +387,10 @@ describe('TransactionService', () => {
 
     it('should trigger new fetch when sort changes', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.updateSort({ column: 'amount', order: 'asc' });
       tick(100);
@@ -329,7 +405,11 @@ describe('TransactionService', () => {
   describe('Create Transaction', () => {
     it('should create a new transaction', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       const newTransaction: CreateTransaction = {
         title: 'New Transaction',
@@ -358,7 +438,11 @@ describe('TransactionService', () => {
 
     it('should optimistically add transaction to list', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: mockTransactions, total: 2 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: mockTransactions, total: 2 });
+      }
+      tick();
 
       service.transactions.set([...mockTransactions]);
 
@@ -374,11 +458,19 @@ describe('TransactionService', () => {
 
       expect(service.transactions().length).toBe(3);
       expect(service.transactions()[2].id).toBe('');
+
+      const req = httpMock.expectOne((request) => request.method === 'POST');
+      req.flush({ id: '3', ...newTransaction });
+      tick();
     }));
 
     it('should update temporary transaction with real one after creation', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       const newTransaction: CreateTransaction = {
         title: 'New Transaction',
@@ -401,7 +493,11 @@ describe('TransactionService', () => {
 
     it('should rollback on create error', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: mockTransactions, total: 2 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: mockTransactions, total: 2 });
+      }
+      tick();
 
       service.transactions.set([...mockTransactions]);
       const originalLength = service.transactions().length;
@@ -426,7 +522,11 @@ describe('TransactionService', () => {
 
     it('should clear error before creating', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.error.set('Previous error');
 
@@ -441,13 +541,21 @@ describe('TransactionService', () => {
       service.create(newTransaction);
 
       expect(service.error()).toBeNull();
+
+      const req = httpMock.expectOne((request) => request.method === 'POST');
+      req.flush({ id: '1', ...newTransaction });
+      tick();
     }));
   });
 
   describe('Update Transaction', () => {
     it('should update an existing transaction', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: mockTransactions, total: 2 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: mockTransactions, total: 2 });
+      }
+      tick();
 
       service.transactions.set([...mockTransactions]);
 
@@ -479,7 +587,11 @@ describe('TransactionService', () => {
 
     it('should refresh transaction list after update', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: mockTransactions, total: 2 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: mockTransactions, total: 2 });
+      }
+      tick();
 
       service.transactions.set([...mockTransactions]);
 
@@ -504,7 +616,11 @@ describe('TransactionService', () => {
 
     it('should rollback on update error', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: mockTransactions, total: 2 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: mockTransactions, total: 2 });
+      }
+      tick();
 
       service.transactions.set([...mockTransactions]);
       const originalTitle = service.transactions()[0].title;
@@ -533,7 +649,11 @@ describe('TransactionService', () => {
 
     it('should clear error before updating', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: mockTransactions, total: 2 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: mockTransactions, total: 2 });
+      }
+      tick();
 
       service.error.set('Previous error');
       service.transactions.set([...mockTransactions]);
@@ -549,13 +669,24 @@ describe('TransactionService', () => {
       service.update('1', updates);
 
       expect(service.error()).toBeNull();
+
+      const putReq = httpMock.expectOne((request) => request.method === 'PUT');
+      putReq.flush({ id: '1', ...updates });
+      tick(100);
+      const getReq = httpMock.expectOne((request) => request.method === 'GET');
+      getReq.flush({ items: [], total: 0 });
+      tick();
     }));
   });
 
   describe('Remove Transaction', () => {
     it('should delete a transaction', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: mockTransactions, total: 2 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: mockTransactions, total: 2 });
+      }
+      tick();
 
       service.remove('1');
 
@@ -574,7 +705,11 @@ describe('TransactionService', () => {
 
     it('should set loading to true while deleting', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.remove('1');
 
@@ -592,7 +727,11 @@ describe('TransactionService', () => {
 
     it('should refresh transaction list after delete', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: mockTransactions, total: 2 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: mockTransactions, total: 2 });
+      }
+      tick();
 
       service.remove('1');
 
@@ -607,7 +746,11 @@ describe('TransactionService', () => {
 
     it('should handle delete errors', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.remove('1');
 
@@ -621,17 +764,29 @@ describe('TransactionService', () => {
 
     it('should clear error before removing', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.error.set('Previous error');
       service.remove('1');
 
       expect(service.error()).toBeNull();
+
+      const deleteReq = httpMock.expectOne((request) => request.method === 'DELETE');
+      deleteReq.flush({});
+      tick(100);
+      const getReq = httpMock.expectOne((request) => request.method === 'GET');
+      getReq.flush({ items: [], total: 0 });
+      tick();
     }));
   });
 
   describe('Edge Cases', () => {
     it('should handle empty response', fakeAsync(() => {
+      tick(0);
       tick(100);
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
@@ -643,33 +798,50 @@ describe('TransactionService', () => {
     }));
 
     it('should handle null categories in filters', fakeAsync(() => {
+      tick(0);
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.updateFilters({ categories: null });
       tick(100);
+      tick();
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
       const categoriesParams = req.request.params.getAll('categories[]');
       expect(categoriesParams).toEqual([]);
       req.flush({ items: [], total: 0 });
+      tick();
     }));
 
     it('should handle empty string search', fakeAsync(() => {
+      tick(0);
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
+      tick();
 
       service.updateFilters({ search: '' });
       tick(100);
+      tick();
 
       const req = httpMock.expectOne((request) => request.url === '/transactions');
       expect(req.request.params.has('search')).toBeFalse();
       req.flush({ items: [], total: 0 });
+      tick();
     }));
 
     it('should handle rapid state changes', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       for (let i = 0; i < 10; i++) {
         service.updatePagination({ pageIndex: i });
@@ -683,6 +855,7 @@ describe('TransactionService', () => {
     }));
 
     it('should handle very large datasets', fakeAsync(() => {
+      tick(0);
       tick(100);
 
       const largeDataset = Array.from({ length: 1000 }, (_, i) => ({
@@ -706,7 +879,10 @@ describe('TransactionService', () => {
   describe('Signal Reactivity', () => {
     it('should update computed state when filters change', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.updateFilters({ search: 'test' });
       const state = (service as any).state();
@@ -716,7 +892,10 @@ describe('TransactionService', () => {
 
     it('should update computed state when pagination changes', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.updatePagination({ pageIndex: 5 });
       const state = (service as any).state();
@@ -726,7 +905,10 @@ describe('TransactionService', () => {
 
     it('should update computed state when sort changes', fakeAsync(() => {
       tick(100);
-      httpMock.expectOne(() => true).flush({ items: [], total: 0 });
+      const initialReq = httpMock.match((request) => request.url === '/transactions');
+      if (initialReq.length > 0) {
+        initialReq[0].flush({ items: [], total: 0 });
+      }
 
       service.updateSort({ column: 'amount', order: 'asc' });
       const state = (service as any).state();

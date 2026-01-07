@@ -528,13 +528,16 @@ describe('TransactionFormComponent', () => {
         date: null,
         type: 'expense',
       });
+      component.form.controls.date.setErrors(null);
+      component.form.controls.date.markAsTouched();
 
       component.submit();
 
+      expect(component.submitted.emit).toHaveBeenCalled();
       const emittedValue = (component.submitted.emit as jasmine.Spy).calls.mostRecent()?.args[0];
-      if (emittedValue) {
-        expect(emittedValue.date).toBeDefined();
-      }
+      expect(emittedValue).toBeDefined();
+      expect(emittedValue.date).toBeDefined();
+      expect(typeof emittedValue.date).toBe('string');
     });
 
     it('should handle very large amounts', () => {

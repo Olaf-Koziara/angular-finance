@@ -1,7 +1,8 @@
 import { Component, input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChip, MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
@@ -63,6 +64,7 @@ describe('TransactionListComponent', () => {
         TranslateModule.forRoot(),
         MatIconModule,
         MatChipsModule,
+        MatSortModule,
       ],
     })
       .overrideComponent(TransactionListComponent, {
@@ -182,19 +184,25 @@ describe('TransactionListComponent', () => {
     });
 
     it('should render type chip with correct color for income', () => {
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+      const chips = fixture.debugElement.queryAll(By.directive(MatChip));
       const incomeChip = chips.find((chip) => chip.nativeElement.textContent.includes('INCOME'));
       expect(incomeChip).toBeTruthy();
-      expect(incomeChip?.nativeElement.getAttribute('ng-reflect-color')).toBe('primary');
+      
+      // Access MatChip component instance
+      const chipComponent = incomeChip?.componentInstance as MatChip;
+      expect(chipComponent?.color).toBe('primary');
     });
 
     it('should render type chip with correct color for expense', () => {
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+      const chips = fixture.debugElement.queryAll(By.directive(MatChip));
       const expenseChips = chips.filter((chip) =>
         chip.nativeElement.textContent.includes('EXPENSE')
       );
       expect(expenseChips.length).toBeGreaterThan(0);
-      expect(expenseChips[0].nativeElement.getAttribute('ng-reflect-color')).toBe('warn');
+      
+      // Access MatChip component instance
+      const chipComponent = expenseChips[0].componentInstance as MatChip;
+      expect(chipComponent?.color).toBe('warn');
     });
 
     it('should render action buttons for each row', () => {
@@ -208,9 +216,13 @@ describe('TransactionListComponent', () => {
 
   describe('Sorting', () => {
     it('should apply sort column and direction to table', () => {
-      const sortElement = fixture.debugElement.query(By.css('[matSort]'));
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-active')).toBe('date');
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-direction')).toBe('desc');
+      const sortElement = fixture.debugElement.query(By.directive(MatSort));
+      expect(sortElement).toBeTruthy();
+      
+      // Get the MatSort directive instance
+      const matSort = sortElement.injector.get(MatSort);
+      expect(matSort.active).toBe('date');
+      expect(matSort.direction).toBe('desc');
     });
 
     it('should emit sortChanged event when sort changes', () => {
@@ -250,9 +262,13 @@ describe('TransactionListComponent', () => {
       fixture.componentRef.setInput('sort', newSort);
       fixture.detectChanges();
 
-      const sortElement = fixture.debugElement.query(By.css('[matSort]'));
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-active')).toBe('amount');
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-direction')).toBe('asc');
+      const sortElement = fixture.debugElement.query(By.directive(MatSort));
+      expect(sortElement).toBeTruthy();
+      
+      // Get the MatSort directive instance
+      const matSort = sortElement.injector.get(MatSort);
+      expect(matSort.active).toBe('amount');
+      expect(matSort.direction).toBe('asc');
     });
   });
 
@@ -404,7 +420,9 @@ describe('TransactionListComponent', () => {
 
   describe('Component Properties', () => {
     it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe('TransactionListComponent');
+      // Check change detection strategy through component metadata
+      const metadata = (component.constructor as any).ɵcmp;
+      expect(metadata.onPush).toBeTrue();
     });
 
     it('should have correct displayedColumns', () => {
