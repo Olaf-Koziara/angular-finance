@@ -43,7 +43,7 @@ export class SettingsService {
 
       this.lastFetchedUserId = currentUser.id;
       this.fetchSettings();
-    });
+    }, { allowSignalWrites: true });
   }
 
   updateSetting<K extends keyof Settings>(setting: K, value: Settings[K]) {
