@@ -108,21 +108,23 @@ export class TransactionService {
   create(payload: CreateTransaction): void {
     this.error.set(null);
     const previousTransactionsValue = [...this.transactions()];
-    this.transactions.set([...previousTransactionsValue, { id: '', ...payload }]);
+    const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    this.transactions.set([...previousTransactionsValue, { id: tempId, ...payload }]);
     
-    this.http.post<Transaction>(this.apiUrl, payload).subscribe({
-      next:((transaction) => {
-        const updatedTransactions = this.transactions().map((transactionMapItem) =>
-          transactionMapItem.id === '' ? transaction : transactionMapItem
-        );
-        this.transactions.set(updatedTransactions);
-      }),
-      error:() => {
-        this.transactions.set(previousTransactionsValue);
-        this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.CREATE_FAILED'));
-      }
-    })
-    
+    this.http.post<Transaction>(this.apiUrl, payload)
+      .pipe(first())
+      .subscribe({
+        next: (transaction) => {
+          const updatedTransactions = this.transactions().map((transactionMapItem) =>
+            transactionMapItem.id === tempId ? transaction : transactionMapItem
+          );
+          this.transactions.set(updatedTransactions);
+        },
+        error: () => {
+          this.transactions.set(previousTransactionsValue);
+          this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.CREATE_FAILED'));
+        },
+      });
   }
 
   update(id: string, payload: CreateTransaction): void {
@@ -134,7 +136,7 @@ export class TransactionService {
       )
     );
 
-    this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload).subscribe({
+    this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload).pipe(first()).subscribe({
       next: (updatedTransaction) => {
         this.transactions.update((transactions) =>
           transactions.map((transaction) =>
@@ -148,7 +150,6 @@ export class TransactionService {
         this.error.set(
           this.translate.instant('TRANSACTIONS.ERRORS.UPDATE_FAILED')
         );
-        throw error;
       },
     });
   }
