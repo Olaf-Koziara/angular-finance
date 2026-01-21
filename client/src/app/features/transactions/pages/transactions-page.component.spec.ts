@@ -1,18 +1,17 @@
+import { ChangeDetectionStrategy, signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TransactionsPageComponent } from './transactions-page.component';
-import { TransactionService } from '../services/transaction.service';
-import { signal, WritableSignal } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
+import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
-import { By } from '@angular/platform-browser';
 import {
   CreateTransaction,
   Transaction,
   TransactionFilters,
   TransactionSort,
 } from '../models/transaction.model';
-import { PageEvent } from '@angular/material/paginator';
-import { TransactionPagination } from '../services/transaction.service';
+import { TransactionPagination, TransactionService } from '../services/transaction.service';
+import { TransactionsPageComponent } from './transactions-page.component';
 
 class MockTransactionService {
   transactions: WritableSignal<Transaction[]> = signal([]);
@@ -648,11 +647,22 @@ describe('TransactionsPageComponent', () => {
 
   describe('Component Properties', () => {
     it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe('TransactionsPageComponent');
+      const metadata = (component.constructor as any).ɵcmp;
+      expect(metadata.changeDetection).toBe(ChangeDetectionStrategy.OnPush);
     });
 
-    it('should be standalone component', () => {
-      expect((component.constructor as any).ɵcmp.standalone).toBeTrue();
+    it('should be standalone component', async () => {
+      // Verify component can be used as standalone by importing it directly in TestBed
+      // This will fail if the component is not standalone
+      await TestBed.configureTestingModule({
+        imports: [TransactionsPageComponent, NoopAnimationsModule, TranslateModule.forRoot()],
+        providers: [{ provide: TransactionService, useValue: mockTransactionService }],
+      }).compileComponents();
+
+      const standaloneFixture = TestBed.createComponent(TransactionsPageComponent);
+      expect(standaloneFixture.componentInstance).toBeTruthy();
+      expect(standaloneFixture.componentInstance).toBeInstanceOf(TransactionsPageComponent);
+      standaloneFixture.destroy();
     });
 
     it('should have editingTransaction signal', () => {

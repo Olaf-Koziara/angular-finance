@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { first, firstValueFrom, Subscription } from 'rxjs';
+import { first, Subscription } from 'rxjs';
 import {
   CreateTransaction,
   Transaction,
@@ -60,8 +60,7 @@ export class TransactionService {
 
   private readonly fetchEffect = effect((onCleanup) => {
     const currentState = this.state();
-    const timer = setTimeout(() => {
-      this.loading.set(true);
+   
       this.error.set(null);
       const params = this.buildHttpParams(currentState);
       const subscription: Subscription = this.http
@@ -81,9 +80,7 @@ export class TransactionService {
           },
         });
       onCleanup(() => subscription.unsubscribe());
-    }, 100);
-
-    onCleanup(() => clearTimeout(timer));
+  
   });
 
   updateFilters(changes: Partial<TransactionFilters>): void {
@@ -108,55 +105,71 @@ export class TransactionService {
     this.sort.set(sort);
   }
 
-  async create(payload: CreateTransaction): Promise<void> {
+  create(payload: CreateTransaction): void {
     this.error.set(null);
-    const tempTransactions = [...this.transactions()];
-    try {
-      this.transactions.set([...tempTransactions, { id: '', ...payload }]);
-      const transaction = await firstValueFrom(this.http.post<Transaction>(this.apiUrl, payload));
-      const updatedTransactions = this.transactions().map((transactionMapItem) =>
-        transactionMapItem.id === '' ? transaction : transactionMapItem
-      );
-      this.transactions.set(updatedTransactions);
-    } catch {
-      this.transactions.set(tempTransactions);
-      this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.CREATE_FAILED'));
-    }
+    const previousTransactionsValue = [...this.transactions()];
+    const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    this.transactions.set([...previousTransactionsValue, { id: tempId, ...payload }]);
+    
+    this.http.post<Transaction>(this.apiUrl, payload)
+      .pipe(first())
+      .subscribe({
+        next: (transaction) => {
+          const updatedTransactions = this.transactions().map((transactionMapItem) =>
+            transactionMapItem.id === tempId ? transaction : transactionMapItem
+          );
+          this.transactions.set(updatedTransactions);
+        },
+        error: () => {
+          this.transactions.set(previousTransactionsValue);
+          this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.CREATE_FAILED'));
+        },
+      });
   }
 
-  async update(id: string, payload: CreateTransaction): Promise<void> {
+  update(id: string, payload: CreateTransaction): void {
     this.error.set(null);
-    const previousTransactions = [...this.transactions()];
-    try {
-      const transaction = await firstValueFrom(
-        this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload)
-      );
-      this.transactions.update((items) =>
-        items.map((item) => (item.id === id ? transaction : item))
-      );
-      this.refresh();
-    } catch (error) {
-      this.transactions.set(previousTransactions);
-      this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.UPDATE_FAILED'));
-      throw error;
-    }
+    const previousTransactionsValue = [...this.transactions()];
+    this.transactions.update((transactions) =>
+      transactions.map((transaction) =>
+        transaction.id === id ? { ...payload, id } : transaction
+      )
+    );
+
+    this.http.put<Transaction>(`${this.apiUrl}/${id}`, payload).pipe(first()).subscribe({
+      next: (updatedTransaction) => {
+        this.transactions.update((transactions) =>
+          transactions.map((transaction) =>
+            transaction.id === id ? updatedTransaction : transaction
+          )
+        );
+        this.refresh();
+      },
+      error: (error) => {
+        this.transactions.set(previousTransactionsValue);
+        this.error.set(
+          this.translate.instant('TRANSACTIONS.ERRORS.UPDATE_FAILED')
+        );
+      },
+    });
   }
 
-  async remove(id: string): Promise<void> {
-    this.loading.set(true);
+  remove(id: string): void {
     this.error.set(null);
-    try {
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`));
-      this.refresh();
-    } catch {
+    const previousTransactionsValue = [...this.transactions()];
+    this.transactions.update(transactions=>transactions.filter(transaction=>transaction.id !== id))
+    this.http.delete(`${this.apiUrl}/${id}`).subscribe({next:()=>{
+      this.refresh()
+    },error:() => {
+      this.transactions.set(previousTransactionsValue)
       this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.DELETE_FAILED'));
-    } finally {
-      this.loading.set(false);
-    }
+    }})
+
   }
 
   private refresh(): void {
-    this.pagination.update((current) => ({ ...current }));
+    const current = this.pagination();
+    this.pagination.set({ ...current });
   }
 
   private buildHttpParams({ filters, pagination, sort }: TransactionState): HttpParams {

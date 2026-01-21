@@ -43,8 +43,15 @@ export const DASHBOARD_BUDGETS: BudgetConfig[] = [
     translationKey: "DASHBOARD.CATEGORIES.HEALTHCARE",
   },
   {
+    key: "Housing",
+    categoryMatchers: ["Housing"],
+    budget: null,
+    color: "#9c27b0",
+    translationKey: "DASHBOARD.CATEGORIES.HOUSING",
+  },
+  {
     key: "Other",
-    categoryMatchers: ["Other", "Housing", "Education"],
+    categoryMatchers: ["Other", "Education"],
     budget: null,
     color: "#2196f3",
     translationKey: "DASHBOARD.CATEGORIES.OTHER",

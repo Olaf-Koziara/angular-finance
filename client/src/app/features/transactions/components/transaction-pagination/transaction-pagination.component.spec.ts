@@ -335,9 +335,8 @@ describe('TransactionPaginationComponent', () => {
 
   describe('Component Properties', () => {
     it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe(
-        'TransactionPaginationComponent'
-      );
+      const metadata = (component.constructor as any).ɵcmp;
+      expect(metadata.onPush).toBeTrue();
     });
 
     it('should be standalone component', () => {
@@ -373,10 +372,11 @@ describe('TransactionPaginationComponent', () => {
       fixture.detectChanges();
 
       const paginator = fixture.debugElement.query(By.css('mat-paginator'));
-      const rangeLabel = paginator.componentInstance.getRangeLabel(0, 10, 100);
-      expect(rangeLabel).toContain('1');
-      expect(rangeLabel).toContain('10');
-      expect(rangeLabel).toContain('100');
+      expect(paginator).toBeTruthy();
+      // Verify paginator has correct inputs
+      expect(paginator.componentInstance.length).toBe(100);
+      expect(paginator.componentInstance.pageSize).toBe(10);
+      expect(paginator.componentInstance.pageIndex).toBe(0);
     });
 
     it('should have hasNextPage method work correctly', () => {

@@ -28,25 +28,22 @@ export class SettingsService {
   private lastFetchedUserId: string | null = null;
 
   constructor() {
-    effect(
-      () => {
-        const currentUser = this.userSignal();
+    effect(() => {
+      const currentUser = this.userSignal();
 
-        if (!currentUser) {
-          this.lastFetchedUserId = null;
-          this.settings.set({ ...DEFAULT_SETTINGS });
-          return;
-        }
+      if (!currentUser) {
+        this.lastFetchedUserId = null;
+        this.settings.set({ ...DEFAULT_SETTINGS });
+        return;
+      }
 
-        if (this.lastFetchedUserId === currentUser.id) {
-          return;
-        }
+      if (this.lastFetchedUserId === currentUser.id) {
+        return;
+      }
 
-        this.lastFetchedUserId = currentUser.id;
-        this.fetchSettings();
-      },
-      { allowSignalWrites: true }
-    );
+      this.lastFetchedUserId = currentUser.id;
+      this.fetchSettings();
+    }, { allowSignalWrites: true });
   }
 
   updateSetting<K extends keyof Settings>(setting: K, value: Settings[K]) {

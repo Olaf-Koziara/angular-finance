@@ -30,6 +30,7 @@
       "ENTERTAINMENT": "Entertainment",
       "UTILITIES": "Utilities",
       "HEALTHCARE": "Healthcare",
+      "HOUSING":"Housing",
       "OTHER": "Other"
     },
     "ALERTS_LIST": {

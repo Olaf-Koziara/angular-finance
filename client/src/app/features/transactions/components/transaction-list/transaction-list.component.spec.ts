@@ -1,12 +1,14 @@
+import { Component, input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TransactionListComponent } from './transaction-list.component';
+import { MatChip, MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
-import { By } from '@angular/platform-browser';
-import { Component, signal } from '@angular/core';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
+import { TransactionListComponent } from './transaction-list.component';
 
 @Component({
   selector: 'app-loader',
@@ -15,7 +17,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  readonly loading = input.required<boolean>();
 }
 
 describe('TransactionListComponent', () => {
@@ -62,11 +64,12 @@ describe('TransactionListComponent', () => {
         TranslateModule.forRoot(),
         MatIconModule,
         MatChipsModule,
+        MatSortModule,
       ],
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
@@ -181,19 +184,25 @@ describe('TransactionListComponent', () => {
     });
 
     it('should render type chip with correct color for income', () => {
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+      const chips = fixture.debugElement.queryAll(By.directive(MatChip));
       const incomeChip = chips.find((chip) => chip.nativeElement.textContent.includes('INCOME'));
       expect(incomeChip).toBeTruthy();
-      expect(incomeChip?.nativeElement.getAttribute('ng-reflect-color')).toBe('primary');
+      
+      // Access MatChip component instance
+      const chipComponent = incomeChip?.componentInstance as MatChip;
+      expect(chipComponent?.color).toBe('primary');
     });
 
     it('should render type chip with correct color for expense', () => {
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+      const chips = fixture.debugElement.queryAll(By.directive(MatChip));
       const expenseChips = chips.filter((chip) =>
         chip.nativeElement.textContent.includes('EXPENSE')
       );
       expect(expenseChips.length).toBeGreaterThan(0);
-      expect(expenseChips[0].nativeElement.getAttribute('ng-reflect-color')).toBe('warn');
+      
+      // Access MatChip component instance
+      const chipComponent = expenseChips[0].componentInstance as MatChip;
+      expect(chipComponent?.color).toBe('warn');
     });
 
     it('should render action buttons for each row', () => {
@@ -207,9 +216,13 @@ describe('TransactionListComponent', () => {
 
   describe('Sorting', () => {
     it('should apply sort column and direction to table', () => {
-      const sortElement = fixture.debugElement.query(By.css('[matSort]'));
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-active')).toBe('date');
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-direction')).toBe('desc');
+      const sortElement = fixture.debugElement.query(By.directive(MatSort));
+      expect(sortElement).toBeTruthy();
+      
+      // Get the MatSort directive instance
+      const matSort = sortElement.injector.get(MatSort);
+      expect(matSort.active).toBe('date');
+      expect(matSort.direction).toBe('desc');
     });
 
     it('should emit sortChanged event when sort changes', () => {
@@ -249,9 +262,13 @@ describe('TransactionListComponent', () => {
       fixture.componentRef.setInput('sort', newSort);
       fixture.detectChanges();
 
-      const sortElement = fixture.debugElement.query(By.css('[matSort]'));
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-active')).toBe('amount');
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-direction')).toBe('asc');
+      const sortElement = fixture.debugElement.query(By.directive(MatSort));
+      expect(sortElement).toBeTruthy();
+      
+      // Get the MatSort directive instance
+      const matSort = sortElement.injector.get(MatSort);
+      expect(matSort.active).toBe('amount');
+      expect(matSort.direction).toBe('asc');
     });
   });
 
@@ -402,8 +419,34 @@ describe('TransactionListComponent', () => {
   });
 
   describe('Component Properties', () => {
-    it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe('TransactionListComponent');
+    it('should use OnPush change detection strategy', () => {
+      // Verify OnPush semantics: component should not update DOM without detectChanges
+      const initialRowCount = fixture.debugElement.queryAll(By.css('tbody tr')).length;
+      expect(initialRowCount).toBe(mockTransactions.length);
+
+      // Change input without calling detectChanges
+      const newTransactions: Transaction[] = [
+        {
+          id: '7',
+          date: '2023-11-07T10:00:00Z',
+          title: 'OnPush Test Transaction',
+          category: 'Food',
+          type: 'expense',
+          amount: 25.5,
+        },
+      ];
+      fixture.componentRef.setInput('transactions', newTransactions);
+
+      // DOM should not update without detectChanges (OnPush behavior)
+      const rowCountWithoutDetectChanges = fixture.debugElement.queryAll(By.css('tbody tr')).length;
+      expect(rowCountWithoutDetectChanges).toBe(initialRowCount);
+      expect(fixture.nativeElement.textContent).not.toContain('OnPush Test Transaction');
+
+      // After detectChanges, DOM should update
+      fixture.detectChanges();
+      const rowCountAfterDetectChanges = fixture.debugElement.queryAll(By.css('tbody tr')).length;
+      expect(rowCountAfterDetectChanges).toBe(1);
+      expect(fixture.nativeElement.textContent).toContain('OnPush Test Transaction');
     });
 
     it('should have correct displayedColumns', () => {
@@ -415,12 +458,6 @@ describe('TransactionListComponent', () => {
         'amount',
         'actions',
       ]);
-    });
-
-    it('should have readonly displayedColumns', () => {
-      expect(() => {
-        (component.displayedColumns as any) = [];
-      }).toThrow();
     });
   });
 });

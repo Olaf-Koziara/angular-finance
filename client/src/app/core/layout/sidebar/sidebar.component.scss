@@ -8,7 +8,11 @@
   background: transparent;
   --mat-sys-on-surface: #fff !important;
 }
-
+.sidenav .mat-mdc-nav-list{
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
 .sidenav .mat-toolbar {
   background: transparent;
 }

@@ -3,8 +3,7 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 1400px;
 }
 
 .page-header h1 {
@@ -37,6 +36,10 @@
   }
 }
 .transaction-form-card {
+  @media (min-width:992px){
+  position: sticky;
+  top: 72px;
+  }
   mat-card-header {
     padding-bottom: 0.5rem;
   }
