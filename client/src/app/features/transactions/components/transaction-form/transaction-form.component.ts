@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -27,6 +28,7 @@ import { TranslateModule } from '@ngx-translate/core';
     MatNativeDateModule,
     MatButtonModule,
     MatButtonToggleModule,
+    MatProgressSpinnerModule,
     TranslateModule
 ],
   templateUrl: './transaction-form.component.html',
@@ -38,6 +40,7 @@ export class TransactionFormComponent {
 
   readonly categories = input<string[]>([...TRANSACTION_CATEGORIES]);
   readonly transaction = input<Transaction | null>(null);
+  readonly loading = input<boolean>(false);
   readonly submitted = output<CreateTransaction>();
   readonly updated = output<{ id: string; changes: CreateTransaction }>();
   readonly cancelled = output<void>();
