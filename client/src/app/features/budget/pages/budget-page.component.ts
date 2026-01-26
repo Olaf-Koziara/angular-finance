@@ -16,7 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { BudgetService } from '../services/budget.service';
 import { Budget } from '../models/budget.model';
 import { TRANSACTION_CATEGORIES } from '../../transactions/constants/transaction-categories.constant';
-import { form, Field, min, required, validate } from '@angular/forms/signals';
+import { form, FormField, min, required, validate } from '@angular/forms/signals';
 import { MatAnchor } from '@angular/material/button';
 import { numericValidator } from '../../../shared/utils/validators';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -36,7 +36,7 @@ import { AppCurrencyPipe } from "../../../shared/pipes/app-currency.pipe";
     MatInputModule,
     MatIconModule,
     TranslateModule,
-    Field,
+    FormField,
     MatAnchor,
     AppCurrencyPipe
   ],

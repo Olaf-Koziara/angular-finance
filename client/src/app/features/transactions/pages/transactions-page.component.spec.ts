@@ -5,6 +5,8 @@ import { signal, WritableSignal } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
 import {
   CreateTransaction,
   Transaction,
@@ -34,16 +36,24 @@ class MockTransactionService {
 
   create = jasmine.createSpy('create').and.returnValue(Promise.resolve());
   remove = jasmine.createSpy('remove').and.returnValue(Promise.resolve());
+  removeMany = jasmine.createSpy('removeMany').and.returnValue(Promise.resolve());
   update = jasmine.createSpy('update').and.returnValue(Promise.resolve());
   updateFilters = jasmine.createSpy('updateFilters');
   updatePagination = jasmine.createSpy('updatePagination');
   updateSort = jasmine.createSpy('updateSort');
 }
 
+class MockMatDialog {
+  open = jasmine.createSpy('open').and.returnValue({
+    afterClosed: () => of(true),
+  });
+}
+
 describe('TransactionsPageComponent', () => {
   let component: TransactionsPageComponent;
   let fixture: ComponentFixture<TransactionsPageComponent>;
   let mockTransactionService: MockTransactionService;
+  let mockDialog: MockMatDialog;
 
   const mockTransactions: Transaction[] = [
     {
@@ -66,10 +76,14 @@ describe('TransactionsPageComponent', () => {
 
   beforeEach(async () => {
     mockTransactionService = new MockTransactionService();
+    mockDialog = new MockMatDialog();
 
     await TestBed.configureTestingModule({
       imports: [TransactionsPageComponent, NoopAnimationsModule, TranslateModule.forRoot()],
-      providers: [{ provide: TransactionService, useValue: mockTransactionService }],
+      providers: [
+        { provide: TransactionService, useValue: mockTransactionService },
+        { provide: MatDialog, useValue: mockDialog },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TransactionsPageComponent);
@@ -170,10 +184,19 @@ describe('TransactionsPageComponent', () => {
   });
 
   describe('Remove Transaction', () => {
-    it('should call service remove method', () => {
+    it('should open confirmation dialog and call service remove method on confirm', () => {
       component.removeTransaction('123');
-
+      expect(mockDialog.open).toHaveBeenCalled();
       expect(mockTransactionService.remove).toHaveBeenCalledWith('123');
+    });
+
+    it('should not call service remove method on cancel', () => {
+      mockDialog.open.and.returnValue({
+        afterClosed: () => of(false),
+      });
+      component.removeTransaction('123');
+      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockTransactionService.remove).not.toHaveBeenCalled();
     });
 
     it('should handle list item removal', () => {
@@ -188,6 +211,58 @@ describe('TransactionsPageComponent', () => {
       listComponent.componentInstance.removed.emit('1');
 
       expect(component.removeTransaction).toHaveBeenCalledWith('1');
+    });
+  });
+
+  describe('Selection Logic', () => {
+    it('should toggle selection mode', () => {
+      expect(component.selectionMode()).toBeFalse();
+      component.toggleSelectionMode();
+      expect(component.selectionMode()).toBeTrue();
+      component.toggleSelectionMode();
+      expect(component.selectionMode()).toBeFalse();
+    });
+
+    it('should clear selection when turning off selection mode', () => {
+      component.toggleSelectionMode();
+      component.onToggleSelection('1');
+      expect(component.selectedIds().size).toBe(1);
+      component.toggleSelectionMode();
+      expect(component.selectedIds().size).toBe(0);
+    });
+
+    it('should toggle individual selection', () => {
+      component.onToggleSelection('1');
+      expect(component.selectedIds().has('1')).toBeTrue();
+      component.onToggleSelection('1');
+      expect(component.selectedIds().has('1')).toBeFalse();
+    });
+
+    it('should toggle all selection', () => {
+      mockTransactionService.transactions.set(mockTransactions);
+      component.onToggleAll(true);
+      expect(component.selectedIds().size).toBe(2);
+      expect(component.selectedIds().has('1')).toBeTrue();
+      expect(component.selectedIds().has('2')).toBeTrue();
+
+      component.onToggleAll(false);
+      expect(component.selectedIds().size).toBe(0);
+    });
+
+    it('should remove selected transactions', async () => {
+      component.toggleSelectionMode();
+      component.onToggleSelection('1');
+      component.onToggleSelection('2');
+
+      component.removeSelected();
+
+      expect(mockDialog.open).toHaveBeenCalled();
+
+      await fixture.whenStable();
+
+      expect(mockTransactionService.removeMany).toHaveBeenCalledWith(['1', '2']);
+      expect(component.selectedIds().size).toBe(0);
+      expect(component.selectionMode()).toBeFalse();
     });
   });
 
@@ -546,6 +621,7 @@ describe('TransactionsPageComponent', () => {
       const listComponent = fixture.debugElement.query(By.css('app-transaction-list'));
       listComponent.componentInstance.removed.emit(mockTransactions[0].id);
 
+      expect(mockDialog.open).toHaveBeenCalled();
       expect(mockTransactionService.remove).toHaveBeenCalledWith(mockTransactions[0].id);
     });
 
@@ -647,10 +723,6 @@ describe('TransactionsPageComponent', () => {
   });
 
   describe('Component Properties', () => {
-    it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe('TransactionsPageComponent');
-    });
-
     it('should be standalone component', () => {
       expect((component.constructor as any).ɵcmp.standalone).toBeTrue();
     });

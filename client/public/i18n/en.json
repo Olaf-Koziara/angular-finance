@@ -1,4 +1,14 @@
 {
+  "COMMON": {
+    "CONFIRMATION": {
+      "TITLE": "Confirm Action",
+      "MESSAGE": "Are you sure you want to proceed?",
+      "CONFIRM": "Confirm",
+      "CANCEL": "Cancel",
+      "DELETE_TITLE": "Delete Transaction",
+      "DELETE_MESSAGE": "Are you sure you want to delete this transaction? This action cannot be undone."
+    }
+  },
   "SIDEBAR": {
     "DASHBOARD": "Dashboard",
     "BUDGET": "Budget",
@@ -96,6 +106,9 @@
     "NO_TRANSACTIONS": "No transactions yet",
     "NO_RESULTS": "No results match your filters",
     "NEW": "New transaction",
+    "SELECT": "Select",
+    "CANCEL_SELECTION": "Cancel Selection",
+    "DELETE_SELECTED": "Delete Selected ({{count}})",
     "HISTORY": "History",
     "SEARCH": "Search",
     "CLEAR_SEARCH": "Clear search",

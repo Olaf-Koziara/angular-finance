@@ -32,16 +32,41 @@
         <mat-card-title>{{ 'TRANSACTIONS.HISTORY' | translate }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <app-transaction-filters [filters]="filters()" (changed)="handleFilterChange($event)"></app-transaction-filters>
+        <div class="filters-actions-container">
+          <app-transaction-filters [filters]="filters()" (changed)="handleFilterChange($event)" class="filters-component"></app-transaction-filters>
+
+          <div class="selection-actions">
+            @if (!selectionMode()) {
+              <button mat-stroked-button color="primary" (click)="toggleSelectionMode()">
+                <mat-icon>check_box</mat-icon>
+                {{ 'TRANSACTIONS.SELECT' | translate }}
+              </button>
+            } @else {
+              @if (selectedIds().size > 0) {
+                <button mat-flat-button color="warn" (click)="removeSelected()">
+                  <mat-icon>delete</mat-icon>
+                  {{ 'TRANSACTIONS.DELETE_SELECTED' | translate: { count: selectedIds().size } }}
+                </button>
+              }
+              <button mat-stroked-button (click)="toggleSelectionMode()">
+                {{ 'TRANSACTIONS.CANCEL_SELECTION' | translate }}
+              </button>
+            }
+          </div>
+        </div>
 
         <app-transaction-list
           [transactions]="transactions()"
           [total]="total()"
           [loading]="loading()"
           [sort]="sort()"
+          [selectionMode]="selectionMode()"
+          [selectedIds]="selectedIds()"
           (removed)="removeTransaction($event)"
           (sortChanged)="handleSortChange($event)"
           (edited)="startEditing($event)"
+          (toggleSelection)="onToggleSelection($event)"
+          (toggleAll)="onToggleAll($event)"
         ></app-transaction-list>
       </mat-card-content>
       <app-transaction-pagination [length]="total()" [pageSize]="pagination().pageSize" [pageIndex]="pagination().pageIndex"

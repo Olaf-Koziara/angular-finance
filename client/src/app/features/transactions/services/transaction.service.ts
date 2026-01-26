@@ -155,6 +155,20 @@ export class TransactionService {
     }
   }
 
+  async removeMany(ids: string[]): Promise<void> {
+    this.loading.set(true);
+    this.error.set(null);
+    try {
+      // Execute all deletes in parallel
+      await Promise.all(ids.map((id) => firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`))));
+      this.refresh();
+    } catch {
+      this.error.set(this.translate.instant('TRANSACTIONS.ERRORS.DELETE_FAILED'));
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
   private refresh(): void {
     this.pagination.update((current) => ({ ...current }));
   }

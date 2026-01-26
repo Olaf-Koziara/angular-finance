@@ -1,43 +1,51 @@
 .page {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 2rem;
+  padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.page-header h1 {
-  margin: 0;
-  font-size: 2.25rem;
-  font-weight: 700;
-}
-
-.page-header p {
-  margin: 0.25rem 0 0;
-  color: var(--mat-sys-outline);
-}
-
 .content {
-  display: grid;
+  display: flex;
   gap: 1.5rem;
-  grid-template-columns: minmax(0, 1fr);
+  align-items: flex-start;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+  }
 }
 
-.form-card,
+.form-card {
+  flex: 0 0 350px;
+  position: sticky;
+  top: 1rem;
+
+  @media (max-width: 960px) {
+    flex: none;
+    width: 100%;
+    position: static;
+  }
+}
+
 .list-card {
-  border-radius: 1rem;
-  overflow: hidden;
+  flex: 1;
+  min-width: 0; // Prevent flex item overflow
 }
 
-@media (min-width: 992px) {
-  .content {
-    grid-template-columns: 360px minmax(0, 1fr);
-    align-items: start;
-  }
+.filters-actions-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
-.transaction-form-card {
-  mat-card-header {
-    padding-bottom: 0.5rem;
-  }
+
+.filters-component {
+  flex: 1;
+  min-width: 300px;
+}
+
+.selection-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
