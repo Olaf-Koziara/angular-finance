@@ -37,13 +37,11 @@ export class TransactionStatisticsService {
     const budget = await budgetService.getBudget(userId);
     const populatedConfigs = mapBudgetsToConfig(budget, DASHBOARD_BUDGETS);
 
-    const [incomeAgg, expenseAgg, recentTransactions] = await Promise.all([
-      prisma.transaction.aggregate({
-        where: { userId, type: "income" },
-        _sum: { amount: true },
-      }),
-      prisma.transaction.aggregate({
-        where: { userId, type: "expense" },
+    // Optimization: Combined aggregation query and optimized fetches
+    const [allTimeStats, recentTransactions] = await Promise.all([
+      prisma.transaction.groupBy({
+        by: ["type"],
+        where: { userId },
         _sum: { amount: true },
       }),
       prisma.transaction.findMany({
@@ -63,6 +61,18 @@ export class TransactionStatisticsService {
         orderBy: { date: "asc" },
       }),
     ]);
+
+    const incomeAgg = { _sum: { amount: new Prisma.Decimal(0) } };
+    const expenseAgg = { _sum: { amount: new Prisma.Decimal(0) } };
+
+    for (const stat of allTimeStats) {
+      if (stat.type === "income" && stat._sum.amount) {
+        incomeAgg._sum.amount = stat._sum.amount;
+      }
+      if (stat.type === "expense" && stat._sum.amount) {
+        expenseAgg._sum.amount = stat._sum.amount;
+      }
+    }
 
     // Build monthly buckets
     for (const tx of recentTransactions) {
@@ -91,14 +101,16 @@ export class TransactionStatisticsService {
         : null;
 
     // Budget categories for current month expenses (by known categories)
+    // Optimization: Use groupBy to reduce data transfer (group by category instead of fetching all rows)
     const nextMonthStart = addMonths(currentMonthStart, 1);
-    const currentMonthExpensesByCategory = await prisma.transaction.findMany({
+    const currentMonthExpensesByCategory = await prisma.transaction.groupBy({
+      by: ["category"],
       where: {
         userId,
         type: "expense",
         date: { gte: currentMonthStart, lt: nextMonthStart },
       },
-      select: { category: true, amount: true },
+      _sum: { amount: true },
     });
 
     // Top categories (previous full month)
@@ -146,7 +158,7 @@ export class TransactionStatisticsService {
     // Map expenses to budget categories
     const spentByKey = new Map<string, number>();
     for (const item of currentMonthExpensesByCategory) {
-      const amt = decimalToNumber(item.amount);
+      const amt = decimalToNumber(item._sum.amount ?? new Prisma.Decimal(0));
       const cfg = populatedConfigs.find((c) =>
         c.categoryMatchers.some(
           (m) => m.toLowerCase() === item.category.toLowerCase()
