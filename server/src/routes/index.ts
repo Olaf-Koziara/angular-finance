@@ -4,7 +4,7 @@ import transactionRoutes from "./transaction.routes";
 import budgetRoutes from "./budget.routes";
 import settingsRoutes from "./settings.routes";
 
-const router = Router();
+const router: Router = Router();
 
 // Health check route
 router.get("/health", (_req, res) => {

@@ -13,7 +13,7 @@ export function buildAlerts(
   entertainmentSpent: number,
   entertainmentAvg: number,
   unallocatedBudget?: number,
-  totalCategoryBudgets?: number,
+  _totalCategoryBudgets?: number,
   generalBudget?: number,
   totalSpent?: number
 ): Alert[] {
