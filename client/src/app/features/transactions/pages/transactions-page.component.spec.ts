@@ -36,6 +36,7 @@ class MockTransactionService {
 
   create = jasmine.createSpy('create').and.returnValue(Promise.resolve());
   remove = jasmine.createSpy('remove').and.returnValue(Promise.resolve());
+  removeMany = jasmine.createSpy('removeMany').and.returnValue(Promise.resolve());
   update = jasmine.createSpy('update').and.returnValue(Promise.resolve());
   updateFilters = jasmine.createSpy('updateFilters');
   updatePagination = jasmine.createSpy('updatePagination');
@@ -210,6 +211,58 @@ describe('TransactionsPageComponent', () => {
       listComponent.componentInstance.removed.emit('1');
 
       expect(component.removeTransaction).toHaveBeenCalledWith('1');
+    });
+  });
+
+  describe('Selection Logic', () => {
+    it('should toggle selection mode', () => {
+      expect(component.selectionMode()).toBeFalse();
+      component.toggleSelectionMode();
+      expect(component.selectionMode()).toBeTrue();
+      component.toggleSelectionMode();
+      expect(component.selectionMode()).toBeFalse();
+    });
+
+    it('should clear selection when turning off selection mode', () => {
+      component.toggleSelectionMode();
+      component.onToggleSelection('1');
+      expect(component.selectedIds().size).toBe(1);
+      component.toggleSelectionMode();
+      expect(component.selectedIds().size).toBe(0);
+    });
+
+    it('should toggle individual selection', () => {
+      component.onToggleSelection('1');
+      expect(component.selectedIds().has('1')).toBeTrue();
+      component.onToggleSelection('1');
+      expect(component.selectedIds().has('1')).toBeFalse();
+    });
+
+    it('should toggle all selection', () => {
+      mockTransactionService.transactions.set(mockTransactions);
+      component.onToggleAll(true);
+      expect(component.selectedIds().size).toBe(2);
+      expect(component.selectedIds().has('1')).toBeTrue();
+      expect(component.selectedIds().has('2')).toBeTrue();
+
+      component.onToggleAll(false);
+      expect(component.selectedIds().size).toBe(0);
+    });
+
+    it('should remove selected transactions', async () => {
+      component.toggleSelectionMode();
+      component.onToggleSelection('1');
+      component.onToggleSelection('2');
+
+      component.removeSelected();
+
+      expect(mockDialog.open).toHaveBeenCalled();
+
+      await fixture.whenStable();
+
+      expect(mockTransactionService.removeMany).toHaveBeenCalledWith(['1', '2']);
+      expect(component.selectedIds().size).toBe(0);
+      expect(component.selectionMode()).toBeFalse();
     });
   });
 
@@ -670,10 +723,6 @@ describe('TransactionsPageComponent', () => {
   });
 
   describe('Component Properties', () => {
-    it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe('TransactionsPageComponent');
-    });
-
     it('should be standalone component', () => {
       expect((component.constructor as any).ɵcmp.standalone).toBeTrue();
     });
