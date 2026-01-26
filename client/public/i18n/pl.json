@@ -1,0 +1,157 @@
+{
+  "COMMON": {
+    "CONFIRMATION": {
+      "TITLE": "Potwierdź akcję",
+      "MESSAGE": "Czy na pewno chcesz kontynuować?",
+      "CONFIRM": "Potwierdź",
+      "CANCEL": "Anuluj",
+      "DELETE_TITLE": "Usuń transakcję",
+      "DELETE_MESSAGE": "Czy na pewno chcesz usunąć tę transakcję? Tej operacji nie można cofnąć."
+    }
+  },
+  "SIDEBAR": {
+    "DASHBOARD": "Panel Finansowy",
+    "BUDGET": "Budżet",
+    "TRANSACTIONS": "Transakcje",
+    "REPORTS": "Raporty",
+    "SETTINGS": "Ustawienia"
+  },
+
+  "GENERAL": {
+    "LANGUAGE": "Język",
+    "ENGLISH": "Angielski",
+    "POLISH": "Polski"
+  },
+  "DASHBOARD": {
+    "TITLE": "Panel Finansowy",
+    "FINANCIAL_HEALTH": "Przegląd Kondycji Finansowej",
+    "BALANCE": "Aktualne Saldo",
+    "INCOME": "Całkowite Przychody",
+    "EXPENSES": "Całkowite Wydatki",
+    "BUDGET": "Status Budżetu",
+    "ALERTS": "Aktywne Alerty",
+    "VIEW_DETAILS": "Zobacz szczegóły",
+    "TRENDS": "Wskaźniki Trendów",
+    "BALANCE_CHANGE": "Zmiana Salda / Miesiąc",
+    "INCOME_VS_EXPENSES": "Przychody vs Wydatki",
+    "BUDGET_USAGE": "Wykorzystanie Budżetu wg Kategorii",
+    "MONTHLY_TREND": "Trend Miesięczny",
+    "CATEGORIES": {
+      "FOOD": "Jedzenie",
+      "TRANSPORT": "Transport",
+      "ENTERTAINMENT": "Rozrywka",
+      "UTILITIES": "Media",
+      "HEALTHCARE": "Zdrowie",
+      "OTHER": "Inne"
+    },
+    "ALERTS_LIST": {
+      "BUDGET_EXCEEDED": "Przekroczono budżet w kategorii Jedzenie",
+      "LOW_BALANCE": "Saldo poniżej progu ostrzegawczego",
+      "UNUSUAL_SPENDING": "Wykryto nietypowe wydatki w kategorii Rozrywka"
+    },
+    "STATISTICS": {
+      "MONTHLY_AVERAGE": "Średnia Miesięczna",
+      "HIGHEST_EXPENSE": "Najwyższy Wydatek",
+      "HIGHEST_INCOME": "Najwyższy Przychód",
+      "SAVINGS_RATE": "Wskaźnik Oszczędności",
+      "LAST_UPDATE": "Ostatnia Aktualizacja"
+    },
+    "MONTHS": {
+      "JAN": "Sty",
+      "FEB": "Lut",
+      "MAR": "Mar",
+      "APR": "Kwi",
+      "MAY": "Maj",
+      "JUN": "Cze",
+      "JUL": "Lip",
+      "AUG": "Sie",
+      "SEP": "Wrz",
+      "OCT": "Paź",
+      "NOV": "Lis",
+      "DEC": "Gru"
+    },
+    "ERRORS": {
+      "FETCH_FAILED": "Nie udało się pobrać danych panelu"
+    }
+  },
+  "BUDGET": {
+    "TITLE": "Zarządzanie Budżetem",
+    "SUBTITLE": "Zarządzaj swoim ogólnym budżetem i budżetami kategorii",
+    "GENERAL_BUDGET": "Budżet Ogólny",
+    "GENERAL_BUDGET_LABEL": "Budżet Miesięczny",
+    "CATEGORY_BUDGETS": "Budżety Kategorii",
+    "EDIT": "Edytuj",
+    "CANCEL_EDIT": "Anuluj",
+    "SAVE": "Zapisz",
+    "LOADING": "Ładowanie danych budżetu...",
+    "TOTAL_CATEGORY_BUDGETS": "Suma Budżetów Kategorii",
+    "UNALLOCATED": "Nieprzydzielone",
+    "ERRORS": {
+      "FETCH_FAILED": "Nie udało się załadować danych budżetu",
+      "UPDATE_FAILED": "Nie udało się zaktualizować budżetu"
+    }
+  },
+  "TRANSACTIONS": {
+    "TITLE": "Transakcje",
+    "TITLE_LABEL": "Tytuł",
+    "TITLE_REQUIRED": "Tytuł jest wymagany",
+    "DATE": "Data",
+    "CATEGORY": "Kategoria",
+    "TYPE": "Typ",
+    "AMOUNT": "Kwota",
+    "REMOVE": "Usuń",
+    "EDIT": "Edytuj",
+    "CANCEL_EDIT": "Anuluj edycję",
+    "EDIT_TRANSACTION": "Edytuj transakcję",
+    "UPDATE_TRANSACTION": "Zapisz zmiany",
+    "NO_TRANSACTIONS": "Brak transakcji",
+    "NO_RESULTS": "Brak wyników spełniających kryteria",
+    "NEW": "Nowa transakcja",
+    "SELECT": "Wybierz",
+    "CANCEL_SELECTION": "Anuluj wybór",
+    "DELETE_SELECTED": "Usuń wybrane ({{count}})",
+    "HISTORY": "Historia",
+    "SEARCH": "Szukaj",
+    "CLEAR_SEARCH": "Wyczyść wyszukiwanie",
+    "CLEAR_FILTERS": "Wyczyść filtry",
+    "SAVE_TRANSACTION": "Zapisz transakcję",
+    "AMOUNT_REQUIRED": "Kwota jest wymagana",
+    "AMOUNT_MIN": "Kwota musi być większa od zera",
+    "CATEGORY_REQUIRED": "Kategoria jest wymagana",
+    "DATE_REQUIRED": "Data jest wymagana",
+    "TYPES": {
+      "ALL": "Wszystkie",
+      "INCOME": "Przychód",
+      "EXPENSE": "Wydatek"
+    },
+    "CATEGORIES": {
+      "FOOD": "Jedzenie",
+      "TRANSPORT": "Transport",
+      "TRANSPORTATION": "Transport",
+      "HOUSING": "Mieszkanie",
+      "UTILITIES": "Media",
+      "ENTERTAINMENT": "Rozrywka",
+      "HEALTH": "Zdrowie",
+      "HEALTHCARE": "Zdrowie",
+      "EDUCATION": "Edukacja",
+      "SAVINGS": "Oszczędności",
+      "OTHER": "Inne"
+    },
+    "ERRORS": {
+      "FETCH_FAILED": "Nie udało się pobrać transakcji",
+      "CREATE_FAILED": "Nie udało się utworzyć transakcji",
+      "UPDATE_FAILED": "Nie udało się zaktualizować transakcji",
+      "DELETE_FAILED": "Nie udało się usunąć transakcji"
+    }
+  },
+  "SETTINGS": {
+    "TITLE": "Ustawienia",
+    "APPEARANCE": "Wygląd",
+    "PREFERENCES": "Preferencje",
+    "CURRENCY": "Waluta",
+    "CLOSE": "Zamknij",
+    "VISUAL": {
+      "BACKGROUND_SELECT": "Tło"
+    }
+  }
+}

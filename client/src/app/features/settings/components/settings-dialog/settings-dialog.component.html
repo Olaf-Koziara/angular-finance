@@ -1,0 +1,44 @@
+<h2 mat-dialog-title class="dialog-title">
+    <lucide-icon [img]="icons.Settings" class="icon"></lucide-icon>
+    {{ 'SETTINGS.TITLE' | translate }}
+</h2>
+
+<mat-dialog-content>
+    <div class="settings-container mx-auto p-2 max-w-4xl">
+
+        <mat-card>
+      
+      
+          <div class="flex gap-3 flex-col p-3">
+      
+            <div class="p-6 flex flex-col gap-2">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 bg-blue-50 rounded-lg text-blue-500 icon-wrapper ">
+                  <lucide-icon [img]="icons.Palette" class="w-5 h-5 icon"></lucide-icon>
+                </div>
+                <h3 class="text-md font-semibold m-0">{{ 'SETTINGS.APPEARANCE' | translate }}</h3>
+              </div>
+      
+              <app-background-picker [selectedBackground]="settingsService.background()"
+                (selectedBackgroundChange)="updateSetting('background', $event)" />
+            </div>
+      
+            <div class="p-6">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="icon-wrapper p-2 bg-green-50 rounded-lg text-green-500">
+                  <lucide-icon [img]="icons.Wallet" class="w-5 h-5 icon"></lucide-icon>
+                </div>
+                <h3 class="text-md font-semibold m-0">{{ 'SETTINGS.PREFERENCES' | translate }}</h3>
+              </div>
+      
+              <app-currency-picker [currency]="settingsService.currency()"
+                (currencyChange)="updateSetting('currency', $event)" />
+            </div>
+          </div>
+        </mat-card>
+      </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>{{ 'SETTINGS.CLOSE' | translate }}</button>
+</mat-dialog-actions>

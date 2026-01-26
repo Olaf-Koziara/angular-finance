@@ -2,6 +2,7 @@
 
 # Compiled output
 /dist
+client/dist
 /tmp
 /out-tsc
 /bazel-out
@@ -10,6 +11,17 @@
 npm-debug.log
 yarn-error.log
 node_modules
+
+# Client
+client/dist
+client/.env
+client/coverage
+client/src/environments
+
+# Server
+server/dist
+server/.env
+server/coverage
 
 
 # IDEs and editors
@@ -30,7 +42,7 @@ node_modules
 .history/*
 
 # Miscellaneous
-.angular/cache/
+*/.angular/cache/
 .sass-cache/
 /connect.lock
 /coverage
@@ -43,5 +55,9 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
+<<<<<<< HEAD
 /client/.angular/
 /client/src/environments/
+=======
+
+>>>>>>> ded9f976ab96271df4ebe39cb0b509a4709bc947

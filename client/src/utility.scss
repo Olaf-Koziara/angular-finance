@@ -1,0 +1,116 @@
+$space-values: (
+    0: 0,
+    1: 0.25rem,
+    2: 0.5rem,
+    3: 0.75rem,
+    4: 1rem,
+    5: 1.5rem
+);
+
+@mixin spacing($prefix, $properties...) {
+    @each $key, $value in $space-values {
+        .#{$prefix}-#{$key} {
+            @each $property in $properties {
+                #{$property}: $value;
+            }
+        }
+    }
+}
+
+@include spacing("p", padding);
+@include spacing("px", padding-left, padding-right);
+@include spacing("py", padding-top, padding-bottom);
+@include spacing("pt", padding-top);
+@include spacing("pr", padding-right);
+@include spacing("pb", padding-bottom);
+@include spacing("pl", padding-left);
+
+@include spacing("m", margin);
+@include spacing("mx", margin-left, margin-right);
+@include spacing("my", margin-top, margin-bottom);
+@include spacing("mt", margin-top);
+@include spacing("mr", margin-right);
+@include spacing("mb", margin-bottom);
+@include spacing("ml", margin-left);
+
+@include spacing("gap", gap);
+
+.flex {
+    display: flex;
+}
+
+.inline-flex {
+    display: inline-flex;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.items-start {
+    align-items: flex-start;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.items-end {
+    align-items: flex-end;
+}
+
+.justify-start {
+    justify-content: flex-start;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.justify-end {
+    justify-content: flex-end;
+}
+
+.justify-around {
+    justify-content: space-around;
+}
+
+.content-center {
+    align-content: center;
+}
+
+.content-between {
+    align-content: space-between;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.h-full {
+    height: 100%;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
+}

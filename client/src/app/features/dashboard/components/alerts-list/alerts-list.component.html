@@ -1,0 +1,25 @@
+<mat-card class="alerts-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>notifications_active</mat-icon>
+      {{ 'DASHBOARD.ALERTS' | translate }}
+      <mat-chip class="alert-count">{{ alerts().length }}</mat-chip>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="alerts-list">
+      @for (alert of alerts(); track alert.message) {
+        <div class="alert-item" [class]="getAlertClass(alert.type)">
+          <mat-icon class="alert-icon">{{ alert.icon }}</mat-icon>
+          <span class="alert-message">{{ alert.message | translate }}</span>
+          <button mat-icon-button class="alert-action"
+                  [matTooltip]="'DASHBOARD.VIEW_DETAILS' | translate"
+                  [attr.aria-label]="('DASHBOARD.VIEW_DETAILS' | translate) + ': ' + (alert.message | translate)">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>
+

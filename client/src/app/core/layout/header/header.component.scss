@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(1.7px);
+  width: 100%;
+  padding: 0 1rem;
+  header {
+    display: flex;
+    align-items: center;
+  }
+}
