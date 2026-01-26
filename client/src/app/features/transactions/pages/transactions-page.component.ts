@@ -48,11 +48,17 @@ export class TransactionsPageComponent {
   readonly sort = this.transactionService.sort;
   readonly pageSizeOptions = [5, 10, 25, 50];
   readonly editingTransaction = signal<Transaction | null>(null);
+  readonly saving = signal(false);
   readonly selectionMode = signal(false);
   readonly selectedIds = signal(new Set<string>());
 
-  createTransaction(payload: CreateTransaction): void {
-    this.transactionService.create(payload);
+  async createTransaction(payload: CreateTransaction): Promise<void> {
+    this.saving.set(true);
+    try {
+      await this.transactionService.create(payload);
+    } finally {
+      this.saving.set(false);
+    }
   }
 
   removeTransaction(id: string): void {
@@ -141,9 +147,13 @@ export class TransactionsPageComponent {
   }
 
   async updateTransaction(payload: { id: string; changes: CreateTransaction }): Promise<void> {
+    this.saving.set(true);
     try {
       await this.transactionService.update(payload.id, payload.changes);
       this.editingTransaction.set(null);
-    } catch {}
+    } catch {
+    } finally {
+      this.saving.set(false);
+    }
   }
 }
