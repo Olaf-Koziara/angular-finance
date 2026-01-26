@@ -81,7 +81,9 @@
     transition: opacity 0.3s ease;
   }
 
-  &:hover .alert-action {
+  &:hover .alert-action,
+  .alert-action:focus-visible,
+  .alert-action:focus {
     opacity: 1;
   }
 

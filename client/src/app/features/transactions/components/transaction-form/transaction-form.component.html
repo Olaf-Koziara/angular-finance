@@ -72,7 +72,10 @@
         {{ 'TRANSACTIONS.CANCEL_EDIT' | translate }}
       </button>
     }
-    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading()">
+      @if (loading()) {
+        <mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
+      }
       {{
       transaction()
       ? ('TRANSACTIONS.UPDATE_TRANSACTION' | translate)

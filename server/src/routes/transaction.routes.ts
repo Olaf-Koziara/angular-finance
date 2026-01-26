@@ -3,7 +3,7 @@ import { transactionController } from "../controllers/transaction.controller";
 import { transactionStatisticsController } from "../controllers/transactionStatistics.controller";
 import { authenticate } from "../middleware/auth.middleware";
 
-const router = Router();
+const router: Router = Router();
 
 // Apply authentication to all transaction routes
 router.use(authenticate);

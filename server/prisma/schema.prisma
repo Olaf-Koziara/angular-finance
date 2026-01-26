@@ -26,12 +26,12 @@ model User {
 }
 
 model RefreshToken {
-  id        String   @id @default(uuid())
-  token     String   @unique
+  id        String    @id @default(uuid())
+  token     String    @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   revokedAt DateTime?
 
   @@index([userId])
@@ -53,31 +53,32 @@ model Transaction {
 
   @@index([userId])
   @@index([date])
+  @@index([userId, date])
   @@map("transactions")
 }
 
 model Budget {
-  id             String   @id @default(uuid())
-  userId         String   @unique
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  generalBudget  Decimal  @db.Decimal(10, 2)
-  categoryBudgets Json    @default("{}")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generalBudget   Decimal  @db.Decimal(10, 2)
+  categoryBudgets Json     @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([userId])
   @@map("budgets")
 }
 
 model UserSettings {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   background String?
-  theme     String?
-  currency  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  theme      String?
+  currency   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([userId])
   @@map("user_settings")
