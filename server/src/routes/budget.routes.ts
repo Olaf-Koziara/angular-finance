@@ -2,7 +2,7 @@ import { Router } from "express";
 import { budgetController } from "../controllers/budget.controller";
 import { authenticate } from "../middleware/auth.middleware";
 
-const router = Router();
+const router: Router = Router();
 
 // Apply authentication to all budget routes
 router.use(authenticate);

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { settingsController } from "../controllers/settings.controller";
 import { authenticate } from "../middleware/auth.middleware";
 
-const router = Router();
+const router: Router = Router();
 
 // Apply authentication to all settings routes
 router.use(authenticate);
