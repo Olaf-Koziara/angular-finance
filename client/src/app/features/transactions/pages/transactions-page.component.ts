@@ -1,8 +1,10 @@
 
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { TranslateModule } from '@ngx-translate/core';
+import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TransactionFiltersComponent } from '../components/transaction-filters/transaction-filters.component';
 import { TransactionFormComponent } from '../components/transaction-form/transaction-form.component';
 import { TransactionListComponent } from '../components/transaction-list/transaction-list.component';
@@ -32,6 +34,7 @@ import { TransactionService } from '../services/transaction.service';
 })
 export class TransactionsPageComponent {
   private readonly transactionService = inject(TransactionService);
+  private readonly dialog = inject(MatDialog);
 
   readonly transactions = this.transactionService.transactions;
   readonly total = this.transactionService.total;
@@ -47,7 +50,19 @@ export class TransactionsPageComponent {
   }
 
   removeTransaction(id: string): void {
-    this.transactionService.remove(id);
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'COMMON.CONFIRMATION.DELETE_TITLE',
+        message: 'COMMON.CONFIRMATION.DELETE_MESSAGE',
+        confirmText: 'COMMON.CONFIRMATION.CONFIRM',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.transactionService.remove(id);
+      }
+    });
   }
 
   handleFilterChange(filters: Partial<TransactionFilters>): void {

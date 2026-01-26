@@ -5,6 +5,8 @@ import { signal, WritableSignal } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
 import {
   CreateTransaction,
   Transaction,
@@ -40,10 +42,17 @@ class MockTransactionService {
   updateSort = jasmine.createSpy('updateSort');
 }
 
+class MockMatDialog {
+  open = jasmine.createSpy('open').and.returnValue({
+    afterClosed: () => of(true),
+  });
+}
+
 describe('TransactionsPageComponent', () => {
   let component: TransactionsPageComponent;
   let fixture: ComponentFixture<TransactionsPageComponent>;
   let mockTransactionService: MockTransactionService;
+  let mockDialog: MockMatDialog;
 
   const mockTransactions: Transaction[] = [
     {
@@ -66,10 +75,14 @@ describe('TransactionsPageComponent', () => {
 
   beforeEach(async () => {
     mockTransactionService = new MockTransactionService();
+    mockDialog = new MockMatDialog();
 
     await TestBed.configureTestingModule({
       imports: [TransactionsPageComponent, NoopAnimationsModule, TranslateModule.forRoot()],
-      providers: [{ provide: TransactionService, useValue: mockTransactionService }],
+      providers: [
+        { provide: TransactionService, useValue: mockTransactionService },
+        { provide: MatDialog, useValue: mockDialog },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TransactionsPageComponent);
@@ -170,10 +183,19 @@ describe('TransactionsPageComponent', () => {
   });
 
   describe('Remove Transaction', () => {
-    it('should call service remove method', () => {
+    it('should open confirmation dialog and call service remove method on confirm', () => {
       component.removeTransaction('123');
-
+      expect(mockDialog.open).toHaveBeenCalled();
       expect(mockTransactionService.remove).toHaveBeenCalledWith('123');
+    });
+
+    it('should not call service remove method on cancel', () => {
+      mockDialog.open.and.returnValue({
+        afterClosed: () => of(false),
+      });
+      component.removeTransaction('123');
+      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockTransactionService.remove).not.toHaveBeenCalled();
     });
 
     it('should handle list item removal', () => {
@@ -546,6 +568,7 @@ describe('TransactionsPageComponent', () => {
       const listComponent = fixture.debugElement.query(By.css('app-transaction-list'));
       listComponent.componentInstance.removed.emit(mockTransactions[0].id);
 
+      expect(mockDialog.open).toHaveBeenCalled();
       expect(mockTransactionService.remove).toHaveBeenCalledWith(mockTransactions[0].id);
     });
 

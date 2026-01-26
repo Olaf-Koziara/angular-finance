@@ -1,4 +1,14 @@
 {
+  "COMMON": {
+    "CONFIRMATION": {
+      "TITLE": "Potwierdź akcję",
+      "MESSAGE": "Czy na pewno chcesz kontynuować?",
+      "CONFIRM": "Potwierdź",
+      "CANCEL": "Anuluj",
+      "DELETE_TITLE": "Usuń transakcję",
+      "DELETE_MESSAGE": "Czy na pewno chcesz usunąć tę transakcję? Tej operacji nie można cofnąć."
+    }
+  },
   "SIDEBAR": {
     "DASHBOARD": "Panel Finansowy",
     "BUDGET": "Budżet",
