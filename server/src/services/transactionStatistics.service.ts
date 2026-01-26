@@ -144,15 +144,22 @@ export class TransactionStatisticsService {
         : null;
 
     // Map expenses to budget categories
+    // Pre-calculate category -> configKey map for O(1) lookup
+    const categoryToConfigKey = new Map<string, string>();
+    for (const cfg of populatedConfigs) {
+      for (const matcher of cfg.categoryMatchers) {
+        const lowerMatcher = matcher.toLowerCase();
+        if (!categoryToConfigKey.has(lowerMatcher)) {
+          categoryToConfigKey.set(lowerMatcher, cfg.key);
+        }
+      }
+    }
+
     const spentByKey = new Map<string, number>();
     for (const item of currentMonthExpensesByCategory) {
       const amt = decimalToNumber(item.amount);
-      const cfg = populatedConfigs.find((c) =>
-        c.categoryMatchers.some(
-          (m) => m.toLowerCase() === item.category.toLowerCase()
-        )
-      );
-      const key = cfg?.key ?? "Other";
+      const key =
+        categoryToConfigKey.get(item.category.toLowerCase()) ?? "Other";
       spentByKey.set(key, (spentByKey.get(key) ?? 0) + amt);
     }
 
