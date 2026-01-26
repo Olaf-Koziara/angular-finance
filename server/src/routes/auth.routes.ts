@@ -5,7 +5,7 @@ import { validate } from '../middleware/validate.middleware';
 import { authenticate } from '../middleware/auth.middleware';
 import { registerSchema, loginSchema } from '../validators/auth.validator';
 
-const router = Router();
+const router: Router = Router();
 
 // Rate limiting for auth endpoints to prevent brute force attacks
 const authRateLimiter = rateLimit({

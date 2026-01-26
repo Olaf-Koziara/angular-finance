@@ -1,6 +1,7 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -24,6 +25,7 @@ import { AppCurrencyPipe } from "../../../../shared/pipes/app-currency.pipe";
     MatSortModule,
     MatButtonModule,
     MatIconModule,
+    MatCheckboxModule,
     MatChipsModule,
     TranslateModule,
     LoaderComponent,
@@ -39,14 +41,30 @@ export class TransactionListComponent {
   readonly total = input.required<number>();
   readonly loading = input.required<boolean>();
   readonly sort = input.required<TransactionSort>();
+  readonly selectionMode = input<boolean>(false);
+  readonly selectedIds = input<Set<string>>(new Set());
 
   readonly removed = output<string>();
   readonly edited = output<Transaction>();
   readonly sortChanged = output<TransactionSort>();
+  readonly toggleSelection = output<string>();
+  readonly toggleAll = output<boolean>();
 
-  readonly displayedColumns = ['date', 'title', 'category', 'type', 'amount', 'actions'] as const;
+  readonly displayedColumns = computed(() => {
+    const baseCols = ['date', 'title', 'category', 'type', 'amount', 'actions'];
+    return this.selectionMode() ? ['select', ...baseCols] : baseCols;
+  });
 
   readonly hasTransactions = computed(() => this.total() > 0);
+  readonly allSelected = computed(() => {
+    return this.transactions().length > 0 &&
+           this.transactions().every(t => this.selectedIds().has(t.id));
+  });
+  readonly someSelected = computed(() => {
+    return this.transactions().length > 0 &&
+           this.selectedIds().size > 0 &&
+           !this.allSelected();
+  });
 
   remove(id: string): void {
     this.removed.emit(id);

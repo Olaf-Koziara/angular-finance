@@ -3,13 +3,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { Alert } from '../../models/dashboard.model';
 
 @Component({
   selector: 'app-alerts-list',
   standalone: true,
-  imports: [MatCardModule, MatIconModule, MatButtonModule, MatChipsModule, TranslateModule],
+  imports: [MatCardModule, MatIconModule, MatButtonModule, MatChipsModule, TranslateModule, MatTooltipModule],
   templateUrl: './alerts-list.component.html',
   styleUrl: './alerts-list.component.scss',
 })
