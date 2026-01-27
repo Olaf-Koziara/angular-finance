@@ -28,9 +28,8 @@ export class TransactionStatisticsService {
     const now = new Date();
     const currentMonthStart = startOfMonth(now);
     const lastMonthStart = startOfMonth(addMonths(now, -1));
+    const threeMonthsStart = startOfMonth(addMonths(now, -3));
     const monthsBuckets = buildMonthBuckets(months, now);
-    const rangeStart = monthsBuckets[0]?.monthStart ?? startOfMonth(now);
-    const rangeEnd = addMonths(startOfMonth(now), 1);
 
     // Fetch budget and populate config with real values
     const budgetService = new BudgetService();
@@ -38,29 +37,56 @@ export class TransactionStatisticsService {
     const populatedConfigs = mapBudgetsToConfig(budget, DASHBOARD_BUDGETS);
 
     // Optimization: Combined aggregation query and optimized fetches
-    const [allTimeStats, recentTransactions] = await Promise.all([
+    // Replaced fetching all transactions with specific aggregation queries
+    const [allTimeStats, ...monthlyAndEntertainmentStats] = await Promise.all([
       prisma.transaction.groupBy({
         by: ["type"],
         where: { userId },
         _sum: { amount: true },
       }),
+      // Monthly buckets aggregation (concurrent)
+      ...monthsBuckets.map((b) =>
+        prisma.transaction.groupBy({
+          by: ["type"],
+          where: {
+            userId,
+            date: {
+              gte: b.monthStart,
+              lt: addMonths(b.monthStart, 1),
+            },
+          },
+          _sum: { amount: true },
+        })
+      ),
+      // Entertainment transactions (specific subset for alerts)
       prisma.transaction.findMany({
         where: {
           userId,
+          type: "expense",
+          category: { equals: "Entertainment", mode: "insensitive" },
           date: {
-            gte: rangeStart,
-            lt: rangeEnd,
+            gte: threeMonthsStart,
+            lt: currentMonthStart,
           },
         },
         select: {
           amount: true,
-          type: true,
-          category: true,
           date: true,
         },
-        orderBy: { date: "asc" },
       }),
     ]);
+
+    // Extract results
+    // monthlyAndEntertainmentStats contains [month1Stats, month2Stats, ..., entertainmentTransactions]
+    const monthlyStats = monthlyAndEntertainmentStats.slice(
+      0,
+      monthsBuckets.length
+    ) as Array<
+      Array<{ type: string; _sum: { amount: Prisma.Decimal | null } }>
+    >;
+    const entertainmentTransactions = monthlyAndEntertainmentStats[
+      monthlyAndEntertainmentStats.length - 1
+    ] as Array<{ amount: Prisma.Decimal; date: Date }>;
 
     const incomeAgg = { _sum: { amount: new Prisma.Decimal(0) } };
     const expenseAgg = { _sum: { amount: new Prisma.Decimal(0) } };
@@ -74,18 +100,14 @@ export class TransactionStatisticsService {
       }
     }
 
-    // Build monthly buckets
-    for (const tx of recentTransactions) {
-      const txDate = tx.date;
-      const monthStart = startOfMonth(txDate);
-      const idx =
-        (monthStart.getFullYear() - rangeStart.getFullYear()) * 12 +
-        (monthStart.getMonth() - rangeStart.getMonth());
-      if (idx < 0 || idx >= monthsBuckets.length) continue;
-
-      const amount = decimalToNumber(tx.amount);
-      if (tx.type === "income") monthsBuckets[idx]!.income += amount;
-      if (tx.type === "expense") monthsBuckets[idx]!.expenses += amount;
+    // Build monthly buckets using aggregated data
+    for (let i = 0; i < monthsBuckets.length; i++) {
+      const stats = monthlyStats[i];
+      for (const stat of stats) {
+        const amount = decimalToNumber(stat._sum.amount);
+        if (stat.type === "income") monthsBuckets[i]!.income += amount;
+        if (stat.type === "expense") monthsBuckets[i]!.expenses += amount;
+      }
     }
 
     const monthlyData: MonthlyData[] = monthsBuckets.map((b) => ({
@@ -169,7 +191,8 @@ export class TransactionStatisticsService {
 
     const spentByKey = new Map<string, number>();
     for (const item of currentMonthExpensesByCategory) {
-      const amt = decimalToNumber(item.amount);
+      // Fix: item is from groupBy, use item._sum.amount
+      const amt = decimalToNumber(item._sum.amount);
       const key =
         categoryToConfigKey.get(item.category.toLowerCase()) ?? "Other";
       spentByKey.set(key, (spentByKey.get(key) ?? 0) + amt);
@@ -213,7 +236,9 @@ export class TransactionStatisticsService {
 
     // Build alerts
     const entertainmentSpent = spentByKey.get("Entertainment") ?? 0;
-    const entertainmentAvg = averageEntertainmentExpense(recentTransactions);
+    const entertainmentAvg = averageEntertainmentExpense(
+      entertainmentTransactions
+    );
     const alerts = buildAlerts(
       budgetCategories,
       balance,
@@ -263,24 +288,14 @@ export class TransactionStatisticsService {
  * (excluding current month).
  */
 function averageEntertainmentExpense(
-  recentTransactions: Array<{
+  entertainmentTransactions: Array<{
     amount: Prisma.Decimal;
-    type: string;
-    category: string;
     date: Date;
   }>
 ): number {
-  const now = new Date();
-  const currentMonthStart = startOfMonth(now);
-  const threeMonthsStart = startOfMonth(addMonths(now, -3));
-
   const byMonth = new Map<string, number>();
-  for (const tx of recentTransactions) {
-    if (tx.type !== "expense") continue;
-    if (tx.category.toLowerCase() !== "entertainment") continue;
-    if (tx.date >= currentMonthStart) continue;
-    if (tx.date < threeMonthsStart) continue;
-
+  for (const tx of entertainmentTransactions) {
+    // Note: Filtering by type/category/date is already done in the query
     const m = startOfMonth(tx.date);
     const key = `${m.getFullYear()}-${m.getMonth()}`;
     byMonth.set(key, (byMonth.get(key) ?? 0) + decimalToNumber(tx.amount));
