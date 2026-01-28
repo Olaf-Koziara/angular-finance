@@ -29,8 +29,7 @@ export class TransactionStatisticsService {
     const currentMonthStart = startOfMonth(now);
     const lastMonthStart = startOfMonth(addMonths(now, -1));
     const monthsBuckets = buildMonthBuckets(months, now);
-    const rangeStart = monthsBuckets[0]?.monthStart ?? startOfMonth(now);
-    const rangeEnd = addMonths(startOfMonth(now), 1);
+    const threeMonthsStart = startOfMonth(addMonths(now, -3));
 
     // Fetch budget and populate config with real values
     const budgetService = new BudgetService();
@@ -38,27 +37,39 @@ export class TransactionStatisticsService {
     const populatedConfigs = mapBudgetsToConfig(budget, DASHBOARD_BUDGETS);
 
     // Optimization: Combined aggregation query and optimized fetches
-    const [allTimeStats, recentTransactions] = await Promise.all([
+    const [allTimeStats, monthlyAggregations, entertainmentTransactions] = await Promise.all([
       prisma.transaction.groupBy({
         by: ["type"],
         where: { userId },
         _sum: { amount: true },
       }),
+      // Optimization: Execute parallel queries for each month to avoid fetching all transactions
+      Promise.all(
+        monthsBuckets.map(async (bucket) => {
+          const start = bucket.monthStart;
+          const end = addMonths(start, 1);
+          return prisma.transaction.groupBy({
+            by: ["type"],
+            where: {
+              userId,
+              date: { gte: start, lt: end },
+            },
+            _sum: { amount: true },
+          });
+        })
+      ),
+      // Targeted fetch for entertainment average
       prisma.transaction.findMany({
         where: {
           userId,
-          date: {
-            gte: rangeStart,
-            lt: rangeEnd,
-          },
+          category: { equals: "Entertainment", mode: "insensitive" },
+          date: { gte: threeMonthsStart, lt: currentMonthStart },
+          type: "expense",
         },
         select: {
           amount: true,
-          type: true,
-          category: true,
           date: true,
         },
-        orderBy: { date: "asc" },
       }),
     ]);
 
@@ -74,18 +85,16 @@ export class TransactionStatisticsService {
       }
     }
 
-    // Build monthly buckets
-    for (const tx of recentTransactions) {
-      const txDate = tx.date;
-      const monthStart = startOfMonth(txDate);
-      const idx =
-        (monthStart.getFullYear() - rangeStart.getFullYear()) * 12 +
-        (monthStart.getMonth() - rangeStart.getMonth());
-      if (idx < 0 || idx >= monthsBuckets.length) continue;
+    // Populate monthly buckets from aggregation results
+    for (let i = 0; i < monthsBuckets.length; i++) {
+      const bucket = monthsBuckets[i];
+      const stats = monthlyAggregations[i];
 
-      const amount = decimalToNumber(tx.amount);
-      if (tx.type === "income") monthsBuckets[idx]!.income += amount;
-      if (tx.type === "expense") monthsBuckets[idx]!.expenses += amount;
+      for (const stat of stats) {
+        const amount = decimalToNumber(stat._sum.amount);
+        if (stat.type === "income") bucket.income += amount;
+        if (stat.type === "expense") bucket.expenses += amount;
+      }
     }
 
     const monthlyData: MonthlyData[] = monthsBuckets.map((b) => ({
@@ -169,7 +178,7 @@ export class TransactionStatisticsService {
 
     const spentByKey = new Map<string, number>();
     for (const item of currentMonthExpensesByCategory) {
-      const amt = decimalToNumber(item.amount);
+      const amt = decimalToNumber(item._sum.amount);
       const key =
         categoryToConfigKey.get(item.category.toLowerCase()) ?? "Other";
       spentByKey.set(key, (spentByKey.get(key) ?? 0) + amt);
@@ -213,7 +222,7 @@ export class TransactionStatisticsService {
 
     // Build alerts
     const entertainmentSpent = spentByKey.get("Entertainment") ?? 0;
-    const entertainmentAvg = averageEntertainmentExpense(recentTransactions);
+    const entertainmentAvg = averageEntertainmentExpense(entertainmentTransactions);
     const alerts = buildAlerts(
       budgetCategories,
       balance,
@@ -263,10 +272,8 @@ export class TransactionStatisticsService {
  * (excluding current month).
  */
 function averageEntertainmentExpense(
-  recentTransactions: Array<{
+  entertainmentTransactions: Array<{
     amount: Prisma.Decimal;
-    type: string;
-    category: string;
     date: Date;
   }>
 ): number {
@@ -275,9 +282,7 @@ function averageEntertainmentExpense(
   const threeMonthsStart = startOfMonth(addMonths(now, -3));
 
   const byMonth = new Map<string, number>();
-  for (const tx of recentTransactions) {
-    if (tx.type !== "expense") continue;
-    if (tx.category.toLowerCase() !== "entertainment") continue;
+  for (const tx of entertainmentTransactions) {
     if (tx.date >= currentMonthStart) continue;
     if (tx.date < threeMonthsStart) continue;
 
