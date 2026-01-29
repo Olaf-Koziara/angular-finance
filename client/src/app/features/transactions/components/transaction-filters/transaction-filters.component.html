@@ -50,6 +50,7 @@
         (click)="clearFilters()"
         [disabled]="!hasActiveFilters()"
         [attr.aria-label]="'TRANSACTIONS.CLEAR_FILTERS' | translate"
+        [matTooltip]="'TRANSACTIONS.CLEAR_FILTERS' | translate"
         >
         <mat-icon>refresh</mat-icon>
         <span>{{ 'TRANSACTIONS.CLEAR_FILTERS' | translate }}</span>
