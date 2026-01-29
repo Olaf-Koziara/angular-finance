@@ -31,14 +31,21 @@ export class TransactionStatisticsService {
     const monthsBuckets = buildMonthBuckets(months, now);
     const rangeStart = monthsBuckets[0]?.monthStart ?? startOfMonth(now);
     const rangeEnd = addMonths(startOfMonth(now), 1);
+    const nextMonthStart = addMonths(currentMonthStart, 1);
 
-    // Fetch budget and populate config with real values
     const budgetService = new BudgetService();
-    const budget = await budgetService.getBudget(userId);
-    const populatedConfigs = mapBudgetsToConfig(budget, DASHBOARD_BUDGETS);
 
     // Optimization: Combined aggregation query and optimized fetches
-    const [allTimeStats, recentTransactions] = await Promise.all([
+    // Parallelize all independent database queries to reduce total latency
+    const [
+      budget,
+      allTimeStats,
+      recentTransactions,
+      currentMonthExpensesByCategory,
+      topExpenseRows,
+      topIncomeRows,
+    ] = await Promise.all([
+      budgetService.getBudget(userId),
       prisma.transaction.groupBy({
         by: ["type"],
         where: { userId },
@@ -60,7 +67,40 @@ export class TransactionStatisticsService {
         },
         orderBy: { date: "asc" },
       }),
+      prisma.transaction.groupBy({
+        by: ["category"],
+        where: {
+          userId,
+          type: "expense",
+          date: { gte: currentMonthStart, lt: nextMonthStart },
+        },
+        _sum: { amount: true },
+      }),
+      prisma.transaction.groupBy({
+        by: ["category"],
+        where: {
+          userId,
+          type: "expense",
+          date: { gte: lastMonthStart, lt: currentMonthStart },
+        },
+        _sum: { amount: true },
+        orderBy: { _sum: { amount: "desc" } },
+        take: 1,
+      }),
+      prisma.transaction.groupBy({
+        by: ["category"],
+        where: {
+          userId,
+          type: "income",
+          date: { gte: lastMonthStart, lt: currentMonthStart },
+        },
+        _sum: { amount: true },
+        orderBy: { _sum: { amount: "desc" } },
+        take: 1,
+      }),
     ]);
+
+    const populatedConfigs = mapBudgetsToConfig(budget, DASHBOARD_BUDGETS);
 
     const incomeAgg = { _sum: { amount: new Prisma.Decimal(0) } };
     const expenseAgg = { _sum: { amount: new Prisma.Decimal(0) } };
@@ -100,45 +140,6 @@ export class TransactionStatisticsService {
         ? monthsBuckets[monthsBuckets.length - 2]!
         : null;
 
-    // Budget categories for current month expenses (by known categories)
-    // Optimization: Use groupBy to reduce data transfer (group by category instead of fetching all rows)
-    const nextMonthStart = addMonths(currentMonthStart, 1);
-    const currentMonthExpensesByCategory = await prisma.transaction.groupBy({
-      by: ["category"],
-      where: {
-        userId,
-        type: "expense",
-        date: { gte: currentMonthStart, lt: nextMonthStart },
-      },
-      _sum: { amount: true },
-    });
-
-    // Top categories (previous full month)
-    const [topExpenseRows, topIncomeRows] = await Promise.all([
-      prisma.transaction.groupBy({
-        by: ["category"],
-        where: {
-          userId,
-          type: "expense",
-          date: { gte: lastMonthStart, lt: currentMonthStart },
-        },
-        _sum: { amount: true },
-        orderBy: { _sum: { amount: "desc" } },
-        take: 1,
-      }),
-      prisma.transaction.groupBy({
-        by: ["category"],
-        where: {
-          userId,
-          type: "income",
-          date: { gte: lastMonthStart, lt: currentMonthStart },
-        },
-        _sum: { amount: true },
-        orderBy: { _sum: { amount: "desc" } },
-        take: 1,
-      }),
-    ]);
-
     const topExpenseCategory: TopCategory | null =
       topExpenseRows.length > 0
         ? {
@@ -169,7 +170,7 @@ export class TransactionStatisticsService {
 
     const spentByKey = new Map<string, number>();
     for (const item of currentMonthExpensesByCategory) {
-      const amt = decimalToNumber(item.amount);
+      const amt = decimalToNumber(item._sum.amount);
       const key =
         categoryToConfigKey.get(item.category.toLowerCase()) ?? "Other";
       spentByKey.set(key, (spentByKey.get(key) ?? 0) + amt);
