@@ -2,7 +2,8 @@
   <div class="row">
     <mat-form-field appearance="outline">
       <mat-label>{{ 'TRANSACTIONS.TITLE_LABEL' | translate }}</mat-label>
-      <input matInput formControlName="title" maxlength="100" />
+      <input matInput formControlName="title" maxlength="100" #titleInput />
+      <mat-hint align="end">{{ titleInput.value.length }} / 100</mat-hint>
       @if (form.controls.title.hasError('required')) {
         <mat-error>{{
           'TRANSACTIONS.TITLE_REQUIRED' | translate
@@ -13,7 +14,7 @@
   <div class="row">
     <mat-form-field appearance="outline">
       <mat-label>{{ 'TRANSACTIONS.AMOUNT' | translate }}</mat-label>
-      <input matInput type="number" min="0" step="0.01" formControlName="amount" />
+      <input matInput type="number" min="0" step="0.01" formControlName="amount" placeholder="0.00" />
       @if (form.controls.amount.hasError('required')) {
         <mat-error>{{
           'TRANSACTIONS.AMOUNT_REQUIRED' | translate
@@ -55,8 +56,8 @@
       }
     </mat-form-field>
     <div class="type-field">
-      <span class="type-label">{{ 'TRANSACTIONS.TYPE' | translate }}</span>
-      <mat-button-toggle-group formControlName="type" appearance="standard">
+      <span class="type-label" id="type-label">{{ 'TRANSACTIONS.TYPE' | translate }}</span>
+      <mat-button-toggle-group formControlName="type" appearance="standard" aria-labelledby="type-label">
         <mat-button-toggle value="income">{{
           'TRANSACTIONS.TYPES.INCOME' | translate
         }}</mat-button-toggle>
