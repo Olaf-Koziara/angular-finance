@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime } from 'rxjs';
 import { TransactionFilters } from '../../models/transaction.model';
@@ -23,6 +24,7 @@ import { TranslateModule } from '@ngx-translate/core';
     MatSelectModule,
     MatIconModule,
     MatButtonModule,
+    MatTooltipModule,
     TranslateModule
 ],
   templateUrl: './transaction-filters.component.html',
