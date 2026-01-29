@@ -17,11 +17,14 @@ import { BudgetService } from '../services/budget.service';
 import { Budget } from '../models/budget.model';
 import { TRANSACTION_CATEGORIES } from '../../transactions/constants/transaction-categories.constant';
 import { form, FormField, min, required, validate } from '@angular/forms/signals';
-import { MatAnchor } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { numericValidator } from '../../../shared/utils/validators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AppCurrencyPipe } from "../../../shared/pipes/app-currency.pipe";
+import { finalize } from 'rxjs/operators';
+
 @Component({
   selector: 'app-budget-page',
   standalone: true,
@@ -37,7 +40,8 @@ import { AppCurrencyPipe } from "../../../shared/pipes/app-currency.pipe";
     MatIconModule,
     TranslateModule,
     FormField,
-    MatAnchor,
+    MatButtonModule,
+    MatProgressSpinnerModule,
     AppCurrencyPipe
   ],
 })
@@ -53,6 +57,7 @@ export class BudgetPageComponent {
   });
 
   readonly isLoading = signal(true);
+  readonly isSaving = signal(false);
   readonly error = signal<string | null>(null);
   readonly form = form(this.budget, (budget) => {
     min(budget.generalBudget, 0);
@@ -106,13 +111,17 @@ export class BudgetPageComponent {
   }
 
   saveBudget(): void {
-    this.budgetService.update(this.budget()).subscribe({
-      next: (savedBudget) => this.budget.set(savedBudget),
-      error: (err: HttpErrorResponse) => this.error.set(err.error.message),
-      complete: () => {
-        this.form().reset();
-      },
-    });
+    this.isSaving.set(true);
+    this.budgetService
+      .update(this.budget())
+      .pipe(finalize(() => this.isSaving.set(false)))
+      .subscribe({
+        next: (savedBudget) => this.budget.set(savedBudget),
+        error: (err: HttpErrorResponse) => this.error.set(err.error.message),
+        complete: () => {
+          this.form().reset();
+        },
+      });
   }
   trackByCategory(index: number, category: string): string {
     return category;
