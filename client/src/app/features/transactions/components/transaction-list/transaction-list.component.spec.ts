@@ -3,10 +3,11 @@ import { TransactionListComponent } from './transaction-list.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
-import { Component, signal } from '@angular/core';
+import { Component, signal, input } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-loader',
@@ -15,7 +16,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  loading = input(false);
 }
 
 describe('TransactionListComponent', () => {
@@ -66,7 +67,7 @@ describe('TransactionListComponent', () => {
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
@@ -322,6 +323,19 @@ describe('TransactionListComponent', () => {
     it('should have sortable headers with appropriate attributes', () => {
       const sortHeaders = fixture.debugElement.queryAll(By.css('[mat-sort-header]'));
       expect(sortHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('should have aria-label on checkboxes when selection mode is enabled', () => {
+      fixture.componentRef.setInput('selectionMode', true);
+      fixture.detectChanges();
+
+      const headerCheckboxInput = fixture.debugElement.query(By.css('th mat-checkbox input'));
+      expect(headerCheckboxInput).toBeTruthy();
+      expect(headerCheckboxInput.nativeElement.getAttribute('aria-label')).toBeTruthy();
+
+      const rowCheckboxInputs = fixture.debugElement.queryAll(By.css('td mat-checkbox input'));
+      expect(rowCheckboxInputs.length).toBeGreaterThan(0);
+      expect(rowCheckboxInputs[0].nativeElement.getAttribute('aria-label')).toBeTruthy();
     });
   });
 
