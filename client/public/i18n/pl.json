@@ -107,6 +107,8 @@
     "NO_TRANSACTIONS": "Brak transakcji",
     "NO_RESULTS": "Brak wyników spełniających kryteria",
     "NEW": "Nowa transakcja",
+    "SELECT_ALL": "Wybierz wszystkie transakcje",
+    "SELECT_ROW": "Wybierz transakcję: {{title}}",
     "SELECT": "Wybierz",
     "CANCEL_SELECTION": "Anuluj wybór",
     "DELETE_SELECTED": "Usuń wybrane ({{count}})",
