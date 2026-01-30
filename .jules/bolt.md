@@ -5,3 +5,7 @@
 ## 2025-02-16 - Prisma Migrations in Sandbox
 **Learning:** Generating Prisma migrations requires a running database (shadow DB) or at least a valid connection. In a sandbox without a running Postgres, `migrate diff` fails.
 **Action:** Be prepared to manually create migration files if the environment restricts running migration commands, ensuring the SQL matches the schema change exactly.
+
+## 2025-02-16 - Raw SQL for Time-Series Aggregation
+**Learning:** Prisma's `groupBy` does not support grouping by derived fields like `DATE_TRUNC`. For time-bucketed analytics (e.g., monthly totals), `prisma.$queryRaw` is necessary to perform efficient aggregation in the database and avoid fetching large datasets.
+**Action:** Use `$queryRaw` with `DATE_TRUNC` (Postgres) for date-based grouping instead of in-memory bucket processing.
