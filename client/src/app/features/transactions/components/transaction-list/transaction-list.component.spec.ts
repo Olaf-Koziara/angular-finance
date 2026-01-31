@@ -3,10 +3,11 @@ import { TransactionListComponent } from './transaction-list.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
-import { Component, signal } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-loader',
@@ -15,7 +16,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  readonly loading = input<boolean>(false);
 }
 
 describe('TransactionListComponent', () => {
@@ -66,7 +67,7 @@ describe('TransactionListComponent', () => {
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
@@ -148,7 +149,7 @@ describe('TransactionListComponent', () => {
 
     it('should render all table columns', () => {
       const headers = fixture.debugElement.queryAll(By.css('th'));
-      expect(headers.length).toBe(component.displayedColumns.length);
+      expect(headers.length).toBe(component.displayedColumns().length);
     });
 
     it('should render correct number of rows', () => {
@@ -159,7 +160,7 @@ describe('TransactionListComponent', () => {
     it('should display transaction date formatted', () => {
       const dateCells = fixture.debugElement
         .queryAll(By.css('td'))
-        .filter((_, index) => index % component.displayedColumns.length === 0);
+        .filter((_, index) => index % component.displayedColumns().length === 0);
       expect(dateCells.length).toBeGreaterThan(0);
     });
 
@@ -325,6 +326,33 @@ describe('TransactionListComponent', () => {
     });
   });
 
+  describe('Selection Mode', () => {
+    beforeEach(() => {
+      fixture.componentRef.setInput('selectionMode', true);
+      fixture.detectChanges();
+    });
+
+    it('should render selection column', () => {
+      const headers = fixture.debugElement.queryAll(By.css('th'));
+      expect(headers.length).toBe(component.displayedColumns().length);
+      const selectHeader = fixture.debugElement.query(By.css('th mat-checkbox'));
+      expect(selectHeader).toBeTruthy();
+    });
+
+    it('should have aria-label on header checkbox', () => {
+      const headerCheckbox = fixture.debugElement.query(By.css('th mat-checkbox'));
+      const input = headerCheckbox.query(By.css('input'));
+      expect(input.nativeElement.getAttribute('aria-label')).toBe('TRANSACTIONS.SELECT_ALL');
+    });
+
+    it('should have aria-label on row checkboxes', () => {
+      const rowCheckboxes = fixture.debugElement.queryAll(By.css('td mat-checkbox'));
+      expect(rowCheckboxes.length).toBeGreaterThan(0);
+      const input = rowCheckboxes[0].query(By.css('input'));
+      expect(input.nativeElement.getAttribute('aria-label')).toBe('TRANSACTIONS.SELECT_ROW');
+    });
+  });
+
   describe('Edge Cases', () => {
     it('should handle empty transactions array', () => {
       fixture.componentRef.setInput('transactions', []);
@@ -407,7 +435,7 @@ describe('TransactionListComponent', () => {
     });
 
     it('should have correct displayedColumns', () => {
-      expect(component.displayedColumns).toEqual([
+      expect(component.displayedColumns()).toEqual([
         'date',
         'title',
         'category',
