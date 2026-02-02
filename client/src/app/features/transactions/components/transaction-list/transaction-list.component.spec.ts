@@ -3,10 +3,12 @@ import { TransactionListComponent } from './transaction-list.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
-import { Component, signal } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { SettingsService } from '../../../../features/settings/services/settings.service';
 
 @Component({
   selector: 'app-loader',
@@ -15,7 +17,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  loading = input(false);
 }
 
 describe('TransactionListComponent', () => {
@@ -63,10 +65,16 @@ describe('TransactionListComponent', () => {
         MatIconModule,
         MatChipsModule,
       ],
+      providers: [
+        {
+          provide: SettingsService,
+          useValue: { currency: signal('USD') },
+        },
+      ],
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
@@ -322,6 +330,26 @@ describe('TransactionListComponent', () => {
     it('should have sortable headers with appropriate attributes', () => {
       const sortHeaders = fixture.debugElement.queryAll(By.css('[mat-sort-header]'));
       expect(sortHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('should have aria-label on checkboxes in selection mode', () => {
+      fixture.componentRef.setInput('selectionMode', true);
+      fixture.detectChanges();
+
+      const checkboxes = fixture.debugElement.queryAll(By.css('mat-checkbox input'));
+
+      // Header checkbox + 3 row checkboxes
+      expect(checkboxes.length).toBe(4);
+
+      const headerCheckbox = checkboxes[0];
+      expect(headerCheckbox.nativeElement.getAttribute('aria-label')).toBe(
+        'TRANSACTIONS.SELECT_ALL'
+      );
+
+      const firstRowCheckbox = checkboxes[1];
+      expect(firstRowCheckbox.nativeElement.getAttribute('aria-label')).toBe(
+        'TRANSACTIONS.SELECT_ROW'
+      );
     });
   });
 
