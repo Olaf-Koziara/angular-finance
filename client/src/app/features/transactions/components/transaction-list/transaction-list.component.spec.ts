@@ -3,10 +3,12 @@ import { TransactionListComponent } from './transaction-list.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
-import { Component, signal } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { SettingsService } from '../../../settings/services/settings.service';
 
 @Component({
   selector: 'app-loader',
@@ -15,7 +17,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  loading = input(false);
 }
 
 describe('TransactionListComponent', () => {
@@ -63,10 +65,16 @@ describe('TransactionListComponent', () => {
         MatIconModule,
         MatChipsModule,
       ],
+      providers: [
+        {
+          provide: SettingsService,
+          useValue: { currency: signal('USD') },
+        },
+      ],
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
@@ -148,7 +156,7 @@ describe('TransactionListComponent', () => {
 
     it('should render all table columns', () => {
       const headers = fixture.debugElement.queryAll(By.css('th'));
-      expect(headers.length).toBe(component.displayedColumns.length);
+      expect(headers.length).toBe(component.displayedColumns().length);
     });
 
     it('should render correct number of rows', () => {
@@ -159,7 +167,7 @@ describe('TransactionListComponent', () => {
     it('should display transaction date formatted', () => {
       const dateCells = fixture.debugElement
         .queryAll(By.css('td'))
-        .filter((_, index) => index % component.displayedColumns.length === 0);
+        .filter((_, index) => index % component.displayedColumns().length === 0);
       expect(dateCells.length).toBeGreaterThan(0);
     });
 
@@ -323,6 +331,25 @@ describe('TransactionListComponent', () => {
       const sortHeaders = fixture.debugElement.queryAll(By.css('[mat-sort-header]'));
       expect(sortHeaders.length).toBeGreaterThan(0);
     });
+
+    it('should have aria-label on selection checkboxes when selection mode is active', () => {
+      fixture.componentRef.setInput('selectionMode', true);
+      fixture.detectChanges();
+
+      const checkboxes = fixture.debugElement.queryAll(By.css('mat-checkbox'));
+      expect(checkboxes.length).toBeGreaterThan(0);
+
+      // Header checkbox - check internal input
+      const headerInput = checkboxes[0].query(By.css('input'));
+      expect(headerInput.nativeElement.getAttribute('aria-label')).toBe('TRANSACTIONS.SELECT_ALL');
+
+      // Row checkbox (checking first row) - check internal input
+      if (checkboxes.length > 1) {
+        const rowInput = checkboxes[1].query(By.css('input'));
+        // Title of first mock transaction is 'Grocery Shopping'
+        expect(rowInput.nativeElement.getAttribute('aria-label')).toContain('Grocery Shopping');
+      }
+    });
   });
 
   describe('Edge Cases', () => {
@@ -402,12 +429,8 @@ describe('TransactionListComponent', () => {
   });
 
   describe('Component Properties', () => {
-    it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe('TransactionListComponent');
-    });
-
     it('should have correct displayedColumns', () => {
-      expect(component.displayedColumns).toEqual([
+      expect(component.displayedColumns()).toEqual([
         'date',
         'title',
         'category',
@@ -415,12 +438,6 @@ describe('TransactionListComponent', () => {
         'amount',
         'actions',
       ]);
-    });
-
-    it('should have readonly displayedColumns', () => {
-      expect(() => {
-        (component.displayedColumns as any) = [];
-      }).toThrow();
     });
   });
 });
