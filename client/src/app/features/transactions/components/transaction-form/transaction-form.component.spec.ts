@@ -414,6 +414,16 @@ describe('TransactionFormComponent', () => {
       expect(typeToggle).toBeTruthy();
     });
 
+    it('should have accessible label on type toggle group', () => {
+      const typeToggle = fixture.debugElement.query(
+        By.css('mat-button-toggle-group[formControlName="type"]')
+      );
+      const label = fixture.debugElement.query(By.css('.type-label'));
+
+      expect(label.nativeElement.getAttribute('id')).toBe('transaction-type-label');
+      expect(typeToggle.nativeElement.getAttribute('aria-labelledby')).toBe('transaction-type-label');
+    });
+
     it('should render submit button', () => {
       const submitButton = fixture.debugElement.query(By.css('button[type="submit"]'));
       expect(submitButton).toBeTruthy();

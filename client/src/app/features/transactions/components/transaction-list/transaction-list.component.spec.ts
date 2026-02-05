@@ -3,10 +3,12 @@ import { TransactionListComponent } from './transaction-list.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
-import { Component, signal } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipsModule, MatChip } from '@angular/material/chips';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-loader',
@@ -15,7 +17,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  readonly loading = input(false);
 }
 
 describe('TransactionListComponent', () => {
@@ -66,7 +68,7 @@ describe('TransactionListComponent', () => {
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
@@ -181,19 +183,30 @@ describe('TransactionListComponent', () => {
     });
 
     it('should render type chip with correct color for income', () => {
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+      const chips = fixture.debugElement.queryAll(By.directive(MatChip));
       const incomeChip = chips.find((chip) => chip.nativeElement.textContent.includes('INCOME'));
       expect(incomeChip).toBeTruthy();
-      expect(incomeChip?.nativeElement.getAttribute('ng-reflect-color')).toBe('primary');
+      // Accessing the component instance to check color input if possible, or rely on class/style.
+      // Since MatChip inputs are not easily accessible via debugElement.componentInstance without casting
+      // We can check if the class 'mat-primary' or similar is applied, but with signal inputs it might be tricky.
+      // However, usually color="primary" adds a class.
+      // Let's assume verifying the attribute exists is enough if ng-reflect is failing, but we can try component instance.
+      // Actually, standard MatChip adds class mat-primary/mat-warn/etc.
+      // But let's check component instance color property.
+      // Note: MatChip doesn't expose color as a simple property in all versions easily.
+      // Let's stick to class check if possible. 'mat-primary' should be there.
+      // Or try to fix the test by using componentInstance.
+      // MatChip has a 'color' input.
+      expect((incomeChip?.componentInstance as any).color).toBe('primary');
     });
 
     it('should render type chip with correct color for expense', () => {
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+      const chips = fixture.debugElement.queryAll(By.directive(MatChip));
       const expenseChips = chips.filter((chip) =>
         chip.nativeElement.textContent.includes('EXPENSE')
       );
       expect(expenseChips.length).toBeGreaterThan(0);
-      expect(expenseChips[0].nativeElement.getAttribute('ng-reflect-color')).toBe('warn');
+      expect((expenseChips[0].componentInstance as any).color).toBe('warn');
     });
 
     it('should render action buttons for each row', () => {
@@ -207,9 +220,10 @@ describe('TransactionListComponent', () => {
 
   describe('Sorting', () => {
     it('should apply sort column and direction to table', () => {
-      const sortElement = fixture.debugElement.query(By.css('[matSort]'));
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-active')).toBe('date');
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-direction')).toBe('desc');
+      const sortElement = fixture.debugElement.query(By.directive(MatSort));
+      const sortInstance = sortElement.injector.get(MatSort);
+      expect(sortInstance.active).toBe('date');
+      expect(sortInstance.direction).toBe('desc');
     });
 
     it('should emit sortChanged event when sort changes', () => {
@@ -249,9 +263,10 @@ describe('TransactionListComponent', () => {
       fixture.componentRef.setInput('sort', newSort);
       fixture.detectChanges();
 
-      const sortElement = fixture.debugElement.query(By.css('[matSort]'));
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-active')).toBe('amount');
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-direction')).toBe('asc');
+      const sortElement = fixture.debugElement.query(By.directive(MatSort));
+      const sortInstance = sortElement.injector.get(MatSort);
+      expect(sortInstance.active).toBe('amount');
+      expect(sortInstance.direction).toBe('asc');
     });
   });
 
@@ -322,6 +337,20 @@ describe('TransactionListComponent', () => {
     it('should have sortable headers with appropriate attributes', () => {
       const sortHeaders = fixture.debugElement.queryAll(By.css('[mat-sort-header]'));
       expect(sortHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('should have aria-label on checkboxes', () => {
+      fixture.componentRef.setInput('selectionMode', true);
+      fixture.detectChanges();
+
+      const checkboxes = fixture.debugElement.queryAll(By.css('mat-checkbox'));
+      // Header checkbox
+      expect(checkboxes[0].nativeElement.getAttribute('aria-label')).toBe('TRANSACTIONS.SELECT_ALL');
+      // Row checkboxes (there are 3 mock transactions)
+      expect(checkboxes.length).toBeGreaterThan(1);
+      // Row checkbox
+      expect(checkboxes[1].nativeElement.getAttribute('aria-label')).toContain('TRANSACTIONS.SELECT_ROW');
+      expect(checkboxes[1].nativeElement.getAttribute('aria-label')).toContain('Grocery Shopping');
     });
   });
 
