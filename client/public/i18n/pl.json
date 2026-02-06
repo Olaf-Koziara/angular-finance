@@ -108,6 +108,8 @@
     "NO_RESULTS": "Brak wyników spełniających kryteria",
     "NEW": "Nowa transakcja",
     "SELECT": "Wybierz",
+    "SELECT_ALL": "Wybierz wszystkie transakcje",
+    "SELECT_ROW": "Wybierz transakcję: {{value}}",
     "CANCEL_SELECTION": "Anuluj wybór",
     "DELETE_SELECTED": "Usuń wybrane ({{count}})",
     "HISTORY": "Historia",
