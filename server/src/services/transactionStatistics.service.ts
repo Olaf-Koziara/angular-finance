@@ -31,6 +31,8 @@ export class TransactionStatisticsService {
     const monthsBuckets = buildMonthBuckets(months, now);
     const rangeStart = monthsBuckets[0]?.monthStart ?? startOfMonth(now);
     const rangeEnd = addMonths(startOfMonth(now), 1);
+    const nextMonthStart = addMonths(currentMonthStart, 1);
+    const threeMonthsStart = startOfMonth(addMonths(now, -3));
 
     // Fetch budget and populate config with real values
     const budgetService = new BudgetService();
@@ -38,28 +40,79 @@ export class TransactionStatisticsService {
     const populatedConfigs = mapBudgetsToConfig(budget, DASHBOARD_BUDGETS);
 
     // Optimization: Combined aggregation query and optimized fetches
-    const [allTimeStats, recentTransactions] = await Promise.all([
+    // Replaced fetching all recent transactions with targeted aggregations to reduce data transfer and memory usage.
+    const [
+      allTimeStats,
+      monthlyStatsRaw,
+      currentMonthExpensesByCategory,
+      topExpenseRows,
+      topIncomeRows,
+      entertainmentStatsRaw,
+    ] = await Promise.all([
+      // 1. All-time stats
       prisma.transaction.groupBy({
         by: ["type"],
         where: { userId },
         _sum: { amount: true },
       }),
-      prisma.transaction.findMany({
+      // 2. Monthly income/expenses (Optimized with raw query)
+      prisma.$queryRaw<Array<{ month: Date; type: string; total: unknown }>>`
+        SELECT
+          DATE_TRUNC('month', "date") as "month",
+          "type",
+          SUM("amount") as "total"
+        FROM "transactions"
+        WHERE "userId" = ${userId}
+          AND "date" >= ${rangeStart}
+          AND "date" < ${rangeEnd}
+        GROUP BY 1, 2
+      `,
+      // 3. Current month expenses by category
+      prisma.transaction.groupBy({
+        by: ["category"],
         where: {
           userId,
-          date: {
-            gte: rangeStart,
-            lt: rangeEnd,
-          },
+          type: "expense",
+          date: { gte: currentMonthStart, lt: nextMonthStart },
         },
-        select: {
-          amount: true,
-          type: true,
-          category: true,
-          date: true,
-        },
-        orderBy: { date: "asc" },
+        _sum: { amount: true },
       }),
+      // 4. Top expenses (previous full month)
+      prisma.transaction.groupBy({
+        by: ["category"],
+        where: {
+          userId,
+          type: "expense",
+          date: { gte: lastMonthStart, lt: currentMonthStart },
+        },
+        _sum: { amount: true },
+        orderBy: { _sum: { amount: "desc" } },
+        take: 1,
+      }),
+      // 5. Top income (previous full month)
+      prisma.transaction.groupBy({
+        by: ["category"],
+        where: {
+          userId,
+          type: "income",
+          date: { gte: lastMonthStart, lt: currentMonthStart },
+        },
+        _sum: { amount: true },
+        orderBy: { _sum: { amount: "desc" } },
+        take: 1,
+      }),
+      // 6. Entertainment expenses (Optimized with raw query for average calculation)
+      prisma.$queryRaw<Array<{ total: unknown }>>`
+        SELECT
+          SUM("amount") as "total"
+        FROM "transactions"
+        WHERE "userId" = ${userId}
+          AND "type" = 'expense'
+          AND LOWER("category") = 'entertainment'
+          AND "date" >= ${threeMonthsStart}
+          AND "date" < ${currentMonthStart}
+        GROUP BY DATE_TRUNC('month', "date")
+      `,
     ]);
 
     const incomeAgg = { _sum: { amount: new Prisma.Decimal(0) } };
@@ -74,18 +127,22 @@ export class TransactionStatisticsService {
       }
     }
 
-    // Build monthly buckets
-    for (const tx of recentTransactions) {
-      const txDate = tx.date;
+    // Build monthly buckets from aggregated data
+    for (const row of monthlyStatsRaw) {
+      const txDate = new Date(row.month); // Ensure it's a date object
       const monthStart = startOfMonth(txDate);
       const idx =
         (monthStart.getFullYear() - rangeStart.getFullYear()) * 12 +
         (monthStart.getMonth() - rangeStart.getMonth());
-      if (idx < 0 || idx >= monthsBuckets.length) continue;
 
-      const amount = decimalToNumber(tx.amount);
-      if (tx.type === "income") monthsBuckets[idx]!.income += amount;
-      if (tx.type === "expense") monthsBuckets[idx]!.expenses += amount;
+      if (idx >= 0 && idx < monthsBuckets.length) {
+        // Handle potentially different types returned by raw query (number or string or Decimal)
+        const amount = Number(row.total);
+        if (!isNaN(amount)) {
+            if (row.type === "income") monthsBuckets[idx]!.income += amount;
+            if (row.type === "expense") monthsBuckets[idx]!.expenses += amount;
+        }
+      }
     }
 
     const monthlyData: MonthlyData[] = monthsBuckets.map((b) => ({
@@ -99,45 +156,6 @@ export class TransactionStatisticsService {
       monthsBuckets.length >= 2
         ? monthsBuckets[monthsBuckets.length - 2]!
         : null;
-
-    // Budget categories for current month expenses (by known categories)
-    // Optimization: Use groupBy to reduce data transfer (group by category instead of fetching all rows)
-    const nextMonthStart = addMonths(currentMonthStart, 1);
-    const currentMonthExpensesByCategory = await prisma.transaction.groupBy({
-      by: ["category"],
-      where: {
-        userId,
-        type: "expense",
-        date: { gte: currentMonthStart, lt: nextMonthStart },
-      },
-      _sum: { amount: true },
-    });
-
-    // Top categories (previous full month)
-    const [topExpenseRows, topIncomeRows] = await Promise.all([
-      prisma.transaction.groupBy({
-        by: ["category"],
-        where: {
-          userId,
-          type: "expense",
-          date: { gte: lastMonthStart, lt: currentMonthStart },
-        },
-        _sum: { amount: true },
-        orderBy: { _sum: { amount: "desc" } },
-        take: 1,
-      }),
-      prisma.transaction.groupBy({
-        by: ["category"],
-        where: {
-          userId,
-          type: "income",
-          date: { gte: lastMonthStart, lt: currentMonthStart },
-        },
-        _sum: { amount: true },
-        orderBy: { _sum: { amount: "desc" } },
-        take: 1,
-      }),
-    ]);
 
     const topExpenseCategory: TopCategory | null =
       topExpenseRows.length > 0
@@ -169,7 +187,8 @@ export class TransactionStatisticsService {
 
     const spentByKey = new Map<string, number>();
     for (const item of currentMonthExpensesByCategory) {
-      const amt = decimalToNumber(item.amount);
+      // Fix: item.amount does not exist, use item._sum.amount
+      const amt = decimalToNumber(item._sum.amount);
       const key =
         categoryToConfigKey.get(item.category.toLowerCase()) ?? "Other";
       spentByKey.set(key, (spentByKey.get(key) ?? 0) + amt);
@@ -211,9 +230,15 @@ export class TransactionStatisticsService {
     const allTimeExpenses = decimalToNumber(expenseAgg._sum.amount);
     const balance = allTimeIncome - allTimeExpenses;
 
+    // Calculate entertainment average from aggregated stats
+    let entertainmentAvg = 0;
+    if (entertainmentStatsRaw.length > 0) {
+        const total = entertainmentStatsRaw.reduce((acc, row) => acc + Number(row.total), 0);
+        entertainmentAvg = total / entertainmentStatsRaw.length;
+    }
+
     // Build alerts
     const entertainmentSpent = spentByKey.get("Entertainment") ?? 0;
-    const entertainmentAvg = averageEntertainmentExpense(recentTransactions);
     const alerts = buildAlerts(
       budgetCategories,
       balance,
@@ -256,39 +281,6 @@ export class TransactionStatisticsService {
       },
     };
   }
-}
-
-/**
- * Computes average monthly entertainment expense for the last 3 full months
- * (excluding current month).
- */
-function averageEntertainmentExpense(
-  recentTransactions: Array<{
-    amount: Prisma.Decimal;
-    type: string;
-    category: string;
-    date: Date;
-  }>
-): number {
-  const now = new Date();
-  const currentMonthStart = startOfMonth(now);
-  const threeMonthsStart = startOfMonth(addMonths(now, -3));
-
-  const byMonth = new Map<string, number>();
-  for (const tx of recentTransactions) {
-    if (tx.type !== "expense") continue;
-    if (tx.category.toLowerCase() !== "entertainment") continue;
-    if (tx.date >= currentMonthStart) continue;
-    if (tx.date < threeMonthsStart) continue;
-
-    const m = startOfMonth(tx.date);
-    const key = `${m.getFullYear()}-${m.getMonth()}`;
-    byMonth.set(key, (byMonth.get(key) ?? 0) + decimalToNumber(tx.amount));
-  }
-
-  if (byMonth.size === 0) return 0;
-  const total = Array.from(byMonth.values()).reduce((acc, v) => acc + v, 0);
-  return total / byMonth.size;
 }
 
 export const transactionStatisticsService = new TransactionStatisticsService();
