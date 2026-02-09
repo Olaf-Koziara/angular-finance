@@ -11,7 +11,13 @@
         @for (data of monthlyData(); track data.month; let i = $index) {
           <div
             class="month-group"
+            role="button"
+            tabindex="0"
             (click)="onMonthSelect(i)"
+            (keydown.enter)="onMonthSelect(i)"
+            (keydown.space)="onMonthSelect(i); $event.preventDefault()"
+            [attr.aria-pressed]="selectedMonth() === i"
+            [attr.aria-label]="(data.month | translate) + ': ' + ('DASHBOARD.INCOME' | translate) + ' ' + formatCurrency(data.income) + ', ' + ('DASHBOARD.EXPENSES' | translate) + ' ' + formatCurrency(data.expenses)"
             [class.selected]="selectedMonth() === i">
             <div class="bars-container">
               <div
