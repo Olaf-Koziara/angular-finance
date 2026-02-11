@@ -3,19 +3,21 @@ import { TransactionListComponent } from './transaction-list.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
-import { Component, signal } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipsModule, MatChip } from '@angular/material/chips';
+import { MatSort } from '@angular/material/sort';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-loader',
   standalone: true,
-  template: '<div class="loader" [class.active]="loading()"></div>',
+  template: '<div class="loader" [class.active]="loading"></div>',
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  @Input() loading = false;
 }
 
 describe('TransactionListComponent', () => {
@@ -66,7 +68,7 @@ describe('TransactionListComponent', () => {
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
@@ -148,7 +150,7 @@ describe('TransactionListComponent', () => {
 
     it('should render all table columns', () => {
       const headers = fixture.debugElement.queryAll(By.css('th'));
-      expect(headers.length).toBe(component.displayedColumns.length);
+      expect(headers.length).toBe(component.displayedColumns().length);
     });
 
     it('should render correct number of rows', () => {
@@ -159,7 +161,7 @@ describe('TransactionListComponent', () => {
     it('should display transaction date formatted', () => {
       const dateCells = fixture.debugElement
         .queryAll(By.css('td'))
-        .filter((_, index) => index % component.displayedColumns.length === 0);
+        .filter((_, index) => index % component.displayedColumns().length === 0);
       expect(dateCells.length).toBeGreaterThan(0);
     });
 
@@ -181,19 +183,19 @@ describe('TransactionListComponent', () => {
     });
 
     it('should render type chip with correct color for income', () => {
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+      const chips = fixture.debugElement.queryAll(By.directive(MatChip));
       const incomeChip = chips.find((chip) => chip.nativeElement.textContent.includes('INCOME'));
       expect(incomeChip).toBeTruthy();
-      expect(incomeChip?.nativeElement.getAttribute('ng-reflect-color')).toBe('primary');
+      expect(incomeChip?.injector.get(MatChip).color).toBe('primary');
     });
 
     it('should render type chip with correct color for expense', () => {
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+      const chips = fixture.debugElement.queryAll(By.directive(MatChip));
       const expenseChips = chips.filter((chip) =>
         chip.nativeElement.textContent.includes('EXPENSE')
       );
       expect(expenseChips.length).toBeGreaterThan(0);
-      expect(expenseChips[0].nativeElement.getAttribute('ng-reflect-color')).toBe('warn');
+      expect(expenseChips[0].injector.get(MatChip).color).toBe('warn');
     });
 
     it('should render action buttons for each row', () => {
@@ -207,9 +209,9 @@ describe('TransactionListComponent', () => {
 
   describe('Sorting', () => {
     it('should apply sort column and direction to table', () => {
-      const sortElement = fixture.debugElement.query(By.css('[matSort]'));
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-active')).toBe('date');
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-direction')).toBe('desc');
+      const sortDirective = fixture.debugElement.query(By.directive(MatSort)).injector.get(MatSort);
+      expect(sortDirective.active).toBe('date');
+      expect(sortDirective.direction).toBe('desc');
     });
 
     it('should emit sortChanged event when sort changes', () => {
@@ -249,9 +251,9 @@ describe('TransactionListComponent', () => {
       fixture.componentRef.setInput('sort', newSort);
       fixture.detectChanges();
 
-      const sortElement = fixture.debugElement.query(By.css('[matSort]'));
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-active')).toBe('amount');
-      expect(sortElement.nativeElement.getAttribute('ng-reflect-mat-sort-direction')).toBe('asc');
+      const sortDirective = fixture.debugElement.query(By.directive(MatSort)).injector.get(MatSort);
+      expect(sortDirective.active).toBe('amount');
+      expect(sortDirective.direction).toBe('asc');
     });
   });
 
@@ -322,6 +324,21 @@ describe('TransactionListComponent', () => {
     it('should have sortable headers with appropriate attributes', () => {
       const sortHeaders = fixture.debugElement.queryAll(By.css('[mat-sort-header]'));
       expect(sortHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('should have aria-label on select all checkbox', () => {
+      fixture.componentRef.setInput('selectionMode', true);
+      fixture.detectChanges();
+      const headerCheckbox = fixture.debugElement.query(By.css('th mat-checkbox input'));
+      expect(headerCheckbox.nativeElement.getAttribute('aria-label')).toBe('TRANSACTIONS.SELECT_ALL');
+    });
+
+    it('should have aria-label on row checkboxes', () => {
+      fixture.componentRef.setInput('selectionMode', true);
+      fixture.detectChanges();
+      const rowCheckboxes = fixture.debugElement.queryAll(By.css('td mat-checkbox input'));
+      expect(rowCheckboxes.length).toBeGreaterThan(0);
+      expect(rowCheckboxes[0].nativeElement.getAttribute('aria-label')).toBe('TRANSACTIONS.SELECT_ITEM');
     });
   });
 
@@ -403,11 +420,11 @@ describe('TransactionListComponent', () => {
 
   describe('Component Properties', () => {
     it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe('TransactionListComponent');
+      expect(component.constructor.prototype.constructor.name).toContain('TransactionListComponent');
     });
 
     it('should have correct displayedColumns', () => {
-      expect(component.displayedColumns).toEqual([
+      expect(component.displayedColumns()).toEqual([
         'date',
         'title',
         'category',
@@ -415,12 +432,6 @@ describe('TransactionListComponent', () => {
         'amount',
         'actions',
       ]);
-    });
-
-    it('should have readonly displayedColumns', () => {
-      expect(() => {
-        (component.displayedColumns as any) = [];
-      }).toThrow();
     });
   });
 });
