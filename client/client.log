@@ -1,0 +1,72 @@
+
+> angular-finance@0.0.0 start /app/client
+> ng serve
+
+❯ Building...
+✔ Building...
+Initial chunk files | Names                       |  Raw size
+styles.css          | styles                      |  13.11 kB |
+main.js             | main                        |  11.53 kB |
+chunk-Q627BOYV.js   | -                           |   5.01 kB |
+chunk-ZEM2ZP5G.js   | -                           |   3.29 kB |
+chunk-653SOEEV.js   | -                           |   1.51 kB |
+chunk-EGFK46N3.js   | -                           | 766 bytes |
+
+                    | Initial total               |  35.23 kB
+
+Lazy chunk files    | Names                       |  Raw size
+chunk-ZQ5QDNX7.js   | transactions-page-component | 106.70 kB |
+chunk-42LYWOHF.js   | dashboard-component         |  84.92 kB |
+chunk-EXDONNT6.js   | authenticated-template      |  58.62 kB |
+chunk-S7ACVOOU.js   | register-component          |  33.31 kB |
+chunk-JU4VPXQE.js   | budget-page-component       |  29.61 kB |
+chunk-QZ7DL6CI.js   | login-component             |  13.83 kB |
+chunk-3TEHUZC2.js   | unauthorized-component      |   3.41 kB |
+chunk-WI64EBYW.js   | -                           |   1.31 kB |
+chunk-GZWYNUEM.js   | -                           | 302 bytes |
+
+Application bundle generation complete. [10.055 seconds] - 2026-02-12T09:28:57.098Z
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: SettingsDialogComponent is not used within the template of SidebarComponent[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/layout/sidebar/sidebar.component.ts:39:4:
+[37m      39 │     [32mSettingsDialogComponent[37m,
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: MatButton is not used within the template of BackgroundPicker[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/settings/components/background-picker/background-picker.component.ts:10:21:
+[37m      10 │   imports: [NgStyle, [32mMatAnchor[37m, MatMenuModule, MatMenuTrigger, Tra...
+         ╵                      [32m~~~~~~~~~[0m
+
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://localhost:4200/
+ ELIFECYCLE  Command failed.
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+github.com/evanw/esbuild/internal/helpers.(*ThreadSafeWaitGroup).Wait(...)
+	github.com/evanw/esbuild/internal/helpers/waitgroup.go:36
+main.runService.func2()
+	github.com/evanw/esbuild/cmd/esbuild/service.go:114 +0x53
+main.runService(0x1)
+	github.com/evanw/esbuild/cmd/esbuild/service.go:160 +0x4c3
+main.main()
+	github.com/evanw/esbuild/cmd/esbuild/main.go:252 +0xb75
+
+goroutine 7 [chan receive]:
+main.runService.func1()
+	github.com/evanw/esbuild/cmd/esbuild/service.go:98 +0x45
+created by main.runService in goroutine 1
+	github.com/evanw/esbuild/cmd/esbuild/service.go:97 +0x1ce
+
+goroutine 8 [chan receive]:
+main.(*serviceType).sendRequest(0xc000156e70, {0x9f3800, 0xc000cceae0})
+	github.com/evanw/esbuild/cmd/esbuild/service.go:192 +0x12b
+main.runService.func3()
+	github.com/evanw/esbuild/cmd/esbuild/service.go:125 +0x3e
+created by main.runService in goroutine 1
+	github.com/evanw/esbuild/cmd/esbuild/service.go:122 +0x2d0
