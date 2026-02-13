@@ -4,8 +4,20 @@
 </button>
 
 <mat-menu #backgroundMenu="matMenu">
-  @for(background of backgrounds;track background ){
-  <div class="background-item" (click)="updateSelectedBackground(background)" [ngStyle]="{ background: background }">
-  </div>
+  @for(background of backgrounds; track background; let i = $index){
+  <button
+    mat-menu-item
+    (click)="updateSelectedBackground(background)"
+    [attr.aria-label]="'SETTINGS.VISUAL.BACKGROUND_NAME' | translate: {index: i + 1}"
+    [class.selected]="selectedBackground() === background"
+  >
+    <div class="menu-item-content">
+      <div class="background-swatch" [ngStyle]="{ background: background }"></div>
+      <span class="background-label">{{ 'SETTINGS.VISUAL.BACKGROUND_NAME' | translate: {index: i + 1} }}</span>
+      @if (selectedBackground() === background) {
+      <mat-icon class="check-icon">check</mat-icon>
+      }
+    </div>
+  </button>
   }
 </mat-menu>
