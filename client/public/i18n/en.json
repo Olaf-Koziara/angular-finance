@@ -150,7 +150,8 @@
     "CURRENCY": "Currency",
     "CLOSE": "Close",
     "VISUAL": {
-      "BACKGROUND_SELECT": "Background"
+      "BACKGROUND_SELECT": "Background",
+      "BACKGROUND_NAME": "Background {{index}}"
     }
   }
 }
