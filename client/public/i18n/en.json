@@ -107,6 +107,8 @@
     "NO_RESULTS": "No results match your filters",
     "NEW": "New transaction",
     "SELECT": "Select",
+    "SELECT_ALL": "Select all transactions",
+    "SELECT_ITEM": "Select transaction: {{title}}",
     "CANCEL_SELECTION": "Cancel Selection",
     "DELETE_SELECTED": "Delete Selected ({{count}})",
     "HISTORY": "History",
