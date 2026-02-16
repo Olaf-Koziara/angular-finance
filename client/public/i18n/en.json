@@ -118,6 +118,12 @@
     "AMOUNT_MIN": "Amount must be greater than zero",
     "CATEGORY_REQUIRED": "Category is required",
     "DATE_REQUIRED": "Date is required",
+    "ACTIONS": {
+      "SELECT_ALL": "Select all transactions",
+      "SELECT_ROW": "Select transaction: {{title}}",
+      "EDIT_ROW": "Edit transaction: {{title}}",
+      "REMOVE_ROW": "Remove transaction: {{title}}"
+    },
     "TYPES": {
       "ALL": "All",
       "INCOME": "Income",
