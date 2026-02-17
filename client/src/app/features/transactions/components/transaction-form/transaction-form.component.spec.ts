@@ -452,16 +452,21 @@ describe('TransactionFormComponent', () => {
       fixture.componentRef.setInput('transaction', mockTransaction);
       fixture.detectChanges();
 
-      const cancelButton = fixture.debugElement.query(By.css('button[type="button"]'));
+      const buttons = fixture.debugElement.queryAll(By.css('button[type="button"]'));
+      const cancelButton = buttons.find((btn) =>
+        btn.nativeElement.textContent.includes('TRANSACTIONS.CANCEL_EDIT')
+      );
       expect(cancelButton).toBeTruthy();
-      expect(cancelButton.nativeElement.textContent).toContain('TRANSACTIONS.CANCEL_EDIT');
     });
 
     it('should not show cancel button in create mode', () => {
       fixture.componentRef.setInput('transaction', null);
       fixture.detectChanges();
 
-      const cancelButton = fixture.debugElement.query(By.css('button[type="button"]'));
+      const buttons = fixture.debugElement.queryAll(By.css('button[type="button"]'));
+      const cancelButton = buttons.find((btn) =>
+        btn.nativeElement.textContent.includes('TRANSACTIONS.CANCEL_EDIT')
+      );
       expect(cancelButton).toBeFalsy();
     });
 
@@ -595,7 +600,7 @@ describe('TransactionFormComponent', () => {
 
   describe('Component Properties', () => {
     it('should have OnPush change detection strategy', () => {
-      expect(component.constructor.prototype.constructor.name).toBe('TransactionFormComponent');
+      expect((component.constructor as any).ɵcmp.onPush).toBeTrue();
     });
 
     it('should be standalone component', () => {
