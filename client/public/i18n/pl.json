@@ -119,6 +119,12 @@
     "AMOUNT_MIN": "Kwota musi być większa od zera",
     "CATEGORY_REQUIRED": "Kategoria jest wymagana",
     "DATE_REQUIRED": "Data jest wymagana",
+    "ACTIONS": {
+      "SELECT_ALL": "Wybierz wszystkie transakcje",
+      "SELECT_ROW": "Wybierz transakcję: {{title}}",
+      "EDIT_ROW": "Edytuj transakcję: {{title}}",
+      "REMOVE_ROW": "Usuń transakcję: {{title}}"
+    },
     "TYPES": {
       "ALL": "Wszystkie",
       "INCOME": "Przychód",
