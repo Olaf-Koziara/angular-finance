@@ -1,0 +1,118 @@
+
+> angular-finance@0.0.0 start
+> ng serve
+
+❯ Building...
+✔ Building...
+Initial chunk files | Names                       |  Raw size
+styles.css          | styles                      |  13.11 kB |
+main.js             | main                        |  11.53 kB |
+chunk-APAZZSVS.js   | -                           |   4.99 kB |
+chunk-2JCYDZZ3.js   | -                           |   3.29 kB |
+chunk-653SOEEV.js   | -                           |   1.51 kB |
+chunk-EGFK46N3.js   | -                           | 766 bytes |
+
+                    | Initial total               |  35.20 kB
+
+Lazy chunk files    | Names                       |  Raw size
+chunk-4IEHFD6J.js   | transactions-page-component | 106.76 kB |
+chunk-KRF7TVRS.js   | dashboard-component         |  84.92 kB |
+chunk-SWVOHTCZ.js   | authenticated-template      |  58.62 kB |
+chunk-QGRW27VX.js   | register-component          |  33.31 kB |
+chunk-MFGFP5XP.js   | budget-page-component       |  29.61 kB |
+chunk-BO5ISBML.js   | login-component             |  13.83 kB |
+chunk-3TEHUZC2.js   | unauthorized-component      |   3.41 kB |
+chunk-PLOVT7C2.js   | -                           |   1.31 kB |
+chunk-GZWYNUEM.js   | -                           | 302 bytes |
+
+Application bundle generation complete. [7.938 seconds] - 2026-02-19T09:29:09.003Z
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: SettingsDialogComponent is not used within the template of SidebarComponent[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/layout/sidebar/sidebar.component.ts:39:4:
+[37m      39 │     [32mSettingsDialogComponent[37m,
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: MatButton is not used within the template of BackgroundPicker[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/settings/components/background-picker/background-picker.component.ts:10:21:
+[37m      10 │   imports: [NgStyle, [32mMatAnchor[37m, MatMenuModule, MatMenuTrigger, Tra...
+         ╵                      [32m~~~~~~~~~[0m
+
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://localhost:4200/
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [3.395 seconds] - 2026-02-19T09:32:37.464Z
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: SettingsDialogComponent is not used within the template of SidebarComponent[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/layout/sidebar/sidebar.component.ts:39:4:
+[37m      39 │     [32mSettingsDialogComponent[37m,
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: MatButton is not used within the template of BackgroundPicker[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/settings/components/background-picker/background-picker.component.ts:10:21:
+[37m      10 │   imports: [NgStyle, [32mMatAnchor[37m, MatMenuModule, MatMenuTrigger, Tra...
+         ╵                      [32m~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "../../../environments/environment"[0m
+
+    src/app/core/interceptors/api.interceptor.ts:1:28:
+[37m      1 │ import { environment } from [32m'../../../environments/environment'[37m;
+        ╵                             [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2307: Cannot find module '../../../environments/environment' or its corresponding type declarations.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/interceptors/api.interceptor.ts:2:28:
+[37m      2 │ import { environment } from [32m'../../../environments/environment'[37m;
+        ╵                             [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "../../../../environments/environment"[0m
+
+    src/app/features/auth/services/auth.service.ts:5:28:
+[37m      5 │ import { environment } from [32m'../../../../environments/environment'[37m;
+        ╵                             [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2307: Cannot find module '../../../../environments/environment' or its corresponding type declarations.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/auth/services/auth.service.ts:5:28:
+[37m      5 │ import { environment } from [32m'../../../../environments/environment'[37m;
+        ╵                             [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "../../../../environments/environment"[0m
+
+    src/app/features/budget/services/budget.service.ts:4:28:
+[37m      4 │ import { environment } from [32m'../../../../environments/environment'[37m;
+        ╵                             [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2307: Cannot find module '../../../../environments/environment' or its corresponding type declarations.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/budget/services/budget.service.ts:5:28:
+[37m      5 │ import { environment } from [32m'../../../../environments/environment'[37m;
+        ╵                             [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "../../../../environments/environment"[0m
+
+    src/app/shared/services/currency/currency.service.ts:3:28:
+[37m      3 │ import { environment } from [32m'../../../../environments/environment'[37m;
+        ╵                             [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2307: Cannot find module '../../../../environments/environment' or its corresponding type declarations.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/services/currency/currency.service.ts:4:28:
+[37m      4 │ import { environment } from [32m'../../../../environments/environment'[37m;
+        ╵                             [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m

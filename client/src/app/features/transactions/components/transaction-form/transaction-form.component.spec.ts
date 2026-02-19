@@ -606,4 +606,26 @@ describe('TransactionFormComponent', () => {
       expect((component as any).fb).toBeDefined();
     });
   });
+
+  describe('UX & Accessibility', () => {
+    it('should have aria-label on type toggle group', () => {
+      const typeToggle = fixture.debugElement.query(
+        By.css('mat-button-toggle-group[formControlName="type"]')
+      );
+      expect(typeToggle.attributes['aria-label']).toBeTruthy();
+    });
+
+    it('should display character count hint for title', () => {
+      const hint = fixture.debugElement.query(By.css('mat-hint'));
+      expect(hint).toBeTruthy();
+      expect(hint.nativeElement.textContent).toContain('/ 100');
+    });
+
+    it('should update character count when title changes', () => {
+      component.form.controls.title.setValue('Test Title');
+      fixture.detectChanges();
+      const hint = fixture.debugElement.query(By.css('mat-hint'));
+      expect(hint.nativeElement.textContent).toContain('10 / 100');
+    });
+  });
 });
