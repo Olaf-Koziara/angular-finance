@@ -4,3 +4,7 @@
 ## 2025-01-25 - [Accessibility] Hidden Action Buttons
 **Learning:** Action buttons in this app's lists were hidden by default (opacity: 0) and only appeared on hover. This made them invisible and confusing for keyboard users who could focus them but not see them.
 **Action:** Always ensure `opacity: 0` interactive elements have a corresponding `:focus` or `:focus-visible` state that restores visibility (`opacity: 1`).
+
+## 2026-02-20 - [Accessibility] Grouped Controls Labeling
+**Learning:** `mat-button-toggle-group` components require an explicit `aria-label` or `aria-labelledby` for screen reader accessibility, even if a visual label is present nearby.
+**Action:** Always add `[aria-label]` or `[aria-labelledby]` to `mat-button-toggle-group` and similar grouped controls.
