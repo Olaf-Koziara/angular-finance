@@ -3,10 +3,11 @@ import { TransactionListComponent } from './transaction-list.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
-import { Component, signal } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-loader',
@@ -15,7 +16,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  loading = input<boolean>(false);
 }
 
 describe('TransactionListComponent', () => {
@@ -66,7 +67,7 @@ describe('TransactionListComponent', () => {
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
@@ -148,7 +149,9 @@ describe('TransactionListComponent', () => {
 
     it('should render all table columns', () => {
       const headers = fixture.debugElement.queryAll(By.css('th'));
-      expect(headers.length).toBe(component.displayedColumns.length);
+      // Note: This test might fail if I add new columns or if the logic for displayedColumns changes.
+      // Based on the code, it should work.
+      expect(headers.length).toBe(component.displayedColumns().length);
     });
 
     it('should render correct number of rows', () => {
@@ -159,7 +162,7 @@ describe('TransactionListComponent', () => {
     it('should display transaction date formatted', () => {
       const dateCells = fixture.debugElement
         .queryAll(By.css('td'))
-        .filter((_, index) => index % component.displayedColumns.length === 0);
+        .filter((_, index) => index % component.displayedColumns().length === 0);
       expect(dateCells.length).toBeGreaterThan(0);
     });
 
@@ -184,6 +187,7 @@ describe('TransactionListComponent', () => {
       const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
       const incomeChip = chips.find((chip) => chip.nativeElement.textContent.includes('INCOME'));
       expect(incomeChip).toBeTruthy();
+      // Use helper to check color class if attribute not available, or just check attribute
       expect(incomeChip?.nativeElement.getAttribute('ng-reflect-color')).toBe('primary');
     });
 
@@ -323,6 +327,21 @@ describe('TransactionListComponent', () => {
       const sortHeaders = fixture.debugElement.queryAll(By.css('[mat-sort-header]'));
       expect(sortHeaders.length).toBeGreaterThan(0);
     });
+
+    it('should have aria-label on selection checkboxes', () => {
+      fixture.componentRef.setInput('selectionMode', true);
+      fixture.detectChanges();
+
+      const headerCheckboxInput = fixture.debugElement.query(By.css('th mat-checkbox input'));
+      // The default TranslateModule setup usually returns the key
+      expect(headerCheckboxInput.nativeElement.getAttribute('aria-label')).toBe('TRANSACTIONS.SELECT_ALL');
+
+      const rowCheckboxInputs = fixture.debugElement.queryAll(By.css('td mat-checkbox input'));
+      expect(rowCheckboxInputs.length).toBe(mockTransactions.length);
+
+      // Check the first one
+      expect(rowCheckboxInputs[0].nativeElement.getAttribute('aria-label')).toContain('TRANSACTIONS.SELECT_ROW');
+    });
   });
 
   describe('Edge Cases', () => {
@@ -407,7 +426,7 @@ describe('TransactionListComponent', () => {
     });
 
     it('should have correct displayedColumns', () => {
-      expect(component.displayedColumns).toEqual([
+      expect(component.displayedColumns()).toEqual([
         'date',
         'title',
         'category',

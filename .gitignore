@@ -55,9 +55,5 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-<<<<<<< HEAD
 /client/.angular/
 /client/src/environments/
-=======
-
->>>>>>> ded9f976ab96271df4ebe39cb0b509a4709bc947
