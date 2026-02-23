@@ -1,6 +1,7 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +25,7 @@ import { AppCurrencyPipe } from "../../../../shared/pipes/app-currency.pipe";
     MatTableModule,
     MatSortModule,
     MatButtonModule,
+    MatTooltipModule,
     MatIconModule,
     MatCheckboxModule,
     MatChipsModule,
