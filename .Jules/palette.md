@@ -4,3 +4,6 @@
 ## 2025-01-25 - [Accessibility] Hidden Action Buttons
 **Learning:** Action buttons in this app's lists were hidden by default (opacity: 0) and only appeared on hover. This made them invisible and confusing for keyboard users who could focus them but not see them.
 **Action:** Always ensure `opacity: 0` interactive elements have a corresponding `:focus` or `:focus-visible` state that restores visibility (`opacity: 1`).
+## 2026-02-24 - [Accessibility] Group Label Association
+**Learning:** Angular Material `mat-button-toggle-group` does not automatically associate with a nearby label, unlike `mat-form-field` controls. This requires manual `aria-labelledby` linking.
+**Action:** Explicitly add `id` to the label element and `aria-labelledby` to the group container.
