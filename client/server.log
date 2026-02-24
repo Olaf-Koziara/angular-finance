@@ -1,0 +1,42 @@
+❯ Building...
+✔ Building...
+Initial chunk files | Names                       |  Raw size
+styles.css          | styles                      |  13.11 kB |
+main.js             | main                        |  11.53 kB |
+chunk-XXF22DXN.js   | -                           |   5.02 kB |
+chunk-MTUA3EUT.js   | -                           |   3.29 kB |
+chunk-653SOEEV.js   | -                           |   1.51 kB |
+chunk-EGFK46N3.js   | -                           | 766 bytes |
+
+                    | Initial total               |  35.23 kB
+
+Lazy chunk files    | Names                       |  Raw size
+chunk-CQQCTJXE.js   | transactions-page-component | 106.27 kB |
+chunk-ED2B4TYP.js   | dashboard-component         |  84.92 kB |
+chunk-QQC665UV.js   | authenticated-template      |  58.62 kB |
+chunk-HD2OV6FU.js   | register-component          |  33.31 kB |
+chunk-PYLJD7MH.js   | budget-page-component       |  29.61 kB |
+chunk-ISNIT5VG.js   | login-component             |  13.83 kB |
+chunk-3TEHUZC2.js   | unauthorized-component      |   3.41 kB |
+chunk-SJOKAXWY.js   | -                           |   1.31 kB |
+chunk-GZWYNUEM.js   | -                           | 302 bytes |
+
+Application bundle generation complete. [8.679 seconds] - 2026-02-24T09:35:47.792Z
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: SettingsDialogComponent is not used within the template of SidebarComponent[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/layout/sidebar/sidebar.component.ts:39:4:
+[37m      39 │     [32mSettingsDialogComponent[37m,
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: MatButton is not used within the template of BackgroundPicker[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/settings/components/background-picker/background-picker.component.ts:10:21:
+[37m      10 │   imports: [NgStyle, [32mMatAnchor[37m, MatMenuModule, MatMenuTrigger, Tra...
+         ╵                      [32m~~~~~~~~~[0m
+
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://localhost:4200/
