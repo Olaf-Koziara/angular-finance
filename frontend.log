@@ -1,0 +1,46 @@
+
+> angular-finance@0.0.0 start /app/client
+> ng serve
+
+❯ Building...
+✔ Building...
+Initial chunk files | Names                       |  Raw size
+styles.css          | styles                      |  13.11 kB |
+main.js             | main                        |  11.53 kB |
+chunk-PS3CEXK6.js   | -                           |   5.01 kB |
+chunk-VNGKLVNY.js   | -                           |   3.29 kB |
+chunk-653SOEEV.js   | -                           |   1.51 kB |
+chunk-EGFK46N3.js   | -                           | 766 bytes |
+
+                    | Initial total               |  35.22 kB
+
+Lazy chunk files    | Names                       |  Raw size
+chunk-7NY2N4KM.js   | transactions-page-component | 107.40 kB |
+chunk-KYPJL6GY.js   | dashboard-component         |  84.92 kB |
+chunk-K5TAU5ZV.js   | authenticated-template      |  58.62 kB |
+chunk-QBF6YSST.js   | register-component          |  33.31 kB |
+chunk-6ET5JTCA.js   | budget-page-component       |  29.61 kB |
+chunk-MGCHKLFY.js   | login-component             |  13.83 kB |
+chunk-3TEHUZC2.js   | unauthorized-component      |   3.41 kB |
+chunk-2RBQM3SP.js   | -                           |   1.31 kB |
+chunk-GZWYNUEM.js   | -                           | 302 bytes |
+
+Application bundle generation complete. [8.525 seconds] - 2026-02-25T09:33:44.634Z
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: SettingsDialogComponent is not used within the template of SidebarComponent[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/layout/sidebar/sidebar.component.ts:39:4:
+[37m      39 │     [32mSettingsDialogComponent[37m,
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: MatButton is not used within the template of BackgroundPicker[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/settings/components/background-picker/background-picker.component.ts:10:21:
+[37m      10 │   imports: [NgStyle, [32mMatAnchor[37m, MatMenuModule, MatMenuTrigger, Tra...
+         ╵                      [32m~~~~~~~~~[0m
+
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://localhost:4200/
