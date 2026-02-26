@@ -55,8 +55,8 @@
       }
     </mat-form-field>
     <div class="type-field">
-      <span class="type-label">{{ 'TRANSACTIONS.TYPE' | translate }}</span>
-      <mat-button-toggle-group formControlName="type" appearance="standard">
+      <span class="type-label" id="transaction-type-label">{{ 'TRANSACTIONS.TYPE' | translate }}</span>
+      <mat-button-toggle-group formControlName="type" appearance="standard" aria-labelledby="transaction-type-label">
         <mat-button-toggle value="income">{{
           'TRANSACTIONS.TYPES.INCOME' | translate
         }}</mat-button-toggle>
