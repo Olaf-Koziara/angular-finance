@@ -6,6 +6,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import {
@@ -14,7 +15,7 @@ import {
   Transaction,
   TransactionSort,
 } from '../../models/transaction.model';
-import { AppCurrencyPipe } from "../../../../shared/pipes/app-currency.pipe";
+import { AppCurrencyPipe } from '../../../../shared/pipes/app-currency.pipe';
 
 @Component({
   selector: 'app-transaction-list',
@@ -27,9 +28,10 @@ import { AppCurrencyPipe } from "../../../../shared/pipes/app-currency.pipe";
     MatIconModule,
     MatCheckboxModule,
     MatChipsModule,
+    MatTooltipModule,
     TranslateModule,
     LoaderComponent,
-    AppCurrencyPipe
+    AppCurrencyPipe,
   ],
   templateUrl: './transaction-list.component.html',
   styleUrl: './transaction-list.component.scss',
@@ -57,13 +59,13 @@ export class TransactionListComponent {
 
   readonly hasTransactions = computed(() => this.total() > 0);
   readonly allSelected = computed(() => {
-    return this.transactions().length > 0 &&
-           this.transactions().every(t => this.selectedIds().has(t.id));
+    return (
+      this.transactions().length > 0 &&
+      this.transactions().every((t) => this.selectedIds().has(t.id))
+    );
   });
   readonly someSelected = computed(() => {
-    return this.transactions().length > 0 &&
-           this.selectedIds().size > 0 &&
-           !this.allSelected();
+    return this.transactions().length > 0 && this.selectedIds().size > 0 && !this.allSelected();
   });
 
   remove(id: string): void {

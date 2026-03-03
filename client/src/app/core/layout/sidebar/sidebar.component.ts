@@ -8,13 +8,14 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { map, shareReplay } from 'rxjs/operators';
 import { HeaderComponent } from '../header/header.component';
 import { AuthService } from '../../../features/auth/services/auth.service';
 import { Observable } from 'rxjs';
-import { SettingsDialogComponent } from "../../../features/settings/components/settings-dialog/settings-dialog.component";
+import { SettingsDialogComponent } from '../../../features/settings/components/settings-dialog/settings-dialog.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 @Component({
@@ -27,6 +28,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
     MatToolbarModule,
     MatButtonModule,
     MatSidenavModule,
+    MatTooltipModule,
     MatListModule,
     MatIconModule,
     MatSelectModule,
@@ -37,7 +39,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
     HeaderComponent,
     RouterLink,
     SettingsDialogComponent,
-    MatDialogModule
+    MatDialogModule,
   ],
 })
 export class SidebarComponent {
@@ -54,7 +56,7 @@ export class SidebarComponent {
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map((result) => result.matches),
-    shareReplay()
+    shareReplay(),
   );
 
   logout(): void {
