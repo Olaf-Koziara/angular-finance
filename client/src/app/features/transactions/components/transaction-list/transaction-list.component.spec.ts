@@ -65,9 +65,7 @@ describe('TransactionListComponent', () => {
       ],
     })
       .overrideComponent(TransactionListComponent, {
-        remove: {
-          imports: [],
-        },
+        remove: { imports: [LoaderComponent] },
         add: {
           imports: [MockLoaderComponent],
         },

@@ -1,0 +1,7 @@
+Add ARIA labels and tooltips to icon-only buttons
+
+Added missing `matTooltip` bindings to action buttons on the Transaction List list view
+to ensure sighted keyboard users and mouse users easily understand the meaning of
+icon-only buttons (Edit and Delete actions). Additionally, augmented the
+"Open user menu" and "Toggle sidenav" buttons within the Sidebar layout with
+helpful `matTooltip` definitions for improved accessibility.
