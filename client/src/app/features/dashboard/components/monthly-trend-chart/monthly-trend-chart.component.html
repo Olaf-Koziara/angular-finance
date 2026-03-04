@@ -11,7 +11,11 @@
         @for (data of monthlyData(); track data.month; let i = $index) {
           <div
             class="month-group"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="('DASHBOARD.VIEW_DETAILS' | translate) + ' ' + (data.month | translate)"
             (click)="onMonthSelect(i)"
+            (keydown)="onKeyDown($event, i)"
             [class.selected]="selectedMonth() === i">
             <div class="bars-container">
               <div

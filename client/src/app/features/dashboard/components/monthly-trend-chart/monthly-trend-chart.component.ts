@@ -22,4 +22,11 @@ export class MonthlyTrendChartComponent {
   onMonthSelect(index: number): void {
     this.selectedMonth.set(index);
   }
+
+  onKeyDown(event: KeyboardEvent, index: number): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.onMonthSelect(index);
+    }
+  }
 }
