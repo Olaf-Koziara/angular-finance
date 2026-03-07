@@ -39,8 +39,8 @@
       }
     </label>
 
-    <button matButton="elevated" type="submit">
-      {{ loading() ? 'logging in?' : 'Login' }}
+    <button matButton="elevated" type="submit" [disabled]="form.invalid || loading()">
+      {{ loading() ? 'Logging in...' : 'Login' }}
     </button>
   </form>
   <a matButton="elevated" [routerLink]="['/register']">Register</a>
