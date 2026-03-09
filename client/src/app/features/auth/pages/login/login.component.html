@@ -39,8 +39,15 @@
       }
     </label>
 
-    <button matButton="elevated" type="submit">
-      {{ loading() ? 'logging in?' : 'Login' }}
+    <button matButton="elevated" type="submit" [disabled]="loading() || form.invalid">
+      @if (loading()) {
+        <mat-progress-spinner
+          diameter="20"
+          strokeWidth="3"
+          mode="indeterminate"
+        ></mat-progress-spinner>
+      }
+      <span>{{ loading() ? 'Logging in...' : 'Login' }}</span>
     </button>
   </form>
   <a matButton="elevated" [routerLink]="['/register']">Register</a>

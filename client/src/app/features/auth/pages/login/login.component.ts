@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule, MatLabel } from "@angular/material/form-field";
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -12,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, MatButtonModule, RouterLink, MatFormFieldModule, MatLabel, TextFieldModule],
+  imports: [ReactiveFormsModule, MatButtonModule, RouterLink, MatFormFieldModule, MatLabel, TextFieldModule, MatProgressSpinnerModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
