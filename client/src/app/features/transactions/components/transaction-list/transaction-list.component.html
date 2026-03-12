@@ -12,14 +12,16 @@
           <mat-checkbox
             (change)="toggleAll.emit($event.checked)"
             [checked]="allSelected()"
-            [indeterminate]="someSelected()">
+            [indeterminate]="someSelected()"
+            [aria-label]="allSelected() ? 'Deselect all transactions' : 'Select all transactions'">
           </mat-checkbox>
         </th>
         <td mat-cell *matCellDef="let item">
           <mat-checkbox
             (click)="$event.stopPropagation()"
             (change)="toggleSelection.emit(item.id)"
-            [checked]="selectedIds().has(item.id)">
+            [checked]="selectedIds().has(item.id)"
+            [aria-label]="('TRANSACTIONS.SELECT' | translate) + ' ' + item.title">
           </mat-checkbox>
         </td>
       </ng-container>
