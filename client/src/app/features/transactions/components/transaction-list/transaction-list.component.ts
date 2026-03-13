@@ -6,6 +6,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import {
@@ -29,6 +30,7 @@ import { AppCurrencyPipe } from "../../../../shared/pipes/app-currency.pipe";
     MatChipsModule,
     TranslateModule,
     LoaderComponent,
+    MatTooltipModule,
     AppCurrencyPipe
   ],
   templateUrl: './transaction-list.component.html',
