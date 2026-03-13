@@ -3,10 +3,12 @@ import { TransactionListComponent } from './transaction-list.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
-import { Component, signal } from '@angular/core';
+import { Component, signal, input } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-loader',
@@ -15,7 +17,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  loading = input<boolean>(false);
 }
 
 describe('TransactionListComponent', () => {
@@ -62,11 +64,12 @@ describe('TransactionListComponent', () => {
         TranslateModule.forRoot(),
         MatIconModule,
         MatChipsModule,
+        MatTooltipModule,
       ],
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
