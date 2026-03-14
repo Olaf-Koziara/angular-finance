@@ -5,7 +5,13 @@
 
 <mat-menu #backgroundMenu="matMenu">
   @for(background of backgrounds;track background ){
-  <div class="background-item" (click)="updateSelectedBackground(background)" [ngStyle]="{ background: background }">
-  </div>
+  <button
+    mat-menu-item
+    class="background-item"
+    (click)="updateSelectedBackground(background)"
+    [ngStyle]="{ background: background }"
+    [attr.aria-label]="'SETTINGS.VISUAL.BACKGROUND_SELECT' | translate"
+  >
+  </button>
   }
 </mat-menu>
