@@ -7,6 +7,10 @@ import { Component, signal } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+
+import { input } from '@angular/core';
 
 @Component({
   selector: 'app-loader',
@@ -15,7 +19,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  loading = input<boolean>(false);
 }
 
 describe('TransactionListComponent', () => {
@@ -62,11 +66,12 @@ describe('TransactionListComponent', () => {
         TranslateModule.forRoot(),
         MatIconModule,
         MatChipsModule,
+        MatTooltipModule,
       ],
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
