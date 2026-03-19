@@ -4,7 +4,9 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule, MatLabel } from "@angular/material/form-field";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -12,7 +14,15 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, MatButtonModule, RouterLink, MatFormFieldModule, MatLabel, TextFieldModule],
+  imports: [
+    ReactiveFormsModule,
+    MatButtonModule,
+    RouterLink,
+    MatFormFieldModule,
+    MatInputModule,
+    TextFieldModule,
+    MatIconModule
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -25,6 +35,7 @@ export class LoginComponent {
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly showPassword = signal(false);
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -40,6 +51,10 @@ export class LoginComponent {
 {
   return this.form.get('password');
 }
+  togglePasswordVisibility(): void {
+    this.showPassword.update((s) => !s);
+  }
+
   submit(): void {
 
     this.form.updateValueAndValidity();
