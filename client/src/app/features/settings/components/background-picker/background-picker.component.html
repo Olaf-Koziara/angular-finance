@@ -1,4 +1,4 @@
-<button class="background-picker" [matMenuTriggerFor]="backgroundMenu">
+<button class="background-picker" [matMenuTriggerFor]="backgroundMenu" [attr.aria-label]="'SETTINGS.VISUAL.BACKGROUND_SELECT' | translate">
   <div class="background-preview" [ngStyle]="{ background: selectedBackground() }"></div>
   <span class="label">{{ 'SETTINGS.VISUAL.BACKGROUND_SELECT' | translate }}</span>
 </button>
