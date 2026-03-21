@@ -1,5 +1,5 @@
 <div class="language-switcher">
-  <button mat-button [matMenuTriggerFor]="langMenu" class="lang-button">
+  <button mat-button [matMenuTriggerFor]="langMenu" class="lang-button" [attr.aria-label]="'GENERAL.LANGUAGE' | translate">
     <mat-icon>language</mat-icon>
     <span>{{ getLangLabel() }}</span>
     <mat-icon class="arrow-icon">arrow_drop_down</mat-icon>
