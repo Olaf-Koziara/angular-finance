@@ -7,6 +7,10 @@ import { Component, signal } from '@angular/core';
 import { Transaction, TransactionSort } from '../../models/transaction.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+
+import { input } from '@angular/core';
 
 @Component({
   selector: 'app-loader',
@@ -15,7 +19,7 @@ import { MatChipsModule } from '@angular/material/chips';
   imports: [],
 })
 class MockLoaderComponent {
-  loading = signal(false);
+  loading = input(false);
 }
 
 describe('TransactionListComponent', () => {
@@ -62,11 +66,12 @@ describe('TransactionListComponent', () => {
         TranslateModule.forRoot(),
         MatIconModule,
         MatChipsModule,
+        MatTooltipModule,
       ],
     })
       .overrideComponent(TransactionListComponent, {
         remove: {
-          imports: [],
+          imports: [LoaderComponent],
         },
         add: {
           imports: [MockLoaderComponent],
@@ -316,6 +321,22 @@ describe('TransactionListComponent', () => {
       const deleteButtons = fixture.debugElement.queryAll(By.css('button[color="warn"]'));
       deleteButtons.forEach((button) => {
         expect(button.nativeElement.getAttribute('aria-label')).toBe('TRANSACTIONS.REMOVE');
+      });
+    });
+
+    it('should have matTooltip on edit buttons', () => {
+      const editButtons = fixture.debugElement.queryAll(By.css('button[color="primary"]'));
+      editButtons.forEach((button) => {
+        const tooltipDirective = button.injector.get(MatTooltip);
+        expect(tooltipDirective.message).toBe('TRANSACTIONS.EDIT');
+      });
+    });
+
+    it('should have matTooltip on delete buttons', () => {
+      const deleteButtons = fixture.debugElement.queryAll(By.css('button[color="warn"]'));
+      deleteButtons.forEach((button) => {
+        const tooltipDirective = button.injector.get(MatTooltip);
+        expect(tooltipDirective.message).toBe('TRANSACTIONS.REMOVE');
       });
     });
 
